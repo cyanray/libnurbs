@@ -1,0 +1,8 @@
+//
+// Created by uint128 on 2023/10/14.
+//
+
+#ifndef LIBNURBS_LIBNURBS_HPP
+#define LIBNURBS_LIBNURBS_HPP
+
+#endif //LIBNURBS_LIBNURBS_HPP
