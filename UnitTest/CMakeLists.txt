@@ -4,6 +4,7 @@ find_package(Catch2 CONFIG REQUIRED)
 
 set(libnurbs_UNITTEST_SOURCES
         MathUnitTest.cpp
+        KnotVectorUnitTest.cpp
 )
 
 add_executable(${PROJECT_NAME} ${libnurbs_UNITTEST_SOURCES})

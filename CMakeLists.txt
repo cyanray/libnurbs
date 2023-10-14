@@ -9,11 +9,15 @@ find_package(Eigen3 CONFIG REQUIRED)
 
 set(LIBNURBS_INCLUDES
         include/libnurbs/libnurbs.hpp
+        include/libnurbs/Curve/Curve.hpp
+        include/libnurbs/Core/Typedefs.hpp
+        include/libnurbs/Core/KnotVector.hpp
 
 )
 
 set(LIBNURBS_SOURCES
         src/libnurbs.cpp
+        src/Core/KnotVector.cpp
 
 )
 
