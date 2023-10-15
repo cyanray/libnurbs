@@ -35,4 +35,21 @@ TEST_CASE("Core/KnotVector", "[libnurbs_knotvector]")
         REQUIRE(result[2].Multiplicity == 3);
     }
 
+    SECTION("FindSpanIndex")
+    {
+        KnotVector U{{0.0, 0.0, 0.0, 0.3, 0.5, 0.75, 1.0, 1.0, 1.0}};
+        REQUIRE(U.FindSpanIndex(2, 0.0) == 2);
+        REQUIRE(U.FindSpanIndex(2, 0.1) == 2);
+        REQUIRE(U.FindSpanIndex(2, 0.2) == 2);
+        REQUIRE(U.FindSpanIndex(2, 0.3) == 3);
+        REQUIRE(U.FindSpanIndex(2, 0.4) == 3);
+        REQUIRE(U.FindSpanIndex(2, 0.5) == 4);
+        REQUIRE(U.FindSpanIndex(2, 0.6) == 4);
+        REQUIRE(U.FindSpanIndex(2, 0.7) == 4);
+        REQUIRE(U.FindSpanIndex(2, 0.8) == 5);
+        REQUIRE(U.FindSpanIndex(2, 0.9) == 5);
+        REQUIRE(U.FindSpanIndex(2, 1.0) == 5);
+        REQUIRE(U.FindSpanIndex(2, 1.1) == 5);  // u=1.1 is an illegal input, but acceptable
+    }
+
 }

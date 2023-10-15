@@ -1,5 +1,6 @@
 #include <libnurbs/Core/KnotVector.hpp>
 #include <stdexcept>
+#include <algorithm>
 
 using namespace std;
 
@@ -70,5 +71,24 @@ namespace libnurbs
         if (knot_pairs.size() < 2) return false;
         if (knot_pairs.front().Multiplicity != knot_pairs.back().Multiplicity) return false;
         return true;
+    }
+
+    bool KnotVector::IsUniform() const
+    {
+        // TODO: implement
+        return true;
+    }
+
+    int KnotVector::FindSpanIndex(int degree, Numeric u) const
+    {
+        int index_first_span = degree;
+        int index_last_span = static_cast<int>(m_Values.size()) - degree - 2;
+        assert(index_last_span >= 0);
+        if (u >= m_Values.back()) return index_last_span;
+        if (u <= m_Values.front()) return index_first_span;
+        // binary search
+        auto it = std::lower_bound(m_Values.begin(), m_Values.end(), u);
+        int index_result = (int) std::distance(m_Values.begin(), it);
+        return (*it == u) ? index_result : index_result - 1;
     }
 }

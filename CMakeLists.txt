@@ -12,12 +12,14 @@ set(LIBNURBS_INCLUDES
         include/libnurbs/Curve/Curve.hpp
         include/libnurbs/Core/Typedefs.hpp
         include/libnurbs/Core/KnotVector.hpp
+        include/libnurbs/Basis/BSplineBasis.hpp
 
 )
 
 set(LIBNURBS_SOURCES
         src/libnurbs.cpp
         src/Core/KnotVector.cpp
+        src/Basis/BSplineBasis.cpp
 
 )
 

@@ -27,7 +27,17 @@ namespace libnurbs
             return m_Values;
         }
 
-        bool IsNonperiodic() const;
+        [[nodiscard]] bool IsNonperiodic() const;
+
+        [[nodiscard]] bool IsUniform() const;
+
+        /**
+         * @brief Find the index of the span contains u into the knot vector.
+         * @param degree
+         * @param u
+         * @return
+         */
+        [[nodiscard]] int FindSpanIndex(int degree, Numeric u) const;
 
     };
 

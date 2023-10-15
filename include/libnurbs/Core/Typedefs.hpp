@@ -1,4 +1,5 @@
 #pragma once
+
 #include <Eigen/Dense>
 
 namespace libnurbs
@@ -10,5 +11,7 @@ namespace libnurbs
     using Vec3 = Eigen::Vector<Numeric, 3>;
 
     using Vec4 = Eigen::Vector<Numeric, 4>;
+
+    using VecX = Eigen::Vector<Numeric, Eigen::Dynamic>;
 
 }
