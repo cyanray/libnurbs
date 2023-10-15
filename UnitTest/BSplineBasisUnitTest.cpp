@@ -16,20 +16,29 @@ TEST_CASE("Core/BSplineBasis", "[libnurbs_BSplineBasis]")
     {
         int degree = 2;
         KnotVector U{{0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0}};
-        VecX result_0_0 = BSplineBasis::Evaluate(degree, U, 0.0);
-        REQUIRE(result_0_0.size() == 3);
-        REQUIRE(result_0_0(0) == Approx(1.0));
-        REQUIRE(result_0_0(1) == Approx(0.0));
-        REQUIRE(result_0_0(2) == Approx(0.0));
-        VecX result_1_0 = BSplineBasis::Evaluate(degree, U, 1.0);
-        REQUIRE(result_1_0.size() == 3);
-        REQUIRE(result_1_0(0) == Approx(0.0));
-        REQUIRE(result_1_0(1) == Approx(0.0));
-        REQUIRE(result_1_0(2) == Approx(1.0));
-        VecX result_0_5 = BSplineBasis::Evaluate(degree, U, 0.5);
-        REQUIRE(result_0_5.size() == 3);
-        REQUIRE(result_0_5(0) == Approx(0.5));
-        REQUIRE(result_0_5(1) == Approx(0.5));
-        REQUIRE(result_0_5(2) == Approx(0.0));
+        {
+            Numeric x = 0.0;
+            VecX result = BSplineBasis::Evaluate(degree, U.Values(), U.FindSpanIndex(degree, x), x);
+            REQUIRE(result.size() == 3);
+            REQUIRE(result(0) == Approx(1.0));
+            REQUIRE(result(1) == Approx(0.0));
+            REQUIRE(result(2) == Approx(0.0));
+        }
+        {
+            Numeric x = 1.0;
+            VecX result = BSplineBasis::Evaluate(degree, U.Values(), U.FindSpanIndex(degree, x), x);
+            REQUIRE(result.size() == 3);
+            REQUIRE(result(0) == Approx(0.0));
+            REQUIRE(result(1) == Approx(0.0));
+            REQUIRE(result(2) == Approx(1.0));
+        }
+        {
+            Numeric x = 0.5;
+            VecX result = BSplineBasis::Evaluate(degree, U.Values(), U.FindSpanIndex(degree, x), x);
+            REQUIRE(result.size() == 3);
+            REQUIRE(result(0) == Approx(0.5));
+            REQUIRE(result(1) == Approx(0.5));
+            REQUIRE(result(2) == Approx(0.0));
+        }
     }
 }

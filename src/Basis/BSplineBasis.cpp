@@ -2,19 +2,17 @@
 
 namespace libnurbs
 {
-    VecX BSplineBasis::Evaluate(int degree, const KnotVector& knot_vec, Numeric x)
+    VecX BSplineBasis::Evaluate(int degree, const vector<Numeric >& knots, int index_span, Numeric x)
     {
         VecX result; result.resize(degree + 1); result.fill(0.0);
         VecX left; left.resize(degree + 1); left.fill(0.0);
         VecX right; right.resize(degree + 1); right.fill(0.0);
-        int span = knot_vec.FindSpanIndex(degree, x);
-        auto& knots = knot_vec.Values();
         Numeric saved, temp;
         result[0] = 1.0;
         for (int j = 1; j <= degree; j++)
         {
-            left[j] = (x - knots[span + 1 - j]);
-            right[j] = knots[span + j] - x;
+            left[j] = (x - knots[index_span + 1 - j]);
+            right[j] = knots[index_span + j] - x;
             saved = 0.0;
             for (int r = 0; r < j; r++)
             {

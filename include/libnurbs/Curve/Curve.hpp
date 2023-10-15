@@ -19,6 +19,6 @@ namespace libnurbs
 
         bool Validate() const;
 
-        Numeric Evaluate(Numeric x) const;
+        [[nodiscard]] Vec3 Evaluate(Numeric x) const;
     };
 }

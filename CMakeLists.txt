@@ -20,6 +20,7 @@ set(LIBNURBS_SOURCES
         src/libnurbs.cpp
         src/Core/KnotVector.cpp
         src/Basis/BSplineBasis.cpp
+        src/Curve/Curve.cpp
 
 )
 
