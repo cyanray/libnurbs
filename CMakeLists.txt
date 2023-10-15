@@ -29,8 +29,13 @@ target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)
 
 install(TARGETS ${PROJECT_NAME})
 
-option(LIBNURBS_BUILD_UNITTEST "Build unit-tests" OFF)
+option(LIBNURBS_BUILD_UNITTEST "Build Unit-Tests" OFF)
 if (LIBNURBS_BUILD_UNITTEST)
     enable_testing()
     add_subdirectory(UnitTest)
+endif ()
+
+option(LIBNURBS_BUILD_VISUALTEST "Build Visual Tests" OFF)
+if (LIBNURBS_BUILD_VISUALTEST)
+    add_subdirectory(VisualTest)
 endif ()

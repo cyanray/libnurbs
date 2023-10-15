@@ -2,7 +2,16 @@
     "version": 3,
     "configurePresets": [
         {
+            "name": "base",
+            "hidden": true,
+            "cacheVariables": {
+                "LIBNURBS_BUILD_UNITTEST": "OFF",
+                "LIBNURBS_BUILD_VISUALTEST": "OFF"
+            }
+        },
+        {
             "name": "windows-base",
+            "inherits": "base",
             "hidden": true,
             "generator": "Ninja",
             "binaryDir": "${sourceDir}/out/build/${presetName}",
@@ -63,6 +72,7 @@
         },
         {
             "name": "linux-debug",
+            "inherits": "base",
             "displayName": "Linux Debug",
             "generator": "Unix Makefiles",
             "binaryDir": "${sourceDir}/out/build/${presetName}",
@@ -87,6 +97,7 @@
         },
         {
             "name": "linux-clang-debug",
+            "inherits": "base",
             "displayName": "Linux Clang Debug",
             "generator": "Unix Makefiles",
             "binaryDir": "${sourceDir}/out/build/${presetName}",
@@ -113,6 +124,7 @@
         },
         {
             "name": "macos-debug",
+            "inherits": "base",
             "displayName": "macOS Debug",
             "generator": "Ninja",
             "binaryDir": "${sourceDir}/out/build/${presetName}",

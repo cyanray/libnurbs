@@ -31,6 +31,5 @@ TEST_CASE("Core/BSplineBasis", "[libnurbs_BSplineBasis]")
         REQUIRE(result_0_5(0) == Approx(0.5));
         REQUIRE(result_0_5(1) == Approx(0.5));
         REQUIRE(result_0_5(2) == Approx(0.0));
-
     }
 }
