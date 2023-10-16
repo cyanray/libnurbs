@@ -89,6 +89,6 @@ namespace libnurbs
         // binary search
         auto it = std::lower_bound(m_Values.begin(), m_Values.end(), u);
         int index_result = (int) std::distance(m_Values.begin(), it);
-        return (*it == u) ? index_result : index_result - 1;
+        return (*it == u) ? index_result : index_result - 1;    // TODO: replace operator== to Approx()
     }
 }

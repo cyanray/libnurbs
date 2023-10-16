@@ -13,6 +13,7 @@ set(LIBNURBS_INCLUDES
         include/libnurbs/Core/Typedefs.hpp
         include/libnurbs/Core/KnotVector.hpp
         include/libnurbs/Basis/BSplineBasis.hpp
+        include/libnurbs/Algorithm/MathUtils.hpp
 
 )
 

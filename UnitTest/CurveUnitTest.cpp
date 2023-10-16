@@ -10,7 +10,7 @@ using namespace Catch;
 using namespace libnurbs;
 using namespace std;
 
-TEST_CASE("Core/Curve", "[libnurbs_BSplineCurve]")
+TEST_CASE("Curve/Curve", "[libnurbs_BSplineCurve]")
 {
     SECTION("Evaluate (p=2)")
     {

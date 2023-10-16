@@ -3,6 +3,7 @@
 #include <catch2/matchers/catch_matchers.hpp>
 
 #include <libnurbs/Basis/BSplineBasis.hpp>
+#include <libnurbs/Core/KnotVector.hpp>
 
 #include <stdexcept>
 
@@ -10,7 +11,7 @@ using namespace Catch;
 using namespace libnurbs;
 using namespace std;
 
-TEST_CASE("Core/BSplineBasis", "[libnurbs_BSplineBasis]")
+TEST_CASE("Basis/BSplineBasis", "[libnurbs_BSplineBasis]")
 {
     SECTION("Evaluate (p=2)")
     {

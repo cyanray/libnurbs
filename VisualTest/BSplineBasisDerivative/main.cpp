@@ -18,7 +18,7 @@ int main()
     VecX x = VecX::LinSpaced(20, 0.0, 1.0);
     for (int i = 0; i < x.size(); ++i)
     {
-        VecX y = BSplineBasis::Evaluate(degree, U.Values(), U.FindSpanIndex(degree, x(i)), x(i));
+        VecX y = BSplineBasis::EvaluateDerivative(degree, U.Values(), U.FindSpanIndex(degree, x(i)), x(i), 1);
         for (int j = 0; j < y.size(); ++j)
         {
             plot({x(i)}, {y(j)}, "ko");
