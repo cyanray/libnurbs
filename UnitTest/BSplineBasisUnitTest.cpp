@@ -19,7 +19,7 @@ TEST_CASE("Basis/BSplineBasis", "[libnurbs_BSplineBasis]")
         KnotVector U{{0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0}};
         {
             Numeric x = 0.0;
-            VecX result = BSplineBasis::Evaluate(degree, U.Values(), U.FindSpanIndex(degree, x), x);
+            VecX result = BSplineBasis::Evaluate(degree, U, x);
             REQUIRE(result.size() == 3);
             REQUIRE(result(0) == Approx(1.0));
             REQUIRE(result(1) == Approx(0.0));
@@ -27,7 +27,7 @@ TEST_CASE("Basis/BSplineBasis", "[libnurbs_BSplineBasis]")
         }
         {
             Numeric x = 1.0;
-            VecX result = BSplineBasis::Evaluate(degree, U.Values(), U.FindSpanIndex(degree, x), x);
+            VecX result = BSplineBasis::Evaluate(degree, U, x);
             REQUIRE(result.size() == 3);
             REQUIRE(result(0) == Approx(0.0));
             REQUIRE(result(1) == Approx(0.0));
@@ -35,7 +35,7 @@ TEST_CASE("Basis/BSplineBasis", "[libnurbs_BSplineBasis]")
         }
         {
             Numeric x = 0.5;
-            VecX result = BSplineBasis::Evaluate(degree, U.Values(), U.FindSpanIndex(degree, x), x);
+            VecX result = BSplineBasis::Evaluate(degree, U, x);
             REQUIRE(result.size() == 3);
             REQUIRE(result(0) == Approx(0.5));
             REQUIRE(result(1) == Approx(0.5));

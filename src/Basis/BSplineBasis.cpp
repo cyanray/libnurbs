@@ -1,4 +1,5 @@
 #include <libnurbs/Basis/BSplineBasis.hpp>
+#include <libnurbs/Core/KnotVector.hpp>
 #include <libnurbs/Algorithm/MathUtils.hpp>
 
 namespace libnurbs
@@ -26,11 +27,19 @@ namespace libnurbs
         return result;
     }
 
-    VecX BSplineBasis::EvaluateDerivative(int degree, const vector<Numeric>& knots,
-                                          int index_span, Numeric x, int order)
+
+    VecX BSplineBasis::Evaluate(int degree, const KnotVector& knot_vec, Numeric x)
     {
+        auto& knots = knot_vec.Values();
+        auto index_span = knot_vec.FindSpanIndex(degree, x);
+        return BSplineBasis::Evaluate(degree, knots, index_span, x);
+    }
+
+    VecX BSplineBasis::EvaluateDerivative(int degree, const KnotVector& knot_vec, Numeric x, int order)
+    {
+        auto& knots = knot_vec.Values();
+        auto index_span = knot_vec.FindSpanIndex(degree, x);
         Numeric t = (Numeric) Factorial(degree) / (Numeric) Factorial(degree - order);
-        Numeric a_cache;
         auto calc_a = [p = degree, i = index_span, &u = knots](auto self, int k, int j) -> Numeric
         {
             if (k == 0 && j == 0) return 1;
@@ -47,7 +56,7 @@ namespace libnurbs
         VecX result = VecX::Zero(degree + 1);
         for (int j = 0; j <= order; ++j)
         {
-            VecX N = BSplineBasis::Evaluate(degree - order, knots, index_span + j, x);
+            VecX N = BSplineBasis::Evaluate(degree - order, knot_vec, x);
             Numeric a = calc_a(calc_a, order, j);
             result += a * N;
         }
