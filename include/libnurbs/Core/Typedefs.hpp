@@ -14,4 +14,6 @@ namespace libnurbs
 
     using VecX = Eigen::Vector<Numeric, Eigen::Dynamic>;
 
+    using MatX = Eigen::Matrix<Numeric, Eigen::Dynamic, Eigen::Dynamic>;
+
 }

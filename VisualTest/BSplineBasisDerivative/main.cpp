@@ -15,13 +15,13 @@ int main()
 {
     int degree = 3;
     KnotVector U{{0.0, 0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0, 1.0}};
-    VecX x = VecX::LinSpaced(20, 0.0, 1.0);
+    VecX x = VecX::LinSpaced(100, 0.0, 1.0);
     for (int i = 0; i < x.size(); ++i)
     {
-        VecX y = BSplineBasis::EvaluateDerivative(degree, U, x(i), 1);
+        MatX y = BSplineBasis::EvaluateDerivative(degree, U, x(i), 1).row(1);
         for (int j = 0; j < y.size(); ++j)
         {
-            plot({x(i)}, {y(j)}, "ko");
+            plot({x(i)}, {y(j)}, "k.");
             hold(on);
         }
     }
