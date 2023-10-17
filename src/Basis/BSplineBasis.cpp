@@ -77,13 +77,13 @@ namespace libnurbs
     }
 
     // from https://github.com/pradeep-pyro/tinynurbs
-    MatX BSplineBasis::EvaluateDerivative(int degree, const std::vector<Numeric>& knots, int index_span, Numeric x,
-                                          int order)
+    MatX BSplineBasis::EvaluateDerivative(int degree, const std::vector<Numeric>& knots,
+                                          int index_span, Numeric x, int order)
     {
         std::vector<Numeric> left, right;
         left.resize(degree + 1, 0.0);
         right.resize(degree + 1, 0.0);
-        Numeric saved = 0.0, temp = 0.0;
+        Numeric saved, temp;
 
         MatX ndu = MatX::Zero(degree + 1, degree + 1);
         ndu(0, 0) = 1.0;
@@ -93,7 +93,6 @@ namespace libnurbs
             left[j] = x - knots[index_span + 1 - j];
             right[j] = knots[index_span + j] - x;
             saved = 0.0;
-
             for (int r = 0; r < j; r++)
             {
                 // Lower triangle
@@ -103,32 +102,23 @@ namespace libnurbs
                 ndu(r, j) = saved + right[r + 1] * temp;
                 saved = left[j - r] * temp;
             }
-
             ndu(j, j) = saved;
         }
 
-        MatX ders = MatX::Zero(order + 1, degree + 1);
-
-        for (int j = 0; j <= degree; j++)
-        {
-            ders(0, j) = ndu(j, degree);
-        }
+        MatX result = MatX::Zero(order + 1, degree + 1);
+        result.row(0) = ndu.col(degree);
 
         MatX a = MatX::Zero(2, degree + 1);
-
         for (int r = 0; r <= degree; r++)
         {
-            int s1 = 0;
-            int s2 = 1;
+            int s1 = 0, s2 = 1;
             a(0, 0) = 1.0;
-
             for (int k = 1; k <= order; k++)
             {
                 Numeric d = 0.0;
                 int rk = r - k;
                 int pk = degree - k;
-                int j1 = 0;
-                int j2 = 0;
+                int j1, j2;
 
                 if (r >= k)
                 {
@@ -151,8 +141,7 @@ namespace libnurbs
                     d += a(s2, k) * ndu(r, pk);
                 }
 
-                ders(k, r) = d;
-
+                result(k, r) = d;
                 std::swap(s1, s2);
             }
         }
@@ -160,14 +149,11 @@ namespace libnurbs
         Numeric fac = degree;
         for (int k = 1; k <= order; k++)
         {
-            for (int j = 0; j <= degree; j++)
-            {
-                ders(k, j) *= fac;
-            }
+            result.row(k) *= fac;
             fac *= (degree - k);
         }
 
-        return ders;
+        return result;
     }
 
 }
