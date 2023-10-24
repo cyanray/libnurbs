@@ -12,4 +12,9 @@ namespace libnurbs
         return result_array[n];
     }
 
+    inline bool Approx(double v1, double v2, double epsilon = 1e-6)
+    {
+        return std::abs(v1 - v2) < epsilon;
+    }
+
 }
