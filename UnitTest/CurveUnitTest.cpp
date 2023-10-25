@@ -69,4 +69,24 @@ TEST_CASE("Curve/Curve", "[libnurbs_BSplineCurve]")
         Check(curve, 0.987, {0.227165964922742, -2.88053915042935, 0.0});
     }
 
+    SECTION("Evaluate (circle arc)")
+    {
+        int degree = 2;
+        KnotVector U{{0,0,0,1,1,1}};
+        vector<Vec4> controlPoints{{0.0, 1.0, 0.0, 2.0},
+                                   {1.0, 1.0, 0.0, 1.0},
+                                   {1.0, 0.0, 0.0, 1.0}};
+        Curve curve;
+        curve.Degree = degree;
+        curve.Knots = U;
+        curve.ControlPoints = controlPoints;
+        Check(curve, 0.0, {0.0, 1.0, 0.0});
+        Check(curve, 1.0, {1.0, 0.0, 0.0});
+        Check(curve, 0.123, {0.130499810923907, 0.991448334180266, 0.0});
+        Check(curve, 0.345, {0.399555641083956, 0.916708944909991, 0.0});
+        Check(curve, 0.5, {0.600000000000000, 0.800000000000000, 0.0});
+        Check(curve, 0.789, {0.914753269680552, 0.404012939902596, 0.0});
+        Check(curve, 0.987, {0.999662057112348, 0.0259956067424605, 0.0});
+    }
+
 }

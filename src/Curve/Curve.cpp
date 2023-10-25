@@ -10,7 +10,9 @@ namespace libnurbs
         Vec4 result = Vec4::Zero();
         for (int i = 0; i <= Degree; i++)
         {
-            result += basis(i) * ControlPoints[index_span - Degree + i];
+            auto point = ControlPoints[index_span - Degree + i];
+            point.head<3>() *= point(3);
+            result += basis(i) * point;
         }
         return result.head<3>() / result(3);
     }
