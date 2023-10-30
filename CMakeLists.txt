@@ -14,6 +14,8 @@ set(LIBNURBS_INCLUDES
         include/libnurbs/Core/KnotVector.hpp
         include/libnurbs/Basis/BSplineBasis.hpp
         include/libnurbs/Algorithm/MathUtils.hpp
+        include/libnurbs/Core/ControlPointGrid.hpp
+        include/libnurbs/Surface/Surface.hpp
 
 )
 
@@ -22,6 +24,7 @@ set(LIBNURBS_SOURCES
         src/Core/KnotVector.cpp
         src/Basis/BSplineBasis.cpp
         src/Curve/Curve.cpp
+        src/Surface/Surface.cpp
 
 )
 

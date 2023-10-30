@@ -5,8 +5,10 @@ namespace libnurbs
 {
     Vec3 Curve::Evaluate(Numeric x) const
     {
+        assert(x >= 0 && x <= 1);
         int index_span = Knots.FindSpanIndex(Degree, x);
         VecX basis = BSplineBasis::Evaluate(Degree, Knots.Values(), index_span, x);
+        assert(basis.size() == Degree + 1);
         Vec4 result = Vec4::Zero();
         for (int i = 0; i <= Degree; i++)
         {

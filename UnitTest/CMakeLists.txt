@@ -7,6 +7,7 @@ set(libnurbs_UNITTEST_SOURCES
         KnotVectorUnitTest.cpp
         BSplineBasisUnitTest.cpp
         CurveUnitTest.cpp
+        SurfaceUnitTest.cpp
 )
 
 add_executable(${PROJECT_NAME} ${libnurbs_UNITTEST_SOURCES})
