@@ -79,6 +79,7 @@ namespace libnurbs
         return true;
     }
 
+    // [Span1,Span2)
     int KnotVector::FindSpanIndex(int degree, Numeric u) const
     {
         int index_first_span = degree;
@@ -91,4 +92,21 @@ namespace libnurbs
         int index_result = (int) std::distance(m_Values.begin(), it);
         return (*it == u) ? index_result : index_result - 1;    // TODO: replace operator== to Approx()
     }
+
+    KnotVector::KnotSpan KnotVector::FindSpan(int degree, Numeric u) const
+    {
+        auto pairs = GetKnotPairs();
+        assert(pairs.size() >= 2);
+        for (int i = (int) pairs.size() - 1; i >= 0; --i)
+        {
+            const auto& pair = pairs[i];
+            if (pair.Value <= u)
+            {
+                return {pair, pairs[i + 1]};
+            }
+        }
+        return {};
+    }
+
+
 }

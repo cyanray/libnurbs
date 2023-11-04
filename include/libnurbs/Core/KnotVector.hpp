@@ -13,6 +13,8 @@ namespace libnurbs
         vector <Numeric> m_Values{};
     public:
         struct KnotPair;
+
+        struct KnotSpan;
     public:
         KnotVector() = default;
 
@@ -20,7 +22,7 @@ namespace libnurbs
 
         explicit KnotVector(const vector <KnotPair>& knots);
 
-        [[nodiscard]] vector<KnotPair> GetKnotPairs() const;
+        [[nodiscard]] vector <KnotPair> GetKnotPairs() const;
 
         [[nodiscard]] auto& Values() const
         {
@@ -39,14 +41,28 @@ namespace libnurbs
          */
         [[nodiscard]] int FindSpanIndex(int degree, Numeric u) const;
 
+        [[nodiscard]] KnotSpan FindSpan(int degree, Numeric u) const;
+
     };
 
     struct KnotVector::KnotPair
     {
-        Numeric Value{};
-        int Multiplicity{};
+        Numeric Value{INVALID_INDEX};
+        int Multiplicity{INVALID_VALUE};
+
+        KnotPair() = default;
 
         KnotPair(Numeric value, int multiplicity) : Value(value), Multiplicity(multiplicity) {}
+    };
+
+    struct KnotVector::KnotSpan
+    {
+        KnotPair Left{};
+        KnotPair Right{};
+
+        KnotSpan() = default;
+
+        KnotSpan(const KnotPair& left, const KnotPair& right) : Left(left), Right(right) {}
     };
 
 }
