@@ -6,6 +6,8 @@ namespace libnurbs
 {
     constexpr int INVALID_DEGREE{-1};
 
+    constexpr int INVALID_VALUE{-1};
+
     constexpr int INVALID_INDEX{-1};
 
     using Numeric = double;
