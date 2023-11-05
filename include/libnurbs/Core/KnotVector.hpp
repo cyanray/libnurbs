@@ -47,22 +47,26 @@ namespace libnurbs
 
     struct KnotVector::KnotPair
     {
-        Numeric Value{INVALID_INDEX};
+        int Index{INVALID_INDEX};
+        Numeric Value{INVALID_VALUE};
         int Multiplicity{INVALID_VALUE};
 
         KnotPair() = default;
 
-        KnotPair(Numeric value, int multiplicity) : Value(value), Multiplicity(multiplicity) {}
+        KnotPair(int index, Numeric value, int multiplicity)
+                : Index(index), Value(value), Multiplicity(multiplicity) {}
     };
 
     struct KnotVector::KnotSpan
     {
+        int Index{INVALID_INDEX};
         KnotPair Left{};
         KnotPair Right{};
 
         KnotSpan() = default;
 
-        KnotSpan(const KnotPair& left, const KnotPair& right) : Left(left), Right(right) {}
+        KnotSpan(int index, const KnotPair& left, const KnotPair& right)
+                : Index(index), Left(left), Right(right) {}
     };
 
 }

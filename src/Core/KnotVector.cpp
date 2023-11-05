@@ -55,13 +55,13 @@ namespace libnurbs
             Numeric val = m_Values[i];
             if (val != last_value)
             {
-                result.emplace_back(last_value, multiplicity);
+                result.emplace_back(i, last_value, multiplicity);
                 last_value = val;
                 multiplicity = 1;
             }
             else ++multiplicity;
         }
-        result.emplace_back(last_value, multiplicity);
+        result.emplace_back(len - multiplicity, last_value, multiplicity);
         return result;
     }
 
@@ -95,6 +95,7 @@ namespace libnurbs
 
     KnotVector::KnotSpan KnotVector::FindSpan(int degree, Numeric u) const
     {
+        assert(u >= 0.0 && u <= 1.0);
         auto pairs = GetKnotPairs();
         assert(pairs.size() >= 2);
         for (int i = (int) pairs.size() - 1; i >= 0; --i)
@@ -102,7 +103,7 @@ namespace libnurbs
             const auto& pair = pairs[i];
             if (pair.Value <= u)
             {
-                return {pair, pairs[i + 1]};
+                return {i, pair, pairs[i + 1]};
             }
         }
         return {};
