@@ -50,8 +50,8 @@ TEST_CASE("Basis/BSplineBasis", "[libnurbs_BSplineBasis]")
         auto conv = [](Numeric x) { return 0.25 * x + 0.25; };
         Numeric k1 = conv(x1), k2 = conv(x2);
         KnotVector U{{0, 0, 0, 0.5, 1, 1, 1}};
-        VecX dN1 = BSplineBasis::EvaluateDerivative(2, U, k1, 1).row(1);
-        VecX dN2 = BSplineBasis::EvaluateDerivative(2, U, k2, 1).row(1);
+        VecX dN1 = BSplineBasis::EvaluateDerivative(2, U, k1, 1);
+        VecX dN2 = BSplineBasis::EvaluateDerivative(2, U, k2, 1);
         MatX tN1 = dN1 * dN1.transpose();
         MatX tN2 = dN2 * dN2.transpose();
         MatX result = (tN1 + tN2) / 8.0;

@@ -15,9 +15,13 @@ namespace libnurbs
 
         static VecX Evaluate(int degree, const vector<Numeric>& knots, int index_span, Numeric x);
 
-        static MatX EvaluateDerivative(int degree, const KnotVector& knot_vec, Numeric x, int order = 1);
+        static VecX EvaluateDerivative(int degree, const KnotVector& knot_vec, Numeric x, int order = 1);
 
-        static MatX EvaluateDerivative(int degree, const std::vector<Numeric>& knots, int index_span, Numeric x, int order);
+        static VecX EvaluateDerivative(int degree, const std::vector<Numeric>& knots, int index_span, Numeric x, int order);
+
+        static MatX EvaluateAll(int degree, const KnotVector& knot_vec, Numeric x, int order = 1);
+
+        static MatX EvaluateAll(int degree, const std::vector<Numeric>& knots, int index_span, Numeric x, int order);
 
     };
 }

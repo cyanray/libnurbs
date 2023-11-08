@@ -20,7 +20,7 @@ int main()
     points.resize(degree + 1, x.size());
     for (int i = 0; i < x.size(); ++i)
     {
-        VecX y = BSplineBasis::EvaluateDerivative(degree, U, x(i), 1).row(1);
+        VecX y = BSplineBasis::EvaluateDerivative(degree, U, x(i), 1);
         points.col(i) = y;
     }
     vector<double> px{x.data(), x.data() + x.size()};

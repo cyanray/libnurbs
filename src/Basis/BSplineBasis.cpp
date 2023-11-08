@@ -36,49 +36,23 @@ namespace libnurbs
         return BSplineBasis::Evaluate(degree, knots, index_span, x);
     }
 
-//    VecX BSplineBasis::EvaluateDerivative(int degree, const KnotVector& knot_vec, Numeric x, int order)
-//    {
-//        auto& knots = knot_vec.Values();
-//        auto index_span = knot_vec.FindSpanIndex(degree, x);
-//        auto calc_a = [p = degree, i = index_span, &u = knots](auto self, int k, int j) -> Numeric
-//        {
-//            if (k == 0 && j == 0) return 1;
-//            if (j == 0)
-//            {
-//                Numeric m = (u[i + p - k + 1] - u[i]);
-//                return (m == 0) ? 0.0 : self(self, k - 1, 0) / m;
-//            }
-//            if (j == k)
-//            {
-//                Numeric m = (u[i + p + 1] - u[i + k]);
-//                return (m == 0) ? 0.0 : (-self(self, k - 1, k - 1)) / m;
-//            }
-//            Numeric m = (u[i + p + j - k + 1] - u[i + j]);
-//            return (m == 0) ? 0.0 : (self(self, k - 1, j) - self(self, k - 1, j - 1)) / m;
-//        };
-//        //VecX result = VecX::Zero(degree + 1);
-//        VecX N = BSplineBasis::Evaluate(degree - order, knot_vec, x);
-//        Numeric R = 0.0;
-//        for (int j = 0; j <= order; ++j)
-//        {
-//            Numeric a = calc_a(calc_a, order, j);
-//            R += a * N(j);
-//        }
-//        Numeric t = (Numeric) Factorial(degree) / (Numeric) Factorial(degree - order);
-//        R *= t;
-//        return {};
-//    }
 
-    MatX BSplineBasis::EvaluateDerivative(int degree, const KnotVector& knot_vec, Numeric x, int order)
+    VecX BSplineBasis::EvaluateDerivative(int degree, const KnotVector& knot_vec, Numeric x, int order)
     {
         auto& knots = knot_vec.Values();
         auto index_span = knot_vec.FindSpanIndex(degree, x);
         return BSplineBasis::EvaluateDerivative(degree, knots, index_span, x, order);
     }
 
-    // from https://github.com/pradeep-pyro/tinynurbs
-    MatX BSplineBasis::EvaluateDerivative(int degree, const std::vector<Numeric>& knots,
+
+    VecX BSplineBasis::EvaluateDerivative(int degree, const std::vector<Numeric>& knots,
                                           int index_span, Numeric x, int order)
+    {
+        return EvaluateAll(degree, knots, index_span, x, order).row(order);
+    }
+
+    // from https://github.com/pradeep-pyro/tinynurbs
+    MatX BSplineBasis::EvaluateAll(int degree, const vector<Numeric>& knots, int index_span, Numeric x, int order)
     {
         std::vector<Numeric> left, right;
         left.resize(degree + 1, 0.0);
@@ -154,6 +128,13 @@ namespace libnurbs
         }
 
         return result;
+    }
+
+    MatX BSplineBasis::EvaluateAll(int degree, const KnotVector& knot_vec, Numeric x, int order)
+    {
+        auto& knots = knot_vec.Values();
+        auto index_span = knot_vec.FindSpanIndex(degree, x);
+        return BSplineBasis::EvaluateAll(degree, knots, index_span, x, order);
     }
 
 }
