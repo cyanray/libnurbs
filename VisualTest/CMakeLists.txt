@@ -1,2 +1,3 @@
 add_subdirectory(BSplineBasis)
 add_subdirectory(BSplineBasisDerivative)
+add_subdirectory(Surface)
