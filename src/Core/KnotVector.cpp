@@ -93,7 +93,7 @@ namespace libnurbs
         return (*it == u) ? index_result : index_result - 1;    // TODO: replace operator== to Approx()
     }
 
-    KnotVector::KnotSpan KnotVector::FindSpan(int degree, Numeric u) const
+    KnotVector::KnotSpan KnotVector::FindSpan(Numeric u) const
     {
         assert(u >= 0.0 && u <= 1.0);
         auto pairs = GetKnotPairs();

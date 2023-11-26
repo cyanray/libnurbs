@@ -41,7 +41,7 @@ namespace libnurbs
          */
         [[nodiscard]] int FindSpanIndex(int degree, Numeric u) const;
 
-        [[nodiscard]] KnotSpan FindSpan(int degree, Numeric u) const;
+        [[nodiscard]] KnotSpan FindSpan(Numeric u) const;
 
     };
 
