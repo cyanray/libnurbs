@@ -98,7 +98,7 @@ namespace libnurbs
         assert(u >= 0.0 && u <= 1.0);
         auto pairs = GetKnotPairs();
         assert(pairs.size() >= 2);
-        for (int i = (int) pairs.size() - 1; i >= 0; --i)
+        for (int i = (int) pairs.size() - 2; i >= 0; --i)
         {
             const auto& pair = pairs[i];
             if (pair.Value <= u)
