@@ -20,5 +20,7 @@ namespace libnurbs
         bool Validate() const;
 
         [[nodiscard]] Vec3 Evaluate(Numeric x) const;
+
+        [[nodiscard]] Vec3 EvaluateDerivative(Numeric x, int order) const;
     };
 }
