@@ -21,6 +21,7 @@ namespace libnurbs
 
         [[nodiscard]] Vec3 Evaluate(Numeric u, Numeric v) const;
 
+        [[nodiscard]] Vec3 EvaluateDerivative(Numeric u, Numeric v, int order_u, int order_v) const;
     };
 
 

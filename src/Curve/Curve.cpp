@@ -31,7 +31,7 @@ namespace libnurbs
         for (int i = 0; i <= Degree; i++)
         {
             auto point = ControlPoints[index_span - Degree + i];
-            point.head<3>() *= basis(i) * point(3);
+            point.head<3>() *= basis(i);
             result += point;
         }
         return result.head<3>();

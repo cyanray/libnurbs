@@ -28,4 +28,27 @@ namespace libnurbs
         }
         return result.head<3>() / result(3);
     }
+
+    Vec3 Surface::EvaluateDerivative(Numeric u, Numeric v, int order_u, int order_v) const
+    {
+        assert(u >= 0 && u <= 1);
+        assert(v >= 0 && v <= 1);
+        int index_span_u = KnotsU.FindSpanIndex(DegreeU, u);
+        int index_span_v = KnotsV.FindSpanIndex(DegreeV, v);
+        VecX basis_u = BSplineBasis::EvaluateDerivative(DegreeU, KnotsU.Values(), index_span_u, u, order_u);
+        VecX basis_v = BSplineBasis::EvaluateDerivative(DegreeV, KnotsV.Values(), index_span_v, v, order_v);
+        assert(basis_u.size() == DegreeU + 1);
+        assert(basis_v.size() == DegreeV + 1);
+        Vec4 result = Vec4::Zero();
+        for (int i = 0; i <= DegreeU; i++)
+        {
+            for (int j = 0; j <= DegreeV; j++)
+            {
+                auto point = ControlPoints.get(index_span_u - DegreeU + i, index_span_v - DegreeV + j);
+                point.head<3>() *= basis_u(i) * basis_v(j);
+                result += point;
+            }
+        }
+        return result.head<3>();
+    }
 }
