@@ -11,7 +11,16 @@ namespace libnurbs
         int UCount{INVALID_INDEX};
         int VCount{INVALID_INDEX};
         std::vector<Vec4> ControlPoints{};
+
     public:
+        ControlPointGrid() = default;
+
+        ControlPointGrid(int u_count, int v_count)
+            : UCount(u_count),
+              VCount(v_count),
+              ControlPoints(UCount * v_count)
+        {
+        }
 
         /*
         // need c++23 features:
@@ -33,7 +42,5 @@ namespace libnurbs
             assert(index_u < UCount && index_v < VCount);
             return ControlPoints[index_v * UCount + index_u];
         }
-
-
     };
 }
