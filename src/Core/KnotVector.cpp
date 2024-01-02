@@ -40,23 +40,24 @@ namespace libnurbs
 
     KnotVector KnotVector::Uniform(int degree, int knots_count)
     {
-        KnotVector knot_vector;
-        auto& knots = knot_vector.Values();
-        knots.resize(knots_count);
+        const int additional_knots_count = knots_count - (degree + 1) * 2;;
+        assert(additional_knots_count >= 0);
+        vector<Numeric> knots;
+        knots.reserve(knots_count);
         for (int i = 0; i < degree + 1; ++i)
         {
-            knots[i] = 0.0;
+            knots.push_back(0.0);
         }
-        const Numeric t = 1.0 / (knots_count - (degree + 1) * 2);
-        for (int i = degree + 1; i < knots_count - (degree + 1); ++i)
+        const Numeric t = 1.0 / (additional_knots_count + 1);
+        for (int i = 1; i <= additional_knots_count; ++i)
         {
-            knots[i] = i * t;
+            knots.push_back(i * t);
         }
-        for (int i = knots_count - (degree + 1); i < knots_count; ++i)
+        for (int i = 0; i < degree + 1; ++i)
         {
-            knots[i] = 1.0;
+            knots.push_back(1.0);
         }
-        return knot_vector;
+        return KnotVector{knots};
     }
 
     KnotVector::KnotVector(const vector<Numeric>& values)
