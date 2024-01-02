@@ -8,6 +8,8 @@ set(libnurbs_UNITTEST_SOURCES
         BSplineBasisUnitTest.cpp
         CurveUnitTest.cpp
         SurfaceUnitTest.cpp
+        GeomSegmentUnitTest.cpp
+        GeomRectUnitTest.cpp
 )
 
 add_executable(${PROJECT_NAME} ${libnurbs_UNITTEST_SOURCES})
