@@ -31,19 +31,19 @@ namespace libnurbs
         }
          */
 
-        Vec4& get(int index_u, int index_v)
+        Vec4& Get(int index_u, int index_v)
         {
             assert(index_u < UCount && index_v < VCount);
             return ControlPoints[index_v * UCount + index_u];
         }
 
-        [[nodiscard]] const Vec4& get(int index_u, int index_v) const
+        [[nodiscard]] const Vec4& Get(int index_u, int index_v) const
         {
             assert(index_u < UCount && index_v < VCount);
             return ControlPoints[index_v * UCount + index_u];
         }
 
-        [[nodiscard]] int size() const noexcept
+        [[nodiscard]] int Size() const noexcept
         {
             return UCount * VCount;
         }

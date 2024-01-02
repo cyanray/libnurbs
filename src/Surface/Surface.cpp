@@ -21,7 +21,7 @@ namespace libnurbs
         {
             for (int j = 0; j <= DegreeV; j++)
             {
-                auto point = ControlPoints.get(index_span_u - DegreeU + i, index_span_v - DegreeV + j);
+                auto point = ControlPoints.Get(index_span_u - DegreeU + i, index_span_v - DegreeV + j);
                 point.head<3>() *= point(3);
                 result += basis_u(i) * basis_v(j) * point;
             }
@@ -44,7 +44,7 @@ namespace libnurbs
         {
             for (int j = 0; j <= DegreeV; j++)
             {
-                auto point = ControlPoints.get(index_span_u - DegreeU + i, index_span_v - DegreeV + j);
+                auto point = ControlPoints.Get(index_span_u - DegreeU + i, index_span_v - DegreeV + j);
                 point.head<3>() *= basis_u(i) * basis_v(j);
                 result += point;
             }
