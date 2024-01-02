@@ -37,6 +37,27 @@ namespace libnurbs
         if (!ValidateKnots(m_Values)) throw invalid_argument("knots");
     }
 
+    KnotVector KnotVector::Uniform(int degree, int count)
+    {
+        KnotVector knot_vector;
+        auto& knots = knot_vector.Values();
+        knots.resize(count);
+        for (int i = 0; i < degree + 1; ++i)
+        {
+            knots[i] = 0.0;
+        }
+        const Numeric t = 1.0 / (count - (degree + 1) * 2);
+        for (int i = degree + 1; i < count - (degree + 1); ++i)
+        {
+            knots[i] = i * t;
+        }
+        for (int i = count - (degree + 1); i < count; ++i)
+        {
+            knots[i] = 1.0;
+        }
+        return knot_vector;
+    }
+
     KnotVector::KnotVector(const vector<Numeric>& values)
     {
         if (!ValidateKnots(values)) throw invalid_argument("values");

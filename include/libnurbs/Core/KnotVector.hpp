@@ -22,6 +22,8 @@ namespace libnurbs
 
         explicit KnotVector(const vector <KnotPair>& knots);
 
+        static KnotVector Uniform(int degree, int count);
+
         [[nodiscard]] vector <KnotPair> GetKnotPairs() const;
 
         [[nodiscard]] auto& Values() const
@@ -48,6 +50,10 @@ namespace libnurbs
 
         [[nodiscard]] KnotSpan FindSpan(Numeric u) const;
 
+        [[nodiscard]] int Count() const
+        {
+            return (int)m_Values.size();
+        }
     };
 
     struct KnotVector::KnotPair
