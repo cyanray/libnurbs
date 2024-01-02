@@ -24,7 +24,9 @@ namespace libnurbs
         {
             for (int j = 0; j < ControlPointCountV; ++j)
             {
-                surface.ControlPoints.Get(i, j).head<3>() = LeftBottomPoint + i * k1 + j * k2;
+                auto& point = surface.ControlPoints.Get(i, j);
+                point.head<3>() = LeftBottomPoint + i * k1 + j * k2;
+                point.w() = 1;
             }
         }
         return surface;
