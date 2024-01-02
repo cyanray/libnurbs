@@ -4,22 +4,21 @@
 
 namespace libnurbs
 {
-    // from https://github.com/pradeep-pyro/tinynurbs
+    // modified from: https://github.com/pradeep-pyro/tinynurbs
     VecX BSplineBasis::Evaluate(int degree, const vector<Numeric>& knots, int index_span, Numeric x)
     {
         VecX result = VecX::Zero(degree + 1);
         VecX left = VecX::Zero(degree + 1);
         VecX right = VecX::Zero(degree + 1);
-        Numeric saved, temp;
         result[0] = 1.0;
         for (int j = 1; j <= degree; j++)
         {
             left[j] = (x - knots[index_span + 1 - j]);
             right[j] = knots[index_span + j] - x;
-            saved = 0.0;
+            Numeric saved = 0.0;
             for (int r = 0; r < j; r++)
             {
-                temp = result[r] / (right[r + 1] + left[j - r]);
+                const Numeric temp = result[r] / (right[r + 1] + left[j - r]);
                 result[r] = saved + right[r + 1] * temp;
                 saved = left[j - r] * temp;
             }
@@ -51,13 +50,10 @@ namespace libnurbs
         return EvaluateAll(degree, knots, index_span, x, order).row(order);
     }
 
-    // from https://github.com/pradeep-pyro/tinynurbs
+    // modified from: https://github.com/pradeep-pyro/tinynurbs
     MatX BSplineBasis::EvaluateAll(int degree, const vector<Numeric>& knots, int index_span, Numeric x, int order)
     {
-        std::vector<Numeric> left, right;
-        left.resize(degree + 1, 0.0);
-        right.resize(degree + 1, 0.0);
-        Numeric saved, temp;
+        std::vector<Numeric> left(degree + 1, 0.0), right(degree + 1, 0.0);
 
         MatX ndu = MatX::Zero(degree + 1, degree + 1);
         ndu(0, 0) = 1.0;
@@ -66,12 +62,12 @@ namespace libnurbs
         {
             left[j] = x - knots[index_span + 1 - j];
             right[j] = knots[index_span + j] - x;
-            saved = 0.0;
+            Numeric saved = 0.0;
             for (int r = 0; r < j; r++)
             {
                 // Lower triangle
                 ndu(j, r) = right[r + 1] + left[j - r];
-                temp = ndu(r, j - 1) / ndu(j, r);
+                const Numeric temp = ndu(r, j - 1) / ndu(j, r);
                 // Upper triangle
                 ndu(r, j) = saved + right[r + 1] * temp;
                 saved = left[j - r] * temp;
