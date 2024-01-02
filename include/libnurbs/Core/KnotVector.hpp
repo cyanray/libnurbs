@@ -29,6 +29,11 @@ namespace libnurbs
             return m_Values;
         }
 
+        [[nodiscard]] auto& Values()
+        {
+            return m_Values;
+        }
+
         [[nodiscard]] bool IsNonperiodic() const;
 
         [[nodiscard]] bool IsUniform() const;

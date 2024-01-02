@@ -16,6 +16,8 @@ set(LIBNURBS_INCLUDES
         include/libnurbs/Algorithm/MathUtils.hpp
         include/libnurbs/Core/ControlPointGrid.hpp
         include/libnurbs/Surface/Surface.hpp
+        include/libnurbs/Geometry/GeomSegment.hpp
+        include/libnurbs/Geometry/GeomRect.hpp
 
 )
 
@@ -25,6 +27,7 @@ set(LIBNURBS_SOURCES
         src/Basis/BSplineBasis.cpp
         src/Curve/Curve.cpp
         src/Surface/Surface.cpp
+        src/Geometry/GeomSegment.cpp
 
 )
 
