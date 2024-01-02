@@ -18,7 +18,7 @@ namespace libnurbs
         ControlPointGrid(int u_count, int v_count)
             : UCount(u_count),
               VCount(v_count),
-              ControlPoints(UCount * v_count)
+              ControlPoints(u_count * v_count)
         {
         }
 
@@ -41,6 +41,11 @@ namespace libnurbs
         {
             assert(index_u < UCount && index_v < VCount);
             return ControlPoints[index_v * UCount + index_u];
+        }
+
+        [[nodiscard]] int size() const noexcept
+        {
+            return UCount * VCount;
         }
     };
 }
