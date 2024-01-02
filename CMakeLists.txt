@@ -28,6 +28,7 @@ set(LIBNURBS_SOURCES
         src/Curve/Curve.cpp
         src/Surface/Surface.cpp
         src/Geometry/GeomSegment.cpp
+        src/Geometry/GeomRect.cpp
 
 )
 
