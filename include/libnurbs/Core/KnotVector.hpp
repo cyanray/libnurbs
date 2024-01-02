@@ -22,7 +22,7 @@ namespace libnurbs
 
         explicit KnotVector(const vector <KnotPair>& knots);
 
-        static KnotVector Uniform(int degree, int count);
+        static KnotVector Uniform(int degree, int knots_count);
 
         [[nodiscard]] vector <KnotPair> GetKnotPairs() const;
 
