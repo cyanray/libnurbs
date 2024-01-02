@@ -6,9 +6,9 @@ namespace libnurbs
 {
     Curve GeomSegment::GetCurve() const
     {
-        assert(ControlPointCount >= 2);
         assert(Degree >= 1);
-        int knot_count = ControlPointCount + Degree + 1;
+        assert(ControlPointCount >= Degree + 1);
+        const int knot_count = ControlPointCount + Degree + 1;
         Curve curve;
         curve.Degree = Degree;
         auto& knots = curve.Knots.Values();
@@ -17,7 +17,7 @@ namespace libnurbs
         {
             knots[i] = 0.0;
         }
-        Numeric t = 1.0 / (knot_count - (Degree + 1) * 2);
+        const Numeric t = 1.0 / (knot_count - (Degree + 1) * 2);
         for (int i = Degree + 1; i < knot_count - (Degree + 1); ++i)
         {
             knots[i] = i * t;
