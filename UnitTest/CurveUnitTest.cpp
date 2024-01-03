@@ -15,10 +15,11 @@ TEST_CASE("Curve/Evaluate (p=2)", "[curve, non_rational, evaluate]")
 {
     int degree = 2;
     KnotVector U{{0.0, 0.0, 0.0, 1.0, 1.0, 1.0}};
-    vector<Vec4> controlPoints{
-            {0.0, 0.0, 0.0, 1.0},
-            {1.0, 0.0, 0.0, 1.0},
-            {1.0, 1.0, 0.0, 1.0}
+    vector<Vec4> controlPoints
+    {
+        {0.0, 0.0, 0.0, 1.0},
+        {1.0, 0.0, 0.0, 1.0},
+        {1.0, 1.0, 0.0, 1.0}
     };
     Curve curve;
     curve.Degree = degree;
@@ -76,13 +77,14 @@ TEST_CASE("Curve/Evaluate (p=3)", "[curve, non_rational, evaluate]")
 {
     int degree = 3;
     KnotVector U{{0, 0, 0, 0, 0.23, 0.67, 1, 1, 1, 1}};
-    vector<Vec4> controlPoints{
-            {0.0, 0.0,  0.0, 1.0},
-            {1.0, 0.0,  0.0, 1.0},
-            {1.0, 1.0,  0.0, 1.0},
-            {2.0, 1.0,  0.0, 1.0},
-            {2.0, -2.0, 0.0, 1.0},
-            {0.0, -3.0, 0.0, 1.0}
+    vector<Vec4> controlPoints
+    {
+        {0.0, 0.0, 0.0, 1.0},
+        {1.0, 0.0, 0.0, 1.0},
+        {1.0, 1.0, 0.0, 1.0},
+        {2.0, 1.0, 0.0, 1.0},
+        {2.0, -2.0, 0.0, 1.0},
+        {0.0, -3.0, 0.0, 1.0}
     };
     Curve curve;
     curve.Degree = degree;
@@ -157,10 +159,11 @@ TEST_CASE("Curve/Evaluate (circle arc)", "[curve, rational, evaluate]")
 {
     int degree = 2;
     KnotVector U{{0, 0, 0, 1, 1, 1}};
-    vector<Vec4> controlPoints{
-            {0.0, 1.0, 0.0, 2.0},
-            {1.0, 1.0, 0.0, 1.0},
-            {1.0, 0.0, 0.0, 1.0}
+    vector<Vec4> controlPoints
+    {
+        {0.0, 1.0, 0.0, 2.0},
+        {1.0, 1.0, 0.0, 1.0},
+        {1.0, 0.0, 0.0, 1.0}
     };
     Curve curve;
     curve.Degree = degree;
@@ -236,10 +239,11 @@ TEST_CASE("Curve/EvaluateDerivative (non-rational)", "[curve, non_rational, deri
     Curve curve;
     curve.Degree = 2;
     curve.Knots = KnotVector{{0, 0, 0, 1, 1, 1}};
-    curve.ControlPoints = vector<Vec4>{
-            {-1.0, 0.0, 0.0, 1.0},
-            {1.0,  1.0, 0.0, 1.0},
-            {1.0,  0.0, 0.0, 1.0}
+    curve.ControlPoints = vector<Vec4>
+    {
+        {-1.0, 0.0, 0.0, 1.0},
+        {1.0, 1.0, 0.0, 1.0},
+        {1.0, 0.0, 0.0, 1.0}
     };
 
     SECTION("x = 0.5")
@@ -257,15 +261,15 @@ TEST_CASE("Curve/EvaluateDerivative order=2 (non-rational)", "[curve, non_ration
     curve.Degree = 4;
     curve.Knots = KnotVector{{0.0, 0.0, 0.0, 0.0, 0.0, 0.333, 0.667, 1.0, 1.0, 1.0, 1.0, 1.0}};
     curve.ControlPoints =
-            {
-                    {0.00, 0.00, 0.00, 1},
-                    {0.25, 0.00, 0.00, 1},
-                    {0.50, 0.00, 0.00, 1},
-                    {1.00, 0.00, 0.00, 1},
-                    {1.50, 0.00, 0.00, 1},
-                    {1.75, 0.00, 0.00, 1},
-                    {2.00, 0.00, 0.00, 1}
-            };
+    {
+        {0.00, 0.00, 0.00, 1},
+        {0.25, 0.00, 0.00, 1},
+        {0.50, 0.00, 0.00, 1},
+        {1.00, 0.00, 0.00, 1},
+        {1.50, 0.00, 0.00, 1},
+        {1.75, 0.00, 0.00, 1},
+        {2.00, 0.00, 0.00, 1}
+    };
 
     SECTION("x = 0.0")
     {
@@ -298,16 +302,17 @@ TEST_CASE("Curve/EvaluateDerivative order=2 (rational)", "[curve, rational, deri
     Curve curve;
     curve.Degree = 2;
     curve.Knots = KnotVector{{0, 0, 0, 0.25, 0.25, 0.5, 0.5, 0.75, 0.75, 1, 1, 1}};
-    curve.ControlPoints = vector<Vec4>{
-            {1,  0,  0, 1},
-            {1,  1,  0, k},
-            {0,  1,  0, 1},
-            {-1, 1,  0, k},
-            {-1, 0,  0, 1},
-            {-1, -1, 0, k},
-            {0,  -1, 0, 1},
-            {1,  -1, 0, k},
-            {1,  0,  0, 1},
+    curve.ControlPoints = vector<Vec4>
+    {
+        {1, 0, 0, 1},
+        {1, 1, 0, k},
+        {0, 1, 0, 1},
+        {-1, 1, 0, k},
+        {-1, 0, 0, 1},
+        {-1, -1, 0, k},
+        {0, -1, 0, 1},
+        {1, -1, 0, k},
+        {1, 0, 0, 1},
     };
 
     SECTION("x = 0.0")
