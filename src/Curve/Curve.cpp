@@ -2,6 +2,8 @@
 #include <libnurbs/Basis/BSplineBasis.hpp>
 #include <cassert>
 
+#include "libnurbs/Algorithm/MathUtils.hpp"
+
 namespace libnurbs
 {
     Vec3 Curve::Evaluate(Numeric x) const
@@ -50,18 +52,6 @@ namespace libnurbs
 
     MatX Curve::EvaluateAll(Numeric x, int order) const
     {
-        static auto binomial = [](int n, int k) -> int
-        {
-            int result = 1;
-            if (k > n) return 0;
-            for (int i = 1; i <= k; i++)
-            {
-                result *= (n - i + 1);
-                result /= i;
-            }
-            return result;
-        };
-
         auto homo_ders = HomogeneousDerivative(x, order);
         MatX result = MatX::Zero(order + 1, 3);
         // Compute rational derivatives
@@ -72,7 +62,7 @@ namespace libnurbs
             for (int i = 1; i <= k; i++)
             {
                 Numeric Wders = homo_ders[i].w();
-                Aders -= binomial(k, i) * Wders * result.row(k - i);
+                Aders -= Binomial(k, i) * Wders * result.row(k - i);
             }
             result.row(k) = (Aders / Wders0);
         }

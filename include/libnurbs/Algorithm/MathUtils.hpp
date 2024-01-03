@@ -4,7 +4,6 @@
 
 namespace libnurbs
 {
-
     inline constexpr int Factorial(int n)
     {
         constexpr const int result_array[10]{1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880};
@@ -17,4 +16,15 @@ namespace libnurbs
         return std::abs(v1 - v2) < epsilon;
     }
 
+    inline int Binomial(int n, int k)
+    {
+        int result = 1;
+        if (k > n) return 0;
+        for (int i = 1; i <= k; i++)
+        {
+            result *= (n - i + 1);
+            result /= i;
+        }
+        return result;
+    };
 }
