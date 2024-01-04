@@ -6,9 +6,6 @@
 
 namespace libnurbs
 {
-    template<typename T>
-    using vvector = std::vector<std::vector<T>>;
-
     class Surface
     {
     public:
@@ -26,10 +23,10 @@ namespace libnurbs
 
         [[nodiscard]] Vec3 EvaluateDerivative(Numeric u, Numeric v, int order_u, int order_v) const;
 
-        [[nodiscard]] vvector<Vec3> EvaluateAll(Numeric u, Numeric v, int order_u, int order_v) const;
+        [[nodiscard]] Grid<Vec3> EvaluateAll(Numeric u, Numeric v, int order_u, int order_v) const;
 
     private:
-        [[nodiscard]] vvector<Vec4> HomogeneousDerivative(Numeric u, Numeric v, int order_u, int order_v) const;
+        [[nodiscard]] Grid<Vec4> HomogeneousDerivative(Numeric u, Numeric v, int order_u, int order_v) const;
 
     };
 

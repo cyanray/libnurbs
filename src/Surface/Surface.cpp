@@ -54,27 +54,28 @@ namespace libnurbs
         return result.head<3>();
     }
 
-    vvector<Vec3> Surface::EvaluateAll(Numeric u, Numeric v, int order_u, int order_v) const
+    Grid<Vec3> Surface::EvaluateAll(Numeric u, Numeric v, int order_u, int order_v) const
     {
         auto homo_ders = HomogeneousDerivative(u, v, order_u, order_v);
-        std::vector result(order_u + 1, std::vector<Vec3>(order_v + 1, Vec3::Zero()));
-        Numeric Wders00 = homo_ders[0][0].w();
+        Grid<Vec3> result(order_u + 1, order_v + 1, Vec3::Zero());
+
+        Numeric Wders00 = homo_ders.Get(0,0).w();
 
         for (int ou = 0; ou <= order_u; ++ou)
         {
             for (int ov = 0; ov <= order_v; ++ov)
             {
-                Vec3 Aders = homo_ders[ou][ov].head<3>();
+                Vec3 Aders = homo_ders.Get(ou, ov).head<3>();
                 for (int i = 1; i <= ou; ++i)
                 {
-                    Numeric Wders = homo_ders[i][0].w();
-                    Aders -= Binomial(ou, i) * Wders * result[ou - i][ov];
+                    Numeric Wders = homo_ders.Get(i, 0).w();
+                    Aders -= Binomial(ou, i) * Wders * result.Get(ou -i, ov);
                 }
 
                 for (int j = 1; j <= ov; ++j)
                 {
-                    Numeric Wders = homo_ders[0][j].w();
-                    Aders -= Binomial(ov, j) * Wders * result[ou][ov - j];
+                    Numeric Wders = homo_ders.Get(0, j).w();
+                    Aders -= Binomial(ov, j) * Wders * result.Get(ou, ov-j);
                 }
 
                 for (int i = 1; i <= ou; ++ou)
@@ -82,18 +83,18 @@ namespace libnurbs
                     const int bi = Binomial(ou, i);
                     for (int j = 1; j <= ov; ++ov)
                     {
-                        Numeric Wders = homo_ders[i][j].w();
-                        Aders -= bi * Binomial(ov, j) * Wders * result[ou - i][ov - j];
+                        Numeric Wders = homo_ders.Get(i, j).w();
+                        Aders -= bi * Binomial(ov, j) * Wders * result.Get(ou - i, ov - j);
                     }
                 }
-                result[ou][ov] = Aders / Wders00;
+                result.Get(ou, ov) = Aders / Wders00;
             }
         }
 
         return result;
     }
 
-    vvector<Vec4> Surface::HomogeneousDerivative(Numeric u, Numeric v, int order_u, int order_v) const
+    Grid<Vec4> Surface::HomogeneousDerivative(Numeric u, Numeric v, int order_u, int order_v) const
     {
         assert(u >= 0 && u <= 1);
         assert(v >= 0 && v <= 1);
@@ -104,7 +105,8 @@ namespace libnurbs
         assert(basis_u.size() == DegreeU + 1);
         assert(basis_v.size() == DegreeV + 1);
 
-        std::vector result(order_u + 1, std::vector<Vec4>(order_v + 1, Vec4::Zero()));
+        Grid<Vec4> result(order_u + 1, order_v + 1, Vec4::Zero());
+
         for (int k = 0; k <= order_u; ++k)
         {
             for (int l = 0; l <= order_v; ++l)
@@ -117,7 +119,7 @@ namespace libnurbs
                         int index_v = index_span_v - DegreeV + j;
                         auto point = ControlPoints.Get(index_u, index_v);
                         point.head<3>() *= point(3);
-                        result[k][l] += point * basis_u(k, i) * basis_v(l, j);
+                        result.Get(k, l) += point * basis_u(k, i) * basis_v(l, j);
                     }
                 }
             }
