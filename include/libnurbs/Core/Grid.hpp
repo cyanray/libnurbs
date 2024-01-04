@@ -23,6 +23,13 @@ namespace libnurbs
         {
         }
 
+        Grid(int u_count, int v_count, T&& init_value)
+            : UCount(u_count),
+              VCount(v_count),
+              Values(u_count * v_count, init_value)
+        {
+        }
+
         /*
         // need c++23 features:
         template<typename Self>
@@ -32,13 +39,13 @@ namespace libnurbs
         }
          */
 
-        Vec4& Get(int index_u, int index_v)
+        T& Get(int index_u, int index_v)
         {
             assert(index_u < UCount && index_v < VCount);
             return Values[index_v * UCount + index_u];
         }
 
-        [[nodiscard]] const Vec4& Get(int index_u, int index_v) const
+        [[nodiscard]] const T& Get(int index_u, int index_v) const
         {
             assert(index_u < UCount && index_v < VCount);
             return Values[index_v * UCount + index_u];
