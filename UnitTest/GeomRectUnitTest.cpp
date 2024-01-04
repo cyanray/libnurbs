@@ -26,7 +26,7 @@ TEST_CASE("Geometry/GeomRect", "[libnurbs_Geometry]")
         REQUIRE(surface.DegreeV == 1);
         REQUIRE(surface.KnotsU.Count() == (rect.ControlPointCountU + rect.DegreeU + 1));
         REQUIRE(surface.KnotsV.Count() == (rect.ControlPointCountV + rect.DegreeV + 1));
-        REQUIRE(surface.ControlPoints.Size() == (rect.ControlPointCountU * rect.ControlPointCountV));
+        REQUIRE(surface.ControlPoints.Count() == (rect.ControlPointCountU * rect.ControlPointCountV));
         REQUIRE(surface.Evaluate(0.0, 0.0) == rect.LeftBottomPoint);
         REQUIRE(surface.Evaluate(1.0, 0.0) == rect.RightBottomPoint);
         REQUIRE(surface.Evaluate(0.0, 1.0) == rect.LeftTopPoint);

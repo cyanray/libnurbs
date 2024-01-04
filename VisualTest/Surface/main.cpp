@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include <libnurbs/Core/ControlPointGrid.hpp>
+#include <libnurbs/Core/Grid.hpp>
 
 #include <libnurbs/Surface/Surface.hpp>
 
@@ -20,12 +20,12 @@ void CaseA()
     ControlPointGrid grid;
     grid.UCount = 3;
     grid.VCount = 2;
-    grid.ControlPoints.emplace_back(1, 0, 0, 1);
-    grid.ControlPoints.emplace_back(1, 1, 0, 1);
-    grid.ControlPoints.emplace_back(0, 1, 0, 2);
-    grid.ControlPoints.emplace_back(1, 0, 1, 1);
-    grid.ControlPoints.emplace_back(1, 1, 1, 1);
-    grid.ControlPoints.emplace_back(0, 1, 1, 2);
+    grid.Values.emplace_back(1, 0, 0, 1);
+    grid.Values.emplace_back(1, 1, 0, 1);
+    grid.Values.emplace_back(0, 1, 0, 2);
+    grid.Values.emplace_back(1, 0, 1, 1);
+    grid.Values.emplace_back(1, 1, 1, 1);
+    grid.Values.emplace_back(0, 1, 1, 2);
 
     Surface surface;
     surface.DegreeU = 2;
@@ -63,12 +63,12 @@ void CaseB()
     ControlPointGrid grid;
     grid.UCount = 3;
     grid.VCount = 2;
-    grid.ControlPoints.emplace_back(1, 0, 0, 1);
-    grid.ControlPoints.emplace_back(1, 1, 0, 1);
-    grid.ControlPoints.emplace_back(0, 1, 0, 2);
-    grid.ControlPoints.emplace_back(1, 0, 1, 1);
-    grid.ControlPoints.emplace_back(1, 1, 1, 1);
-    grid.ControlPoints.emplace_back(0, 1, 1, 2);
+    grid.Values.emplace_back(1, 0, 0, 1);
+    grid.Values.emplace_back(1, 1, 0, 1);
+    grid.Values.emplace_back(0, 1, 0, 2);
+    grid.Values.emplace_back(1, 0, 1, 1);
+    grid.Values.emplace_back(1, 1, 1, 1);
+    grid.Values.emplace_back(0, 1, 1, 2);
 
     Surface surface;
     surface.DegreeU = 2;
@@ -120,25 +120,25 @@ void CaseC()
     ControlPointGrid grid;
     grid.UCount = 9;
     grid.VCount = 2;
-    grid.ControlPoints.emplace_back(0.5, 0.0, 0.0, 1);
-    grid.ControlPoints.emplace_back(1.0, 0.0, 0.0, w);
-    grid.ControlPoints.emplace_back(1.0, 0.5, 0.0, 1);
-    grid.ControlPoints.emplace_back(1.0, 1.0, 0.0, w);
-    grid.ControlPoints.emplace_back(0.5, 1.0, 0.0, 1);
-    grid.ControlPoints.emplace_back(0.0, 1.0, 0.0, w);
-    grid.ControlPoints.emplace_back(0.0, 0.5, 0.0, 1);
-    grid.ControlPoints.emplace_back(0.0, 0.0, 0.0, w);
-    grid.ControlPoints.emplace_back(0.5, 0.0, 0.0, 1);
+    grid.Values.emplace_back(0.5, 0.0, 0.0, 1);
+    grid.Values.emplace_back(1.0, 0.0, 0.0, w);
+    grid.Values.emplace_back(1.0, 0.5, 0.0, 1);
+    grid.Values.emplace_back(1.0, 1.0, 0.0, w);
+    grid.Values.emplace_back(0.5, 1.0, 0.0, 1);
+    grid.Values.emplace_back(0.0, 1.0, 0.0, w);
+    grid.Values.emplace_back(0.0, 0.5, 0.0, 1);
+    grid.Values.emplace_back(0.0, 0.0, 0.0, w);
+    grid.Values.emplace_back(0.5, 0.0, 0.0, 1);
 
-    grid.ControlPoints.emplace_back(0.5, 0.0, 3.0, 1);
-    grid.ControlPoints.emplace_back(1.0, 0.0, 3.0, w);
-    grid.ControlPoints.emplace_back(1.0, 0.5, 3.0, 1);
-    grid.ControlPoints.emplace_back(1.0, 1.0, 3.0, w);
-    grid.ControlPoints.emplace_back(0.5, 1.0, 3.0, 1);
-    grid.ControlPoints.emplace_back(0.0, 1.0, 3.0, w);
-    grid.ControlPoints.emplace_back(0.0, 0.5, 3.0, 1);
-    grid.ControlPoints.emplace_back(0.0, 0.0, 3.0, w);
-    grid.ControlPoints.emplace_back(0.5, 0.0, 3.0, 1);
+    grid.Values.emplace_back(0.5, 0.0, 3.0, 1);
+    grid.Values.emplace_back(1.0, 0.0, 3.0, w);
+    grid.Values.emplace_back(1.0, 0.5, 3.0, 1);
+    grid.Values.emplace_back(1.0, 1.0, 3.0, w);
+    grid.Values.emplace_back(0.5, 1.0, 3.0, 1);
+    grid.Values.emplace_back(0.0, 1.0, 3.0, w);
+    grid.Values.emplace_back(0.0, 0.5, 3.0, 1);
+    grid.Values.emplace_back(0.0, 0.0, 3.0, w);
+    grid.Values.emplace_back(0.5, 0.0, 3.0, 1);
 
     Surface surface;
     surface.DegreeU = 2;
@@ -178,25 +178,25 @@ void CaseD()
     ControlPointGrid grid;
     grid.UCount = 9;
     grid.VCount = 2;
-    grid.ControlPoints.emplace_back(0.5, 0.0, 0.0, 1);
-    grid.ControlPoints.emplace_back(1.0, 0.0, 0.0, w);
-    grid.ControlPoints.emplace_back(1.0, 0.5, 0.0, 1);
-    grid.ControlPoints.emplace_back(1.0, 1.0, 0.0, w);
-    grid.ControlPoints.emplace_back(0.5, 1.0, 0.0, 1);
-    grid.ControlPoints.emplace_back(0.0, 1.0, 0.0, w);
-    grid.ControlPoints.emplace_back(0.0, 0.5, 0.0, 1);
-    grid.ControlPoints.emplace_back(0.0, 0.0, 0.0, w);
-    grid.ControlPoints.emplace_back(0.5, 0.0, 0.0, 1);
+    grid.Values.emplace_back(0.5, 0.0, 0.0, 1);
+    grid.Values.emplace_back(1.0, 0.0, 0.0, w);
+    grid.Values.emplace_back(1.0, 0.5, 0.0, 1);
+    grid.Values.emplace_back(1.0, 1.0, 0.0, w);
+    grid.Values.emplace_back(0.5, 1.0, 0.0, 1);
+    grid.Values.emplace_back(0.0, 1.0, 0.0, w);
+    grid.Values.emplace_back(0.0, 0.5, 0.0, 1);
+    grid.Values.emplace_back(0.0, 0.0, 0.0, w);
+    grid.Values.emplace_back(0.5, 0.0, 0.0, 1);
 
-    grid.ControlPoints.emplace_back(0.5, 0.0, 3.0, 1);
-    grid.ControlPoints.emplace_back(1.0, 0.0, 3.0, w);
-    grid.ControlPoints.emplace_back(1.0, 0.5, 3.0, 1);
-    grid.ControlPoints.emplace_back(1.0, 1.0, 3.0, w);
-    grid.ControlPoints.emplace_back(0.5, 1.0, 3.0, 1);
-    grid.ControlPoints.emplace_back(0.0, 1.0, 3.0, w);
-    grid.ControlPoints.emplace_back(0.0, 0.5, 3.0, 1);
-    grid.ControlPoints.emplace_back(0.0, 0.0, 3.0, w);
-    grid.ControlPoints.emplace_back(0.5, 0.0, 3.0, 1);
+    grid.Values.emplace_back(0.5, 0.0, 3.0, 1);
+    grid.Values.emplace_back(1.0, 0.0, 3.0, w);
+    grid.Values.emplace_back(1.0, 0.5, 3.0, 1);
+    grid.Values.emplace_back(1.0, 1.0, 3.0, w);
+    grid.Values.emplace_back(0.5, 1.0, 3.0, 1);
+    grid.Values.emplace_back(0.0, 1.0, 3.0, w);
+    grid.Values.emplace_back(0.0, 0.5, 3.0, 1);
+    grid.Values.emplace_back(0.0, 0.0, 3.0, w);
+    grid.Values.emplace_back(0.5, 0.0, 3.0, 1);
 
     Surface surface;
     surface.DegreeU = 2;

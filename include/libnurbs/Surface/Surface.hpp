@@ -2,7 +2,7 @@
 
 #include <libnurbs/Core/Typedefs.hpp>
 #include <libnurbs/Core/KnotVector.hpp>
-#include <libnurbs/Core/ControlPointGrid.hpp>
+#include <libnurbs/Core/Grid.hpp>
 
 namespace libnurbs
 {

@@ -20,4 +20,8 @@ namespace libnurbs
 
     using MatX = Eigen::Matrix<Numeric, Eigen::Dynamic, Eigen::Dynamic>;
 
+    template<typename T>
+    class Grid;
+
+    using ControlPointGrid = Grid<Vec4>;
 }

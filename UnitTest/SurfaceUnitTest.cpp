@@ -16,12 +16,12 @@ TEST_CASE("Surface/Evaluate", "[surface, evaluate]")
     ControlPointGrid grid;
     grid.UCount = 3;
     grid.VCount = 2;
-    grid.ControlPoints.emplace_back(1, 0, 0, 1);
-    grid.ControlPoints.emplace_back(1, 1, 0, 1);
-    grid.ControlPoints.emplace_back(0, 1, 0, 2);
-    grid.ControlPoints.emplace_back(1, 0, 1, 1);
-    grid.ControlPoints.emplace_back(1, 1, 1, 1);
-    grid.ControlPoints.emplace_back(0, 1, 1, 2);
+    grid.Values.emplace_back(1, 0, 0, 1);
+    grid.Values.emplace_back(1, 1, 0, 1);
+    grid.Values.emplace_back(0, 1, 0, 2);
+    grid.Values.emplace_back(1, 0, 1, 1);
+    grid.Values.emplace_back(1, 1, 1, 1);
+    grid.Values.emplace_back(0, 1, 1, 2);
 
     Surface surface;
     surface.DegreeU = 2;
@@ -45,12 +45,12 @@ TEST_CASE("Surface/EvaluateDerivative", "[surface, derivative]")
     ControlPointGrid grid;
     grid.UCount = 3;
     grid.VCount = 2;
-    grid.ControlPoints.emplace_back(1, 0, 0, 1);
-    grid.ControlPoints.emplace_back(1, 1, 0, 1);
-    grid.ControlPoints.emplace_back(0, 1, 0, 2);
-    grid.ControlPoints.emplace_back(1, 0, 1, 1);
-    grid.ControlPoints.emplace_back(1, 1, 1, 1);
-    grid.ControlPoints.emplace_back(0, 1, 1, 2);
+    grid.Values.emplace_back(1, 0, 0, 1);
+    grid.Values.emplace_back(1, 1, 0, 1);
+    grid.Values.emplace_back(0, 1, 0, 2);
+    grid.Values.emplace_back(1, 0, 1, 1);
+    grid.Values.emplace_back(1, 1, 1, 1);
+    grid.Values.emplace_back(0, 1, 1, 2);
 
     Surface surface;
     surface.DegreeU = 2;
