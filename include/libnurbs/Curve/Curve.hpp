@@ -23,9 +23,9 @@ namespace libnurbs
 
         [[nodiscard]] Vec3 EvaluateDerivative(Numeric x, int order) const;
 
-        [[nodiscard]] MatX EvaluateAll(Numeric x, int order) const;
+        [[nodiscard]] vector<Vec3> EvaluateAll(Numeric x, int order) const;
 
     private:
-        [[nodiscard]] std::vector<Vec4> HomogeneousDerivative(Numeric x, int order) const;
+        [[nodiscard]] vector<Vec4> HomogeneousDerivative(Numeric x, int order) const;
     };
 }

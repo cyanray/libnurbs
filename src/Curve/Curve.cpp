@@ -47,13 +47,14 @@ namespace libnurbs
 
     Vec3 Curve::EvaluateDerivative(Numeric x, int order) const
     {
-        return EvaluateAll(x, order).row(order);
+        return EvaluateAll(x, order)[order];
     }
 
-    MatX Curve::EvaluateAll(Numeric x, int order) const
+    vector<Vec3> Curve::EvaluateAll(Numeric x, int order) const
     {
         auto homo_ders = HomogeneousDerivative(x, order);
-        MatX result = MatX::Zero(order + 1, 3);
+        vector<Vec3> result(order + 1, Vec3::Zero());
+
         // Compute rational derivatives
         Numeric Wders0 = homo_ders[0].w();
         for (int k = 0; k <= order; k++)
@@ -62,9 +63,9 @@ namespace libnurbs
             for (int i = 1; i <= k; i++)
             {
                 Numeric Wders = homo_ders[i].w();
-                Aders -= Binomial(k, i) * Wders * result.row(k - i);
+                Aders -= Binomial(k, i) * Wders * result[k - i];
             }
-            result.row(k) = (Aders / Wders0);
+            result[k] = (Aders / Wders0);
         }
         return result;
     }
