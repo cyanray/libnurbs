@@ -22,6 +22,16 @@ namespace libnurbs
         Vec3 RightTopPoint = Vec3::Zero();
 
     public:
+        static GeomRect Make(const Vec3& left_bottom, const Vec3& right_bottom, const Vec3& left_top, const Vec3& right_top)
+        {
+            GeomRect result;
+            result.LeftBottomPoint = left_bottom;
+            result.RightBottomPoint = right_bottom;
+            result.LeftTopPoint = left_top;
+            result.RightTopPoint = right_top;
+            return result;
+        }
+
         [[nodiscard]] Surface GetSurface() const;
     };
 }
