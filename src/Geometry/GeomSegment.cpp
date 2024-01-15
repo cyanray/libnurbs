@@ -17,6 +17,7 @@ namespace libnurbs
         for (int i = 0; i < ControlPointCount; ++i)
         {
             curve.ControlPoints[i].head<3>() = LeftPoint + i * k;
+            curve.ControlPoints[i].w() = 1;
         }
         return curve;
     }
