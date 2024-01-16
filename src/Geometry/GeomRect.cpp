@@ -20,9 +20,9 @@ namespace libnurbs
         surface.ControlPoints = {ControlPointCountU, ControlPointCountV};
         Vec3 k1 = (RightBottomPoint - LeftBottomPoint) / (ControlPointCountU - 1);
         Vec3 k2 = (LeftTopPoint - LeftBottomPoint) / (ControlPointCountV - 1);
-        for (int i = 0; i < ControlPointCountU; ++i)
+        for (int j = 0; j < ControlPointCountV; ++j)
         {
-            for (int j = 0; j < ControlPointCountV; ++j)
+            for (int i = 0; i < ControlPointCountU; ++i)
             {
                 auto& point = surface.ControlPoints.Get(i, j);
                 point.head<3>() = LeftBottomPoint + i * k1 + j * k2;
