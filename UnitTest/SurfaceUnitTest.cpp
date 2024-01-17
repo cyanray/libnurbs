@@ -124,3 +124,46 @@ TEST_CASE("Surface/EvaluateDerivative", "[surface, derivative]")
 
 
 }
+
+
+
+TEST_CASE("Surface/SearchParameter", "[surface, evaluate]")
+{
+    ControlPointGrid grid;
+    grid.UCount = 3;
+    grid.VCount = 2;
+    grid.Values.emplace_back(1, 0, 0, 1);
+    grid.Values.emplace_back(1, 1, 0, 1);
+    grid.Values.emplace_back(0, 1, 0, 2);
+    grid.Values.emplace_back(1, 0, 1, 1);
+    grid.Values.emplace_back(1, 1, 1, 1);
+    grid.Values.emplace_back(0, 1, 1, 2);
+
+    Surface surface;
+    surface.DegreeU = 2;
+    surface.DegreeV = 1;
+    surface.KnotsU = KnotVector{{0.0, 0.0, 0.0, 1.0, 1.0, 1.0}};
+    surface.KnotsV = KnotVector{{0.0, 0.0, 1.0, 1.0}};
+    surface.ControlPoints = grid;
+
+    SECTION("u = 0.0 & v = 0.0")
+    {
+        auto [u, v] = surface.SearchParameter({1.0, 0.0, 0.0});
+        REQUIRE(std::abs(u) == Approx(0.0));
+        REQUIRE(std::abs(v) == Approx(0.0));
+    }
+
+    SECTION("u = 1.0 & v = 1.0")
+    {
+        auto [u, v] = surface.SearchParameter({0.0, 1.0, 1.0});
+        REQUIRE(u == Approx(1.0));
+        REQUIRE(v == Approx(1.0));
+    }
+
+    SECTION("u = 0.5 & v = 0.5")
+    {
+        auto [u, v] = surface.SearchParameter({0.6, 0.8, 0.5});
+        REQUIRE(u == Approx(0.5));
+        REQUIRE(v == Approx(0.5));
+    }
+}

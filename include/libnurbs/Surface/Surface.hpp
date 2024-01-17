@@ -25,6 +25,8 @@ namespace libnurbs
 
         [[nodiscard]] Grid<Vec3> EvaluateAll(Numeric u, Numeric v, int order_u, int order_v) const;
 
+        [[nodiscard]] std::pair<Numeric,Numeric> SearchParameter(const Vec3& point) const;
+
     private:
         [[nodiscard]] Grid<Vec4> HomogeneousDerivative(Numeric u, Numeric v, int order_u, int order_v) const;
 

@@ -59,7 +59,7 @@ namespace libnurbs
         auto homo_ders = HomogeneousDerivative(u, v, order_u, order_v);
         Grid<Vec3> result(order_u + 1, order_v + 1, Vec3::Zero());
 
-        Numeric Wders00 = homo_ders.Get(0,0).w();
+        Numeric Wders00 = homo_ders.Get(0, 0).w();
 
         for (int ou = 0; ou <= order_u; ++ou)
         {
@@ -69,13 +69,13 @@ namespace libnurbs
                 for (int i = 1; i <= ou; ++i)
                 {
                     Numeric Wders = homo_ders.Get(i, 0).w();
-                    Aders -= Binomial(ou, i) * Wders * result.Get(ou -i, ov);
+                    Aders -= Binomial(ou, i) * Wders * result.Get(ou - i, ov);
                 }
 
                 for (int j = 1; j <= ov; ++j)
                 {
                     Numeric Wders = homo_ders.Get(0, j).w();
-                    Aders -= Binomial(ov, j) * Wders * result.Get(ou, ov-j);
+                    Aders -= Binomial(ov, j) * Wders * result.Get(ou, ov - j);
                 }
 
                 for (int i = 1; i <= ou; ++ou)
@@ -92,6 +92,57 @@ namespace libnurbs
         }
 
         return result;
+    }
+
+    std::pair<Numeric, Numeric> Surface::SearchParameter(const Vec3& point) const
+    {
+        using Vec2 = Eigen::Vector2<Numeric>;
+        using Mat2x2 = Eigen::Matrix<Numeric, 2, 2>;
+        auto Ri = [&point, this](Numeric u, Numeric v) -> Vec3 { return Evaluate(u, v) - point; };
+
+        auto Ki = [this, &Ri](Numeric u, Numeric v) -> Vec2
+        {
+            auto ri = Ri(u, v);
+            auto Su = EvaluateDerivative(u, v, 1, 0);
+            auto Sv = EvaluateDerivative(u, v, 0, 1);
+            return Vec2{ri.dot(Su), ri.dot(Sv)};
+        };
+
+        auto Ji = [this, &Ri](Numeric u, Numeric v) -> Mat2x2
+        {
+            auto Su = EvaluateDerivative(u, v, 1, 0);
+            auto Sv = EvaluateDerivative(u, v, 0, 1);
+            auto Suu = EvaluateDerivative(u, v, 2, 0);
+            auto Svv = EvaluateDerivative(u, v, 0, 2);
+            auto Suv = EvaluateDerivative(u, v, 1, 1);
+            auto ri = Ri(u, v);
+            auto a = Su.dot(Su) + ri.dot(Suu);
+            auto c = Su.dot(Sv) + ri.dot(Suv);
+            auto d = Sv.dot(Sv) + ri.dot(Svv);
+            Mat2x2 result;
+            result << a,c,c,d;
+            return result;
+        };
+        constexpr static int MAX_ITERATION_COUNT = 512;
+        constexpr static Numeric EPSILON = 1e-6;
+        Vec2 uv_last = Vec2::Constant(0.5);
+        Vec3 res = Ri(uv_last.x(), uv_last.y());
+        int count = 0;
+        while (res.norm() >= EPSILON && (count++ < MAX_ITERATION_COUNT) &&
+               uv_last.x() >= 0 && uv_last.x() <= 1 &&
+               uv_last.y() >= 0 && uv_last.y() <= 1)
+        {
+            auto k = Ki(uv_last.x(), uv_last.y());
+            auto j = Ji(uv_last.x(), uv_last.y());
+            uv_last += -j.inverse() * k;
+        }
+        uv_last.x() = uv_last.x() >= 1.0 ? 1.0 : uv_last.x();
+        uv_last.x() = uv_last.x() <= 0.0 ? 0.0 : uv_last.x();
+
+        uv_last.y() = uv_last.y() >= 1.0 ? 1.0 : uv_last.y();
+        uv_last.y() = uv_last.y() <= 0.0 ? 0.0 : uv_last.y();
+
+        return {uv_last.x(), uv_last.y()};
     }
 
     Grid<Vec4> Surface::HomogeneousDerivative(Numeric u, Numeric v, int order_u, int order_v) const
