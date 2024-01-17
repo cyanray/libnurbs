@@ -25,6 +25,8 @@ namespace libnurbs
 
         [[nodiscard]] vector<Vec3> EvaluateAll(Numeric x, int order) const;
 
+        [[nodiscard]] Numeric SearchParameter(const Vec3& point) const;
+
     private:
         [[nodiscard]] vector<Vec4> HomogeneousDerivative(Numeric x, int order) const;
     };

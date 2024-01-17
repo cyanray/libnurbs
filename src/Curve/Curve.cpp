@@ -69,4 +69,36 @@ namespace libnurbs
         }
         return result;
     }
+
+    Numeric Curve::SearchParameter(const Vec3& point) const
+    {
+        auto Ri = [&point, this](Numeric u) -> Vec3 { return Evaluate(u) - point; };
+        auto fi = [this, &Ri](Numeric u) -> Numeric
+        {
+            auto ri = Ri(u);
+            auto Cu = EvaluateDerivative(u, 1);
+            return ri.dot(Cu);
+        };
+        auto Ji = [this, &Ri](Numeric u) -> Numeric
+        {
+            auto Cu = EvaluateDerivative(u, 1);
+            auto Cuu = EvaluateDerivative(u, 2);
+            auto ri = Ri(u);
+            return Cu.dot(Cu) + ri.dot(Cuu);
+        };
+        constexpr static int MAX_ITERATION_COUNT = 512;
+        constexpr static Numeric EPSILON = 1e-6;
+        Numeric u_last = 0.5;
+        Vec3 res = Ri(u_last);
+        int count = 0;
+        while (res.norm() >= EPSILON && (count++ < MAX_ITERATION_COUNT) && u_last >= 0 && u_last <= 1)
+        {
+            auto f = fi(u_last);
+            auto j = Ji(u_last);
+            u_last += -fi(u_last) / Ji(u_last);
+        }
+        u_last = u_last >= 1.0 ? 1.0 : u_last;
+        u_last = u_last <= 0.0 ? 0.0 : u_last;
+        return u_last;
+    }
 }

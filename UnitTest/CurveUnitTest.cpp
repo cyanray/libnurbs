@@ -331,3 +331,55 @@ TEST_CASE("Curve/EvaluateDerivative order=2 (rational)", "[curve, rational, deri
         REQUIRE(der.z() == Approx(0.0));
     }
 }
+
+TEST_CASE("Curve/SearchParameter", "[curve, non_rational, search_parameter]")
+{
+    int degree = 2;
+    KnotVector U{{0.0, 0.0, 0.0, 1.0, 1.0, 1.0}};
+    vector<Vec4> controlPoints
+    {
+            {0.0, 0.0, 0.0, 1.0},
+            {1.0, 0.0, 0.0, 1.0},
+            {1.0, 1.0, 0.0, 1.0}
+    };
+    Curve curve;
+    curve.Degree = degree;
+    curve.Knots = U;
+    curve.ControlPoints = controlPoints;
+
+    SECTION("x = 0.0")
+    {
+        Numeric u = curve.SearchParameter({0, 0, 0});;
+        INFO("u: " << u);
+        REQUIRE(u == Approx(0.0));
+    }
+
+    SECTION("x = 1.0")
+    {
+        Numeric u = curve.SearchParameter({1, 1, 0});;
+        INFO("u: " << u);
+        REQUIRE(u == Approx(1.0));
+    }
+
+    SECTION("x = 0.5")
+    {
+        Numeric u = curve.SearchParameter({0.75, 0.25, 0});;
+        INFO("u: " << u);
+        REQUIRE(u == Approx(0.5));
+    }
+
+    SECTION("x = 0.3")
+    {
+        Numeric u = curve.SearchParameter({0.51, 0.09, 0});;
+        INFO("u: " << u);
+        REQUIRE(u == Approx(0.3));
+    }
+
+    SECTION("x = 0.678")
+    {
+        Numeric u = curve.SearchParameter({0.896316, 0.459684, 0});;
+        INFO("u: " << u);
+        REQUIRE(u == Approx(0.678));
+    }
+}
+
