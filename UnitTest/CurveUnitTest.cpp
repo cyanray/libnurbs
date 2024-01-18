@@ -381,5 +381,12 @@ TEST_CASE("Curve/SearchParameter", "[curve, non_rational, search_parameter]")
         INFO("u: " << u);
         REQUIRE(u == Approx(0.678));
     }
+
+    SECTION("x = 0.00123")
+    {
+        Numeric u = curve.SearchParameter(curve.Evaluate(0.00123));;
+        INFO("u: " << u);
+        REQUIRE(u == Approx(0.00123));
+    }
 }
 

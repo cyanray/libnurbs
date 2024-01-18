@@ -86,19 +86,28 @@ namespace libnurbs
             auto ri = Ri(u);
             return Cu.dot(Cu) + ri.dot(Cuu);
         };
+
         constexpr static int MAX_ITERATION_COUNT = 512;
-        constexpr static Numeric EPSILON = 1e-6;
+        constexpr static Numeric EPSILON = 1e-8;
         Numeric u_last = 0.5;
         Vec3 res = Ri(u_last);
         int count = 0;
-        while (res.norm() >= EPSILON && (count++ < MAX_ITERATION_COUNT) && u_last >= 0 && u_last <= 1)
+        // coefficient *s* is used to prevent uv_last from going out of range
+        Numeric s = 1.0;
+        while (res.norm() >= EPSILON && (count++ < MAX_ITERATION_COUNT))
         {
             auto f = fi(u_last);
             auto j = Ji(u_last);
-            u_last += -fi(u_last) / Ji(u_last);
+            u_last += -f / j * s;
+
+            if (u_last < 0 || u_last > 1)
+            {
+                s /= 2;
+                u_last = u_last > 1.0 ? 1.0 : u_last;
+                u_last = u_last < 0.0 ? 0.0 : u_last;
+            }
+            res = Ri(u_last);
         }
-        u_last = u_last >= 1.0 ? 1.0 : u_last;
-        u_last = u_last <= 0.0 ? 0.0 : u_last;
         return u_last;
     }
 }
