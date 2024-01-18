@@ -98,7 +98,14 @@ namespace libnurbs
     {
         using Vec2 = Eigen::Vector2<Numeric>;
         using Mat2x2 = Eigen::Matrix<Numeric, 2, 2>;
-        auto Ri = [&point, this](Numeric u, Numeric v) -> Vec3 { return Evaluate(u, v) - point; };
+
+        constexpr static int MAX_ITERATION_COUNT = 512;
+        constexpr static Numeric EPSILON = 1e-8;
+
+        auto Ri = [&point, this](Numeric u, Numeric v) -> Vec3
+        {
+            return Evaluate(u, v) - point;
+        };
 
         auto Ki = [this, &Ri](Numeric u, Numeric v) -> Vec2
         {
@@ -120,29 +127,39 @@ namespace libnurbs
             auto c = Su.dot(Sv) + ri.dot(Suv);
             auto d = Sv.dot(Sv) + ri.dot(Svv);
             Mat2x2 result;
-            result << a,c,c,d;
+            result << a, c, c, d;
             return result;
         };
-        constexpr static int MAX_ITERATION_COUNT = 512;
-        constexpr static Numeric EPSILON = 1e-6;
-        Vec2 uv_last = Vec2::Constant(0.5);
-        Vec3 res = Ri(uv_last.x(), uv_last.y());
+
+        Numeric u_last = 0.5, v_last = 0.5;
+        Vec3 res = Ri(u_last, v_last);
+
+        // coefficient *s* is used to prevent uv_last from going out of range
+        Numeric s = 1.0;
+
         int count = 0;
-        while (res.norm() >= EPSILON && (count++ < MAX_ITERATION_COUNT) &&
-               uv_last.x() >= 0 && uv_last.x() <= 1 &&
-               uv_last.y() >= 0 && uv_last.y() <= 1)
+        while (res.norm() >= EPSILON && (count++ < MAX_ITERATION_COUNT))
         {
-            auto k = Ki(uv_last.x(), uv_last.y());
-            auto j = Ji(uv_last.x(), uv_last.y());
-            uv_last += -j.inverse() * k;
+            auto k = Ki(u_last, v_last);
+            auto j = Ji(u_last, v_last);
+
+            Vec2 uv_last{u_last, v_last};
+            uv_last += -j.inverse() * k * s;
+
+            u_last = uv_last.x();
+            v_last = uv_last.y();
+
+            if (u_last < 0 || u_last > 1 || v_last < 0 || v_last > 1)
+            {
+                s /= 2;
+                u_last = u_last > 1.0 ? 1.0 : u_last;
+                u_last = u_last < 0.0 ? 0.0 : u_last;
+                v_last = v_last > 1.0 ? 1.0 : v_last;
+                v_last = v_last < 0.0 ? 0.0 : v_last;
+            }
+            res = Ri(u_last, v_last);
         }
-        uv_last.x() = uv_last.x() >= 1.0 ? 1.0 : uv_last.x();
-        uv_last.x() = uv_last.x() <= 0.0 ? 0.0 : uv_last.x();
-
-        uv_last.y() = uv_last.y() >= 1.0 ? 1.0 : uv_last.y();
-        uv_last.y() = uv_last.y() <= 0.0 ? 0.0 : uv_last.y();
-
-        return {uv_last.x(), uv_last.y()};
+        return {u_last, v_last};
     }
 
     Grid<Vec4> Surface::HomogeneousDerivative(Numeric u, Numeric v, int order_u, int order_v) const

@@ -166,4 +166,11 @@ TEST_CASE("Surface/SearchParameter", "[surface, evaluate]")
         REQUIRE(u == Approx(0.5));
         REQUIRE(v == Approx(0.5));
     }
+
+    SECTION("u = 0.00123 & v = 0.123")
+    {
+        auto [u, v] = surface.SearchParameter(surface.Evaluate(0.00123, 0.123));
+        REQUIRE(u == Approx(0.00123));
+        REQUIRE(v == Approx(0.123));
+    }
 }
