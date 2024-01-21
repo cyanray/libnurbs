@@ -266,3 +266,41 @@ TEST_CASE("Surface/SearchParameter 3", "[surface, evaluate]")
         REQUIRE(eta == Approx(v));
     }
 }
+
+
+TEST_CASE("Surface/SearchParameter 4", "[surface, evaluate]")
+{
+    auto geom_rect1 = GeomRect::Make({0, 0, 0}, {1, 0, 0},
+                                     {0, 2, 0}, {1, 2, 0});
+    geom_rect1.DegreeU = 4;
+    geom_rect1.DegreeV = 4;
+    geom_rect1.ControlPointCountU = 8;
+    geom_rect1.ControlPointCountV = 9;
+
+    auto geom_rect2 = GeomRect::Make({1, 0, 0}, {2.0, 0, 0},
+                                     {1, 2, 0}, {2, 2, 0});
+    geom_rect2.DegreeU = 4;
+    geom_rect2.DegreeV = 4;
+    geom_rect2.ControlPointCountU = 9;
+    geom_rect2.ControlPointCountV = 10;
+
+    auto rect1 = geom_rect1.GetSurface();
+    auto rect2 = geom_rect2.GetSurface();
+
+    const Numeric Zero = 1e-18;
+
+    SECTION("1")
+    {
+        Numeric v = 0.58611363116000004;
+        auto point1 = rect1.Evaluate(1, v);
+        auto [xi, eta] = rect2.SearchParameter(point1, 0, v, 1E-12);
+        auto point2 = rect2.Evaluate(xi, eta);
+        INFO("[xi, eta]: "<< xi << ", " << eta);
+        INFO("point 1: " << std::setprecision(10) << point1.transpose());
+        INFO("point 2: " << std::setprecision(10) << point2.transpose());
+        REQUIRE(std::abs(xi - Zero) < 1e-16);
+        REQUIRE(point1.x() == Approx(point2.x()).epsilon(1e-10));
+        REQUIRE(point1.y() == Approx(point2.y()).epsilon(1e-10));
+        REQUIRE(point1.z() == Approx(point2.z()).epsilon(1e-10));
+    }
+}
