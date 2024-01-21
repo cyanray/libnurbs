@@ -87,7 +87,7 @@ namespace libnurbs
             return Cu.dot(Cu) + ri.dot(Cuu);
         };
 
-        constexpr static int MAX_ITERATION_COUNT = 512;
+        constexpr static int MAX_ITERATION_COUNT = 4096;
         constexpr static Numeric EPSILON = 1e-18;
         Numeric u_last = 0.5;
         Vec3 res = Ri(u_last);

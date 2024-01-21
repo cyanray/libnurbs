@@ -99,7 +99,7 @@ namespace libnurbs
         using Vec2 = Eigen::Vector2<Numeric>;
         using Mat2x2 = Eigen::Matrix<Numeric, 2, 2>;
 
-        constexpr static int MAX_ITERATION_COUNT = 512;
+        constexpr static int MAX_ITERATION_COUNT = 4096;
         constexpr static Numeric EPSILON = 1e-18;
 
         auto Ri = [&point, this](Numeric u, Numeric v) -> Vec3
