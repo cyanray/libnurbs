@@ -90,15 +90,18 @@ namespace libnurbs
         constexpr static int MAX_ITERATION_COUNT = 4096;
         constexpr static Numeric EPSILON = 1e-18;
         Numeric u_last = 0.5;
-        Vec3 res = Ri(u_last);
+        Numeric res = 1;
         int count = 0;
         // coefficient *s* is used to prevent uv_last from going out of range
         Numeric s = 1.0;
-        while (res.norm() >= EPSILON && (count++ < MAX_ITERATION_COUNT))
+        while (res >= EPSILON && (count++ < MAX_ITERATION_COUNT))
         {
             auto f = fi(u_last);
             auto j = Ji(u_last);
-            u_last += -f / j * s;
+            Numeric u_new = u_last -f / j * s;
+
+            res = std::abs(u_new - u_last);
+            u_last = u_new;
 
             if (u_last < 0 || u_last > 1)
             {
@@ -106,7 +109,6 @@ namespace libnurbs
                 u_last = u_last > 1.0 ? 1.0 : u_last;
                 u_last = u_last < 0.0 ? 0.0 : u_last;
             }
-            res = Ri(u_last);
         }
         return u_last;
     }

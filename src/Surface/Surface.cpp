@@ -132,19 +132,22 @@ namespace libnurbs
         };
 
         Numeric u_last = 0.5, v_last = 0.5;
-        Vec3 res = Ri(u_last, v_last);
+        Numeric u_res = 1, v_res = 1;
 
         // coefficient *s* is used to prevent uv_last from going out of range
         Numeric s = 1.0;
 
         int count = 0;
-        while (res.norm() >= EPSILON && (count++ < MAX_ITERATION_COUNT))
+        while ((u_res >= EPSILON || v_res >= EPSILON) && (count++ < MAX_ITERATION_COUNT))
         {
             auto k = Ki(u_last, v_last);
             auto j = Ji(u_last, v_last);
 
             Vec2 uv_last{u_last, v_last};
             uv_last += -j.inverse() * k * s;
+
+            u_res = abs(uv_last.x() - u_last);
+            v_res = abs(uv_last.y() - v_last);
 
             u_last = uv_last.x();
             v_last = uv_last.y();
@@ -157,7 +160,6 @@ namespace libnurbs
                 v_last = v_last > 1.0 ? 1.0 : v_last;
                 v_last = v_last < 0.0 ? 0.0 : v_last;
             }
-            res = Ri(u_last, v_last);
         }
         return {u_last, v_last};
     }
