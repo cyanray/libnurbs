@@ -14,6 +14,7 @@ namespace libnurbs
         int Degree{INVALID_DEGREE};
         KnotVector Knots{};
         vector<Vec4> ControlPoints{};
+
     public:
         Curve() = default;
 
@@ -25,7 +26,10 @@ namespace libnurbs
 
         [[nodiscard]] vector<Vec3> EvaluateAll(Numeric x, int order) const;
 
-        [[nodiscard]] Numeric SearchParameter(const Vec3& point) const;
+        [[nodiscard]] Numeric SearchParameter(const Vec3& point,
+                                              Numeric init = 0.5,
+                                              Numeric epsion = 1e-8,
+                                              Numeric max_iteration_count = 512) const;
 
     private:
         [[nodiscard]] vector<Vec4> HomogeneousDerivative(Numeric x, int order) const;

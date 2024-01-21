@@ -94,13 +94,11 @@ namespace libnurbs
         return result;
     }
 
-    std::pair<Numeric, Numeric> Surface::SearchParameter(const Vec3& point) const
+    std::pair<Numeric, Numeric> Surface::SearchParameter(const Vec3& point, Numeric init_u, Numeric init_v,
+                                                         Numeric epsion, Numeric max_iteration_count) const
     {
         using Vec2 = Eigen::Vector2<Numeric>;
         using Mat2x2 = Eigen::Matrix<Numeric, 2, 2>;
-
-        constexpr static int MAX_ITERATION_COUNT = 4096;
-        constexpr static Numeric EPSILON = 1e-18;
 
         auto Ri = [&point, this](Numeric u, Numeric v) -> Vec3
         {
@@ -131,14 +129,14 @@ namespace libnurbs
             return result;
         };
 
-        Numeric u_last = 0.5, v_last = 0.5;
+        Numeric u_last = init_u, v_last = init_v;
         Numeric u_res = 1, v_res = 1;
 
         // coefficient *s* is used to prevent uv_last from going out of range
         Numeric s = 1.0;
 
         int count = 0;
-        while ((u_res >= EPSILON || v_res >= EPSILON) && (count++ < MAX_ITERATION_COUNT))
+        while ((u_res >= epsion || v_res >= epsion) && (count++ < max_iteration_count))
         {
             auto k = Ki(u_last, v_last);
             auto j = Ji(u_last, v_last);

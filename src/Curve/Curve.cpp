@@ -70,7 +70,7 @@ namespace libnurbs
         return result;
     }
 
-    Numeric Curve::SearchParameter(const Vec3& point) const
+    Numeric Curve::SearchParameter(const Vec3& point, Numeric init, Numeric epsion, Numeric max_iteration_count) const
     {
         auto Ri = [&point, this](Numeric u) -> Vec3 { return Evaluate(u) - point; };
         auto fi = [this, &Ri](Numeric u) -> Numeric
@@ -87,14 +87,12 @@ namespace libnurbs
             return Cu.dot(Cu) + ri.dot(Cuu);
         };
 
-        constexpr static int MAX_ITERATION_COUNT = 4096;
-        constexpr static Numeric EPSILON = 1e-18;
-        Numeric u_last = 0.5;
+        Numeric u_last = init;
         Numeric res = 1;
         int count = 0;
         // coefficient *s* is used to prevent uv_last from going out of range
         Numeric s = 1.0;
-        while (res >= EPSILON && (count++ < MAX_ITERATION_COUNT))
+        while (res >= epsion && (count++ < max_iteration_count))
         {
             auto f = fi(u_last);
             auto j = Ji(u_last);
@@ -112,4 +110,5 @@ namespace libnurbs
         }
         return u_last;
     }
+
 }

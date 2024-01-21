@@ -6,6 +6,8 @@
 
 #include <stdexcept>
 
+#include "libnurbs/Geometry/GeomRect.hpp"
+
 using namespace Catch;
 using namespace libnurbs;
 using namespace std;
@@ -121,10 +123,7 @@ TEST_CASE("Surface/EvaluateDerivative", "[surface, derivative]")
         REQUIRE(value.y() == Approx(0.0));
         REQUIRE(value.z() == Approx(1.0));
     }
-
-
 }
-
 
 
 TEST_CASE("Surface/SearchParameter", "[surface, evaluate]")
@@ -179,5 +178,91 @@ TEST_CASE("Surface/SearchParameter", "[surface, evaluate]")
         auto [u, v] = surface.SearchParameter(surface.Evaluate(0.00123, 0.999));
         REQUIRE(u == Approx(0.00123));
         REQUIRE(v == Approx(0.999));
+    }
+}
+
+
+TEST_CASE("Surface/SearchParameter 2", "[surface, evaluate]")
+{
+    auto geom_rect1 = GeomRect::Make({0, 0, 0}, {1, 0, 0},
+                                     {0, 2, 0}, {1, 2, 0});
+    geom_rect1.DegreeU = 3;
+    geom_rect1.DegreeV = 3;
+    geom_rect1.ControlPointCountU = 5;
+    geom_rect1.ControlPointCountV = 5;
+
+    auto geom_rect2 = GeomRect::Make({1, 0, 0}, {2.0, 0, 0},
+                                     {1, 2, 0}, {2, 2, 0});
+    geom_rect2.DegreeU = 3;
+    geom_rect2.DegreeV = 3;
+    geom_rect2.ControlPointCountU = 5;
+    geom_rect2.ControlPointCountV = 5;
+
+    auto rect1 = geom_rect1.GetSurface();
+    auto rect2 = geom_rect2.GetSurface();
+
+    const Numeric Zero = 1e-18;
+
+    SECTION("0.0123")
+    {
+        Numeric v = 0.0123;
+        auto point = rect1.Evaluate(1, v);
+        auto [xi, eta] = rect2.SearchParameter(point);
+        INFO("[xi, eta]: "<< xi << ", " << eta);
+        REQUIRE(std::abs(xi - Zero) < 1e-16);
+        REQUIRE(eta == Approx(v));
+    }
+
+    SECTION("0.33499526089999998")
+    {
+        Numeric v = 0.33499526089999998;
+        auto point = rect1.Evaluate(1, v);
+        auto [xi, eta] = rect2.SearchParameter(point);
+        INFO("[xi, eta]: "<< xi << ", " << eta);
+        REQUIRE(std::abs(xi - Zero) < 1e-16);
+        REQUIRE(eta == Approx(v));
+    }
+}
+
+
+TEST_CASE("Surface/SearchParameter 3", "[surface, evaluate]")
+{
+    auto geom_rect1 = GeomRect::Make({0, 0, 0}, {1, 0, 0},
+                                     {0, 2, 0}, {1, 2, 0});
+    geom_rect1.DegreeU = 4;
+    geom_rect1.DegreeV = 4;
+    geom_rect1.ControlPointCountU = 10;
+    geom_rect1.ControlPointCountV = 10;
+
+    auto geom_rect2 = GeomRect::Make({1, 0, 0}, {2.0, 0, 0},
+                                     {1, 2, 0}, {2, 2, 0});
+    geom_rect2.DegreeU = 4;
+    geom_rect2.DegreeV = 4;
+    geom_rect2.ControlPointCountU = 10;
+    geom_rect2.ControlPointCountV = 10;
+
+    auto rect1 = geom_rect1.GetSurface();
+    auto rect2 = geom_rect2.GetSurface();
+
+    const Numeric Zero = 1e-18;
+
+    SECTION("0.11166508696666666")
+    {
+        Numeric v = 0.11166508696666666;
+        auto point = rect1.Evaluate(1, v);
+        auto [xi, eta] = rect2.SearchParameter(point, 0, 0.11);
+        INFO("[xi, eta]: "<< xi << ", " << eta);
+        REQUIRE(std::abs(xi - Zero) < 1e-16);
+        REQUIRE(eta == Approx(v));
+    }
+
+    SECTION("0.33499526089999998")
+    {
+        Numeric v = 0.33499526089999998;
+        auto point = rect1.Evaluate(1, v);
+        auto [xi, eta] = rect2.SearchParameter(point, 0, 0.33);
+        INFO("[xi, eta]: "<< xi << ", " << eta);
+        REQUIRE(std::abs(xi - Zero) < 1e-16);
+        REQUIRE(eta == Approx(v));
     }
 }
