@@ -88,7 +88,7 @@ namespace libnurbs
         };
 
         constexpr static int MAX_ITERATION_COUNT = 512;
-        constexpr static Numeric EPSILON = 1e-8;
+        constexpr static Numeric EPSILON = 1e-18;
         Numeric u_last = 0.5;
         Vec3 res = Ri(u_last);
         int count = 0;

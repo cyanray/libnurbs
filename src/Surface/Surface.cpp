@@ -100,7 +100,7 @@ namespace libnurbs
         using Mat2x2 = Eigen::Matrix<Numeric, 2, 2>;
 
         constexpr static int MAX_ITERATION_COUNT = 512;
-        constexpr static Numeric EPSILON = 1e-8;
+        constexpr static Numeric EPSILON = 1e-18;
 
         auto Ri = [&point, this](Numeric u, Numeric v) -> Vec3
         {
