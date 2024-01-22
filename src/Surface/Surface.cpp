@@ -25,7 +25,7 @@ namespace libnurbs
             {
                 auto point = ControlPoints.Get(index_span_u - DegreeU + i, index_span_v - DegreeV + j);
                 point.head<3>() *= point(3);
-                result += basis_u(i) * basis_v(j) * point;
+                result.noalias() += basis_u(i) * basis_v(j) * point;
             }
         }
         return result.head<3>() / result(3);
@@ -69,13 +69,13 @@ namespace libnurbs
                 for (int i = 1; i <= ou; ++i)
                 {
                     Numeric Wders = homo_ders.Get(i, 0).w();
-                    Aders -= Binomial(ou, i) * Wders * result.Get(ou - i, ov);
+                    Aders.noalias() -= Binomial(ou, i) * Wders * result.Get(ou - i, ov);
                 }
 
                 for (int j = 1; j <= ov; ++j)
                 {
                     Numeric Wders = homo_ders.Get(0, j).w();
-                    Aders -= Binomial(ov, j) * Wders * result.Get(ou, ov - j);
+                    Aders.noalias() -= Binomial(ov, j) * Wders * result.Get(ou, ov - j);
                 }
 
                 for (int i = 1; i <= ou; ++ou)
@@ -84,7 +84,7 @@ namespace libnurbs
                     for (int j = 1; j <= ov; ++ov)
                     {
                         Numeric Wders = homo_ders.Get(i, j).w();
-                        Aders -= bi * Binomial(ov, j) * Wders * result.Get(ou - i, ov - j);
+                        Aders.noalias() -= bi * Binomial(ov, j) * Wders * result.Get(ou - i, ov - j);
                     }
                 }
                 result.Get(ou, ov) = Aders / Wders00;
@@ -142,7 +142,7 @@ namespace libnurbs
             auto j = Ji(u_last, v_last);
 
             Vec2 uv_last{u_last, v_last};
-            uv_last += -j.inverse() * k * s;
+            uv_last.noalias() += -j.inverse() * k * s;
 
             u_res = abs(uv_last.x() - u_last);
             v_res = abs(uv_last.y() - v_last);
@@ -187,7 +187,7 @@ namespace libnurbs
                         int index_v = index_span_v - DegreeV + j;
                         auto point = ControlPoints.Get(index_u, index_v);
                         point.head<3>() *= point(3);
-                        result.Get(k, l) += point * basis_u(k, i) * basis_v(l, j);
+                        result.Get(k, l).noalias() += point * basis_u(k, i) * basis_v(l, j);
                     }
                 }
             }

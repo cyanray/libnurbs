@@ -38,7 +38,7 @@ namespace libnurbs
             {
                 auto point = ControlPoints[index_span - Degree + i];
                 point.head<3>() *= point.w();
-                tmp += point * basis(k, i);
+                tmp.noalias() += point * basis(k, i);
             }
             result[k] = tmp;
         }
@@ -63,7 +63,7 @@ namespace libnurbs
             for (int i = 1; i <= k; i++)
             {
                 Numeric Wders = homo_ders[i].w();
-                Aders -= Binomial(k, i) * Wders * result[k - i];
+                Aders.noalias() -= Binomial(k, i) * Wders * result[k - i];
             }
             result[k] = (Aders / Wders0);
         }
