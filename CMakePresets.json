@@ -6,7 +6,8 @@
             "hidden": true,
             "cacheVariables": {
                 "LIBNURBS_BUILD_UNITTEST": "OFF",
-                "LIBNURBS_BUILD_VISUALTEST": "OFF"
+                "LIBNURBS_BUILD_VISUALTEST": "OFF",
+                "LIBNURBS_BUILD_BENCHMARK": "OFF"
             }
         },
         {

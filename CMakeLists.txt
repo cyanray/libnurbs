@@ -48,3 +48,8 @@ option(LIBNURBS_BUILD_VISUALTEST "Build Visual Tests" OFF)
 if (LIBNURBS_BUILD_VISUALTEST)
     add_subdirectory(VisualTest)
 endif ()
+
+option(LIBNURBS_BUILD_BENCHMARK "Build Benchmark" OFF)
+if (LIBNURBS_BUILD_BENCHMARK)
+    add_subdirectory(Benchmark)
+endif ()
