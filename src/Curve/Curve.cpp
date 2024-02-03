@@ -111,4 +111,22 @@ namespace libnurbs
         return u_last;
     }
 
+    Curve Curve::InsertKnot(Numeric knot_value) const
+    {
+        Curve result{*this};
+        int k = result.Knots.InsertKnot(knot_value);
+        result.ControlPoints.insert(result.ControlPoints.begin() + k - 1 ,Vec4::Zero());
+        const auto& knots = this->Knots.Values();
+        for(int i = k - Degree + 1; i <= k; i++)
+        {
+            Numeric alpha = (knot_value - knots[i]) / (knots[i + Degree] - knots[i]);
+            auto point_i = this->ControlPoints[i];
+            point_i.head<3>() *= point_i.w();
+            auto point_im1 = this->ControlPoints[i - 1];
+            point_im1.head<3>() *= point_im1.w();
+            result.ControlPoints[i] = alpha * point_i + (1 - alpha) * point_im1;
+            result.ControlPoints[i].head<3>() /= result.ControlPoints[i].w();
+        }
+        return result;
+    }
 }

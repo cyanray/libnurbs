@@ -10,7 +10,7 @@ using namespace libnurbs;
 using namespace std;
 
 
-TEST_CASE("KnotVector/Constructor", "[knot_vector, constructor]")
+TEST_CASE("KnotVector/Constructor", "[knot_vector]")
 {
     SECTION("simple")
     {
@@ -46,7 +46,7 @@ TEST_CASE("KnotVector/Constructor", "[knot_vector, constructor]")
 }
 
 
-TEST_CASE("KnotVector/GetKnotPairs", "[knot_vector, get_knot_pairs]")
+TEST_CASE("KnotVector/GetKnotPairs", "[knot_vector]")
 {
     SECTION("simple")
     {
@@ -63,7 +63,7 @@ TEST_CASE("KnotVector/GetKnotPairs", "[knot_vector, get_knot_pairs]")
 }
 
 
-TEST_CASE("KnotVector/FindSpanIndex", "[knot_vector, find_span_index]")
+TEST_CASE("KnotVector/FindSpanIndex", "[knot_vector]")
 {
     SECTION("simple")
     {
@@ -97,5 +97,56 @@ TEST_CASE("KnotVector/FindSpanIndex", "[knot_vector, find_span_index]")
         REQUIRE(U.FindSpanIndex(2, 0.9) == 6);
         REQUIRE(U.FindSpanIndex(2, 1.0) == 6);
         REQUIRE(U.FindSpanIndex(2, 1.1) == 6); // u=1.1 is an illegal input, but acceptable
+    }
+}
+
+
+TEST_CASE("KnotVector/InsertKnot", "[knot_vector]")
+{
+    SECTION("1")
+    {
+        KnotVector U{{0.0, 0.0, 0.0, 1.0, 1.0, 1.0}};
+        int span_index = U.InsertKnot(0.5);
+        REQUIRE(span_index == 2);
+        auto result = U.GetKnotPairs();
+        REQUIRE(result.size() == 3);
+        REQUIRE(result[0].Value == 0.0);
+        REQUIRE(result[0].Multiplicity == 3);
+        REQUIRE(result[1].Value == 0.5);
+        REQUIRE(result[1].Multiplicity == 1);
+        REQUIRE(result[2].Value == 1.0);
+        REQUIRE(result[2].Multiplicity == 3);
+    }
+
+    SECTION("2")
+    {
+        KnotVector U{{0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0}};
+        int span_index = U.InsertKnot(0.5);
+        REQUIRE(span_index == 2);
+        auto result = U.GetKnotPairs();
+        REQUIRE(result.size() == 3);
+        REQUIRE(result[0].Value == 0.0);
+        REQUIRE(result[0].Multiplicity == 3);
+        REQUIRE(result[1].Value == 0.5);
+        REQUIRE(result[1].Multiplicity == 2);
+        REQUIRE(result[2].Value == 1.0);
+        REQUIRE(result[2].Multiplicity == 3);
+    }
+
+    SECTION("3")
+    {
+        KnotVector U{{0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0}};
+        int span_index = U.InsertKnot(0.6);
+        REQUIRE(span_index == 3);
+        auto result = U.GetKnotPairs();
+        REQUIRE(result.size() == 4);
+        REQUIRE(result[0].Value == 0.0);
+        REQUIRE(result[0].Multiplicity == 3);
+        REQUIRE(result[1].Value == 0.5);
+        REQUIRE(result[1].Multiplicity == 1);
+        REQUIRE(result[2].Value == 0.6);
+        REQUIRE(result[2].Multiplicity == 1);
+        REQUIRE(result[3].Value == 1.0);
+        REQUIRE(result[3].Multiplicity == 3);
     }
 }

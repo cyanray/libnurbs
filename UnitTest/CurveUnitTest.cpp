@@ -11,7 +11,7 @@ using namespace libnurbs;
 using namespace std;
 
 
-TEST_CASE("Curve/Evaluate (p=2)", "[curve, non_rational, evaluate]")
+TEST_CASE("Curve/Evaluate (p=2)", "[curve][non_rational]")
 {
     int degree = 2;
     KnotVector U{{0.0, 0.0, 0.0, 1.0, 1.0, 1.0}};
@@ -73,7 +73,7 @@ TEST_CASE("Curve/Evaluate (p=2)", "[curve, non_rational, evaluate]")
 }
 
 
-TEST_CASE("Curve/Evaluate (p=3)", "[curve, non_rational, evaluate]")
+TEST_CASE("Curve/Evaluate (p=3)", "[curve][non_rational]")
 {
     int degree = 3;
     KnotVector U{{0, 0, 0, 0, 0.23, 0.67, 1, 1, 1, 1}};
@@ -155,7 +155,7 @@ TEST_CASE("Curve/Evaluate (p=3)", "[curve, non_rational, evaluate]")
 }
 
 
-TEST_CASE("Curve/Evaluate (circle arc)", "[curve, rational, evaluate]")
+TEST_CASE("Curve/Evaluate (circle arc)", "[curve][rational]")
 {
     int degree = 2;
     KnotVector U{{0, 0, 0, 1, 1, 1}};
@@ -234,7 +234,7 @@ TEST_CASE("Curve/Evaluate (circle arc)", "[curve, rational, evaluate]")
 }
 
 
-TEST_CASE("Curve/EvaluateDerivative (non-rational)", "[curve, non_rational, derivative]")
+TEST_CASE("Curve/EvaluateDerivative (non-rational)", "[curve][non_rational]")
 {
     Curve curve;
     curve.Degree = 2;
@@ -255,7 +255,7 @@ TEST_CASE("Curve/EvaluateDerivative (non-rational)", "[curve, non_rational, deri
     }
 }
 
-TEST_CASE("Curve/EvaluateDerivative order=2 (non-rational)", "[curve, non_rational, derivative]")
+TEST_CASE("Curve/EvaluateDerivative order=2 (non-rational)", "[curve][non_rational]")
 {
     Curve curve;
     curve.Degree = 4;
@@ -296,7 +296,7 @@ TEST_CASE("Curve/EvaluateDerivative order=2 (non-rational)", "[curve, non_ration
     }
 }
 
-TEST_CASE("Curve/EvaluateDerivative order=2 (rational)", "[curve, rational, derivative]")
+TEST_CASE("Curve/EvaluateDerivative order=2 (rational)", "[curve][rational]")
 {
     const Numeric k = std::sqrt(2.0) / 2.0;
     Curve curve;
@@ -332,15 +332,15 @@ TEST_CASE("Curve/EvaluateDerivative order=2 (rational)", "[curve, rational, deri
     }
 }
 
-TEST_CASE("Curve/SearchParameter", "[curve, non_rational, search_parameter]")
+TEST_CASE("Curve/SearchParameter", "[curve][non_rational]")
 {
     int degree = 2;
     KnotVector U{{0.0, 0.0, 0.0, 1.0, 1.0, 1.0}};
     vector<Vec4> controlPoints
     {
-            {0.0, 0.0, 0.0, 1.0},
-            {1.0, 0.0, 0.0, 1.0},
-            {1.0, 1.0, 0.0, 1.0}
+        {0.0, 0.0, 0.0, 1.0},
+        {1.0, 0.0, 0.0, 1.0},
+        {1.0, 1.0, 0.0, 1.0}
     };
     Curve curve;
     curve.Degree = degree;
@@ -397,3 +397,95 @@ TEST_CASE("Curve/SearchParameter", "[curve, non_rational, search_parameter]")
     }
 }
 
+TEST_CASE("Curve/InsertKnot", "[curve][non_rational]")
+{
+    int degree = 2;
+    KnotVector U{{0.0, 0.0, 0.0, 1.0, 1.0, 1.0}};
+    vector<Vec4> controlPoints
+    {
+        {0.0, 0.0, 0.0, 1.0},
+        {1.0, 0.0, 0.0, 1.0},
+        {1.0, 1.0, 0.0, 1.0}
+    };
+    Curve curve;
+    curve.Degree = degree;
+    curve.Knots = U;
+    curve.ControlPoints = controlPoints;
+
+    SECTION("1")
+    {
+        Curve new_curve = curve.InsertKnot(0.5);
+        for (Numeric x: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+        {
+            Vec3 value = curve.Evaluate(x);
+            Vec3 new_value = new_curve.Evaluate(x);
+            INFO("x: " << x);
+            INFO("value: " << value.transpose());
+            INFO("new_value: " << new_value.transpose());
+            REQUIRE(value.x() == Approx(new_value.x()));
+            REQUIRE(value.y() == Approx(new_value.y()));
+            REQUIRE(value.z() == Approx(new_value.z()));
+        }
+    }
+
+    SECTION("2")
+    {
+        for (Numeric knot: vector{0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+        {
+            Curve new_curve = curve.InsertKnot(knot);
+            for (Numeric x: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+            {
+                Vec3 value = curve.Evaluate(x);
+                Vec3 new_value = new_curve.Evaluate(x);
+                INFO("knot: "<< knot);
+                INFO("x: " << x);
+                INFO("value: " << value.transpose());
+                INFO("new_value: " << new_value.transpose());
+                REQUIRE(value.x() == Approx(new_value.x()));
+                REQUIRE(value.y() == Approx(new_value.y()));
+                REQUIRE(value.z() == Approx(new_value.z()));
+            }
+        }
+    }
+}
+
+
+TEST_CASE("Curve/InsertKnot 2", "[curve][rational]")
+{
+    const Numeric k = std::sqrt(2.0) / 2.0;
+    Curve curve;
+    curve.Degree = 2;
+    curve.Knots = KnotVector{{0, 0, 0, 0.25, 0.25, 0.5, 0.5, 0.75, 0.75, 1, 1, 1}};
+    curve.ControlPoints = vector<Vec4>
+    {
+        {1, 0, 0, 1},
+        {1, 1, 0, k},
+        {0, 1, 0, 1},
+        {-1, 1, 0, k},
+        {-1, 0, 0, 1},
+        {-1, -1, 0, k},
+        {0, -1, 0, 1},
+        {1, -1, 0, k},
+        {1, 0, 0, 1},
+    };
+
+    SECTION("1")
+    {
+        for (Numeric knot: vector{0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+        {
+            Curve new_curve = curve.InsertKnot(knot);
+            for (Numeric x: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+            {
+                Vec3 value = curve.Evaluate(x);
+                Vec3 new_value = new_curve.Evaluate(x);
+                INFO("knot: "<< knot);
+                INFO("x: " << x);
+                INFO("value: " << value.transpose());
+                INFO("new_value: " << new_value.transpose());
+                REQUIRE(value.x() == Approx(new_value.x()));
+                REQUIRE(value.y() == Approx(new_value.y()));
+                REQUIRE(value.z() == Approx(new_value.z()));
+            }
+        }
+    }
+}

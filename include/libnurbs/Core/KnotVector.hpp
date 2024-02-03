@@ -36,6 +36,11 @@ namespace libnurbs
             return m_Values;
         }
 
+        [[nodiscard]] int Count() const
+        {
+            return (int)m_Values.size();
+        }
+
         [[nodiscard]] bool IsNonperiodic() const;
 
         [[nodiscard]] bool IsUniform() const;
@@ -44,16 +49,18 @@ namespace libnurbs
          * @brief Find the index of the span contains u into the knot vector.
          * @param degree
          * @param u
-         * @return
+         * @return Span1, [Span1,Span2).
          */
         [[nodiscard]] int FindSpanIndex(int degree, Numeric u) const;
 
         [[nodiscard]] KnotSpan FindSpan(Numeric u) const;
 
-        [[nodiscard]] int Count() const
-        {
-            return (int)m_Values.size();
-        }
+        /**
+         * \brief Insert a knot value into the knot vector.
+         * \param value
+         * \return Span index in original KnotVector that contains the new knot value.
+         */
+        int InsertKnot(Numeric value);
     };
 
     struct KnotVector::KnotPair

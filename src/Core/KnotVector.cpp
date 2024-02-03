@@ -25,7 +25,6 @@ namespace
 
 namespace libnurbs
 {
-
     KnotVector::KnotVector(const vector<KnotPair>& knots)
     {
         for (const auto& knot: knots)
@@ -70,7 +69,7 @@ namespace libnurbs
     {
         if (m_Values.empty()) return {};
         vector<KnotPair> result;
-        int len = (int) m_Values.size();
+        int len = (int)m_Values.size();
         Numeric last_value = m_Values[0];
         int multiplicity{1};
         for (int i = 1; i < len; ++i)
@@ -102,7 +101,6 @@ namespace libnurbs
         return true;
     }
 
-    // [Span1,Span2)
     int KnotVector::FindSpanIndex(int degree, Numeric u) const
     {
         int index_first_span = degree;
@@ -112,11 +110,11 @@ namespace libnurbs
         if (u <= m_Values.front()) return index_first_span;
         // binary search
         auto it = std::lower_bound(m_Values.begin(), m_Values.end(), u);
-        int index_result = (int) std::distance(m_Values.begin(), it);
+        int index_result = (int)std::distance(m_Values.begin(), it);
         if (Approx(*it, u))
         {
             it = std::upper_bound(m_Values.begin(), m_Values.end(), u);
-            index_result = (int) std::distance(m_Values.begin(), it);
+            index_result = (int)std::distance(m_Values.begin(), it);
         }
         return index_result - 1;
     }
@@ -126,7 +124,7 @@ namespace libnurbs
         assert(u >= 0.0 && u <= 1.0);
         auto pairs = GetKnotPairs();
         assert(pairs.size() >= 2);
-        for (int i = (int) pairs.size() - 2; i >= 0; --i)
+        for (int i = (int)pairs.size() - 2; i >= 0; --i)
         {
             const auto& pair = pairs[i];
             if (pair.Value <= u)
@@ -137,5 +135,17 @@ namespace libnurbs
         return {};
     }
 
-
+    int KnotVector::InsertKnot(Numeric value)
+    {
+        assert(value > 0 && value < 1);
+        for (int i = (int)m_Values.size() - 1; i >= 0; --i)
+        {
+            if (m_Values[i] < value)
+            {
+                m_Values.insert(m_Values.begin() + i + 1, value);
+                return i;
+            }
+        }
+        throw std::out_of_range("The knot value is out of range.");
+    }
 }

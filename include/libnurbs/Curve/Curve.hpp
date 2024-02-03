@@ -31,6 +31,7 @@ namespace libnurbs
                                               Numeric epsion = 1e-8,
                                               Numeric max_iteration_count = 512) const;
 
+        [[nodiscard]] Curve InsertKnot(Numeric knot_value) const;
     private:
         [[nodiscard]] vector<Vec4> HomogeneousDerivative(Numeric x, int order) const;
     };
