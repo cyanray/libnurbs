@@ -57,6 +57,8 @@ namespace libnurbs
 
         [[nodiscard]] KnotSpan FindSpan(Numeric u) const;
 
+        [[nodiscard]] int DetectDegree() const;
+
         /**
          * \brief Insert a knot value into the knot vector.
          * \param value

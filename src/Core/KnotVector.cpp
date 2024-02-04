@@ -153,6 +153,15 @@ namespace libnurbs
         return {};
     }
 
+    int KnotVector::DetectDegree() const
+    {
+        for (int i = 0; i < (int)m_Values.size(); ++i)
+        {
+            if (m_Values[i] != 0.0) return i - 1;
+        }
+        throw std::out_of_range("The knot vector is invalid.");
+    }
+
     int KnotVector::InsertKnot(Numeric value)
     {
         assert(value > 0 && value < 1);
