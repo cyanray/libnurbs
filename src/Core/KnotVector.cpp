@@ -87,12 +87,30 @@ namespace libnurbs
         return result;
     }
 
-    bool KnotVector::IsNonperiodic() const
+    bool KnotVector::IsValid() const
     {
-        auto knot_pairs = GetKnotPairs();
-        if (knot_pairs.size() < 2) return false;
-        if (knot_pairs.front().Multiplicity != knot_pairs.back().Multiplicity) return false;
+        if (m_Values.size() < 4) return false;
+        if (m_Values.front() != 0.0) return false;
+        if (m_Values.back() != 1.0) return false;
+        for (int i = 1; i < (int)m_Values.size(); ++i)
+        {
+            if (m_Values[i] < m_Values[i - 1]) return false;
+        }
         return true;
+    }
+
+    bool KnotVector::IsClamped() const
+    {
+        int count0, count1;
+        for (count0 = 0; count0 < (int)m_Values.size(); ++count0)
+        {
+            if(m_Values[count0] != 0.0) break;
+        }
+        for(count1 = (int)m_Values.size() - 1; count1 >= 0; --count1)
+        {
+            if(m_Values[count1] != 1.0) break;
+        }
+        return count0 == count1;
     }
 
     bool KnotVector::IsUniform() const

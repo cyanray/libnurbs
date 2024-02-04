@@ -41,7 +41,9 @@ namespace libnurbs
             return (int)m_Values.size();
         }
 
-        [[nodiscard]] bool IsNonperiodic() const;
+        [[nodiscard]] bool IsValid() const;
+
+        [[nodiscard]] bool IsClamped() const;
 
         [[nodiscard]] bool IsUniform() const;
 
