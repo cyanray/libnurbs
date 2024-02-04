@@ -10,6 +10,7 @@ set(libnurbs_UNITTEST_SOURCES
         SurfaceUnitTest.cpp
         GeomSegmentUnitTest.cpp
         GeomRectUnitTest.cpp
+        GridUnitTest.cpp
 )
 
 add_executable(${PROJECT_NAME} ${libnurbs_UNITTEST_SOURCES})
