@@ -55,5 +55,38 @@ namespace libnurbs
         {
             return UCount * VCount;
         }
+
+        void InsertV(int v_index, const T& default_value = T())
+        {
+            assert(v_index >= 0 && v_index < VCount);
+            auto iter = Values.begin() + v_index * UCount;
+            Values.insert(iter, UCount, default_value);
+            VCount += 1;
+        }
+
+        void InsertU(int u_index, const T& default_value = T())
+        {
+            assert(u_index >= 0 && u_index < UCount);
+            int float_idx = UCount * VCount - 1;
+            UCount += 1;
+            Values.resize(UCount * VCount);
+
+            for (int it_v = VCount - 1; it_v >= 0; --it_v)
+            {
+                int start_idx = it_v * UCount;
+                int insertion_idx = start_idx + u_index;
+                int end_idx = (it_v + 1) * UCount;
+
+                for (int i = end_idx - 1; i > insertion_idx; --i)
+                {
+                    Values[i] = std::move(Values[float_idx--]);
+                }
+                for (int i = insertion_idx - 1; i >= start_idx; --i)
+                {
+                    Values[i] = std::move(Values[float_idx--]);
+                }
+                Values[insertion_idx] = default_value;
+            }
+        }
     };
 }
