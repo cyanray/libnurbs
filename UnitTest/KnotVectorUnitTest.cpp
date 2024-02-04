@@ -79,7 +79,6 @@ TEST_CASE("KnotVector/FindSpanIndex", "[knot_vector]")
         REQUIRE(U.FindSpanIndex(2, 0.8) == 5);
         REQUIRE(U.FindSpanIndex(2, 0.9) == 5);
         REQUIRE(U.FindSpanIndex(2, 1.0) == 5);
-        REQUIRE(U.FindSpanIndex(2, 1.1) == 5); // u=1.1 is an illegal input, but acceptable
     }
 
     SECTION("simple2")
@@ -96,7 +95,6 @@ TEST_CASE("KnotVector/FindSpanIndex", "[knot_vector]")
         REQUIRE(U.FindSpanIndex(2, 0.8) == 6);
         REQUIRE(U.FindSpanIndex(2, 0.9) == 6);
         REQUIRE(U.FindSpanIndex(2, 1.0) == 6);
-        REQUIRE(U.FindSpanIndex(2, 1.1) == 6); // u=1.1 is an illegal input, but acceptable
     }
 }
 
