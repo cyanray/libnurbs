@@ -121,19 +121,16 @@ namespace libnurbs
 
     int KnotVector::FindSpanIndex(int degree, Numeric u) const
     {
+        assert(u >= 0.0 && u <= 1.0);
         int index_first_span = degree;
         int index_last_span = static_cast<int>(m_Values.size()) - degree - 2;
         assert(index_last_span >= 0);
-        if (u >= m_Values.back()) return index_last_span;
-        if (u <= m_Values.front()) return index_first_span;
+        assert(index_first_span <= index_last_span);
+        if (u == m_Values.back()) return index_last_span;
+        if (u == m_Values.front()) return index_first_span;
         // binary search
-        auto it = std::lower_bound(m_Values.begin(), m_Values.end(), u);
+        auto it = std::upper_bound(m_Values.begin(), m_Values.end(), u);
         int index_result = (int)std::distance(m_Values.begin(), it);
-        if (Approx(*it, u))
-        {
-            it = std::upper_bound(m_Values.begin(), m_Values.end(), u);
-            index_result = (int)std::distance(m_Values.begin(), it);
-        }
         return index_result - 1;
     }
 
