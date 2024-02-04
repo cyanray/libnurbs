@@ -120,7 +120,7 @@ TEST_CASE("KnotVector/InsertKnot", "[knot_vector]")
     {
         KnotVector U{{0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0}};
         int span_index = U.InsertKnot(0.5);
-        REQUIRE(span_index == 2);
+        REQUIRE(span_index == 3);
         auto result = U.GetKnotPairs();
         REQUIRE(result.size() == 3);
         REQUIRE(result[0].Value == 0.0);
@@ -144,6 +144,24 @@ TEST_CASE("KnotVector/InsertKnot", "[knot_vector]")
         REQUIRE(result[1].Multiplicity == 1);
         REQUIRE(result[2].Value == 0.6);
         REQUIRE(result[2].Multiplicity == 1);
+        REQUIRE(result[3].Value == 1.0);
+        REQUIRE(result[3].Multiplicity == 3);
+    }
+
+    SECTION("4")
+    {
+        KnotVector U{{0.0, 0.0, 0.0, 0.5, 0.5, 1.0, 1.0, 1.0}};
+        int span_index = U.InsertKnot(0.3);
+        REQUIRE(span_index == 2);
+        REQUIRE(U.IsValid() == true);
+        auto result = U.GetKnotPairs();
+        REQUIRE(result.size() == 4);
+        REQUIRE(result[0].Value == 0.0);
+        REQUIRE(result[0].Multiplicity == 3);
+        REQUIRE(result[1].Value == 0.3);
+        REQUIRE(result[1].Multiplicity == 1);
+        REQUIRE(result[2].Value == 0.5);
+        REQUIRE(result[2].Multiplicity == 2);
         REQUIRE(result[3].Value == 1.0);
         REQUIRE(result[3].Multiplicity == 3);
     }
