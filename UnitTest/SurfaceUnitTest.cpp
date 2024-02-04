@@ -13,7 +13,7 @@ using namespace libnurbs;
 using namespace std;
 
 
-TEST_CASE("Surface/Evaluate", "[surface, evaluate]")
+TEST_CASE("Surface/Evaluate", "[surface]")
 {
     ControlPointGrid grid;
     grid.UCount = 3;
@@ -42,7 +42,7 @@ TEST_CASE("Surface/Evaluate", "[surface, evaluate]")
     }
 }
 
-TEST_CASE("Surface/EvaluateDerivative", "[surface, derivative]")
+TEST_CASE("Surface/EvaluateDerivative", "[surface]")
 {
     ControlPointGrid grid;
     grid.UCount = 3;
@@ -126,7 +126,7 @@ TEST_CASE("Surface/EvaluateDerivative", "[surface, derivative]")
 }
 
 
-TEST_CASE("Surface/SearchParameter", "[surface, evaluate]")
+TEST_CASE("Surface/SearchParameter", "[surface]")
 {
     ControlPointGrid grid;
     grid.UCount = 3;
@@ -182,7 +182,7 @@ TEST_CASE("Surface/SearchParameter", "[surface, evaluate]")
 }
 
 
-TEST_CASE("Surface/SearchParameter 2", "[surface, evaluate]")
+TEST_CASE("Surface/SearchParameter 2", "[surface]")
 {
     auto geom_rect1 = GeomRect::Make({0, 0, 0}, {1, 0, 0},
                                      {0, 2, 0}, {1, 2, 0});
@@ -225,7 +225,7 @@ TEST_CASE("Surface/SearchParameter 2", "[surface, evaluate]")
 }
 
 
-TEST_CASE("Surface/SearchParameter 3", "[surface, evaluate]")
+TEST_CASE("Surface/SearchParameter 3", "[surface]")
 {
     auto geom_rect1 = GeomRect::Make({0, 0, 0}, {1, 0, 0},
                                      {0, 2, 0}, {1, 2, 0});
@@ -268,7 +268,7 @@ TEST_CASE("Surface/SearchParameter 3", "[surface, evaluate]")
 }
 
 
-TEST_CASE("Surface/SearchParameter 4", "[surface, evaluate]")
+TEST_CASE("Surface/SearchParameter 4", "[surface]")
 {
     auto geom_rect1 = GeomRect::Make({0, 0, 0}, {1, 0, 0},
                                      {0, 2, 0}, {1, 2, 0});
@@ -302,5 +302,193 @@ TEST_CASE("Surface/SearchParameter 4", "[surface, evaluate]")
         REQUIRE(point1.x() == Approx(point2.x()).epsilon(1e-10));
         REQUIRE(point1.y() == Approx(point2.y()).epsilon(1e-10));
         REQUIRE(point1.z() == Approx(point2.z()).epsilon(1e-10));
+    }
+}
+
+TEST_CASE("Surface/InsertKnotU 1", "[surface]")
+{
+    auto geom_rect1 = GeomRect::Make({0, 0, 0}, {1, 0, 0},
+                                     {0, 2, 0}, {1, 2, 0});
+    geom_rect1.DegreeU = 3;
+    geom_rect1.DegreeV = 3;
+    geom_rect1.ControlPointCountU = 5;
+    geom_rect1.ControlPointCountV = 5;
+
+    auto surface = geom_rect1.GetSurface();
+
+    for (Numeric knot: vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+    {
+        auto new_surface = surface.InsertKnotU(knot);
+        for (Numeric u: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+        {
+            for (Numeric v: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+            {
+                Vec3 value = surface.Evaluate(u, v);
+                Vec3 new_value = new_surface.Evaluate(u, v);
+                INFO("knot: "<< knot);
+                INFO("u: " << u << ", v: " << v);
+                INFO("value: " << value.transpose());
+                INFO("new_value: " << new_value.transpose());
+                REQUIRE(value.x() == Approx(new_value.x()));
+                REQUIRE(value.y() == Approx(new_value.y()));
+                REQUIRE(value.z() == Approx(new_value.z()));
+            }
+        }
+    }
+}
+
+TEST_CASE("Surface/InsertKnotU 2", "[surface]")
+{
+    ControlPointGrid grid;
+    grid.UCount = 3;
+    grid.VCount = 2;
+    grid.Values.emplace_back(1, 0, 0, 1);
+    grid.Values.emplace_back(1, 1, 0, 1);
+    grid.Values.emplace_back(0, 1, 0, 2);
+    grid.Values.emplace_back(1, 0, 1, 1);
+    grid.Values.emplace_back(1, 1, 1, 1);
+    grid.Values.emplace_back(0, 1, 1, 2);
+
+    Surface surface;
+    surface.DegreeU = 2;
+    surface.DegreeV = 1;
+    surface.KnotsU = KnotVector{{0.0, 0.0, 0.0, 1.0, 1.0, 1.0}};
+    surface.KnotsV = KnotVector{{0.0, 0.0, 1.0, 1.0}};
+    surface.ControlPoints = grid;
+
+    for (Numeric knot: vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+    {
+        auto new_surface = surface.InsertKnotU(knot);
+        for (Numeric u: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+        {
+            for (Numeric v: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+            {
+                Vec3 value = surface.Evaluate(u, v);
+                Vec3 new_value = new_surface.Evaluate(u, v);
+                INFO("knot: "<< knot);
+                INFO("u: " << u << ", v: " << v);
+                INFO("value: " << value.transpose());
+                INFO("new_value: " << new_value.transpose());
+                REQUIRE(value.x() == Approx(new_value.x()));
+                REQUIRE(value.y() == Approx(new_value.y()));
+                REQUIRE(value.z() == Approx(new_value.z()));
+            }
+        }
+    }
+}
+
+TEST_CASE("Surface/InsertKnotV 1", "[surface]")
+{
+    auto geom_rect1 = GeomRect::Make({0, 0, 0}, {1, 0, 0},
+                                     {0, 2, 0}, {1, 2, 0});
+    geom_rect1.DegreeU = 3;
+    geom_rect1.DegreeV = 3;
+    geom_rect1.ControlPointCountU = 5;
+    geom_rect1.ControlPointCountV = 5;
+
+    auto surface = geom_rect1.GetSurface();
+
+    for (Numeric knot: vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+    {
+        auto new_surface = surface.InsertKnotV(knot);
+        for (Numeric u: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+        {
+            for (Numeric v: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+            {
+                Vec3 value = surface.Evaluate(u, v);
+                Vec3 new_value = new_surface.Evaluate(u, v);
+                INFO("knot: "<< knot);
+                INFO("u: " << u << ", v: " << v);
+                INFO("value: " << value.transpose());
+                INFO("new_value: " << new_value.transpose());
+                REQUIRE(value.x() == Approx(new_value.x()));
+                REQUIRE(value.y() == Approx(new_value.y()));
+                REQUIRE(value.z() == Approx(new_value.z()));
+            }
+        }
+    }
+}
+
+TEST_CASE("Surface/InsertKnotV 2", "[surface]")
+{
+    ControlPointGrid grid;
+    grid.UCount = 3;
+    grid.VCount = 2;
+    grid.Values.emplace_back(1, 0, 0, 1);
+    grid.Values.emplace_back(1, 1, 0, 1);
+    grid.Values.emplace_back(0, 1, 0, 2);
+    grid.Values.emplace_back(1, 0, 1, 1);
+    grid.Values.emplace_back(1, 1, 1, 1);
+    grid.Values.emplace_back(0, 1, 1, 2);
+
+    Surface surface;
+    surface.DegreeU = 2;
+    surface.DegreeV = 1;
+    surface.KnotsU = KnotVector{{0.0, 0.0, 0.0, 1.0, 1.0, 1.0}};
+    surface.KnotsV = KnotVector{{0.0, 0.0, 1.0, 1.0}};
+    surface.ControlPoints = grid;
+
+    for (Numeric knot: vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+    {
+        auto new_surface = surface.InsertKnotV(knot);
+        for (Numeric u: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+        {
+            for (Numeric v: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+            {
+                Vec3 value = surface.Evaluate(u, v);
+                Vec3 new_value = new_surface.Evaluate(u, v);
+                INFO("knot: "<< knot);
+                INFO("u: " << u << ", v: " << v);
+                INFO("value: " << value.transpose());
+                INFO("new_value: " << new_value.transpose());
+                REQUIRE(value.x() == Approx(new_value.x()));
+                REQUIRE(value.y() == Approx(new_value.y()));
+                REQUIRE(value.z() == Approx(new_value.z()));
+            }
+        }
+    }
+}
+
+TEST_CASE("Surface/InsertKnotV 3", "[surface]")
+{
+    ControlPointGrid grid;
+    grid.UCount = 3;
+    grid.VCount = 2;
+    grid.Values.emplace_back(1, 0, 0, 1);
+    grid.Values.emplace_back(1, 1, 0, 1);
+    grid.Values.emplace_back(0, 1, 0, 2);
+    grid.Values.emplace_back(1, 0, 1, 1);
+    grid.Values.emplace_back(1, 1, 1, 1);
+    grid.Values.emplace_back(0, 1, 1, 2);
+
+    Surface surface;
+    surface.DegreeU = 2;
+    surface.DegreeV = 1;
+    surface.KnotsU = KnotVector{{0.0, 0.0, 0.0, 1.0, 1.0, 1.0}};
+    surface.KnotsV = KnotVector{{0.0, 0.0, 1.0, 1.0}};
+    surface.ControlPoints = grid;
+
+    for (Numeric knot1: vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+    {
+        for (Numeric knot2: vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+        {
+            auto new_surface = surface.InsertKnotV(knot1).InsertKnotV(knot2);
+            for (Numeric u: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+            {
+                for (Numeric v: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+                {
+                    Vec3 value = surface.Evaluate(u, v);
+                    Vec3 new_value = new_surface.Evaluate(u, v);
+                    INFO("knot 1: "<< knot1);
+                    INFO("knot 2: "<< knot2);
+                    INFO("u: " << u << ", v: " << v);
+                    INFO("value: " << value.transpose());
+                    INFO("new_value: " << new_value.transpose());
+                    REQUIRE(value.x() == Approx(new_value.x()));
+                    REQUIRE(value.y() == Approx(new_value.y()));
+                    REQUIRE(value.z() == Approx(new_value.z()));
+                }
+            }
+        }
     }
 }

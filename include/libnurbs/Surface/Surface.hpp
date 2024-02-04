@@ -32,6 +32,10 @@ namespace libnurbs
                                                                   Numeric epsion = 1e-8,
                                                                   Numeric max_iteration_count = 512) const;
 
+        [[nodiscard]] Surface InsertKnotU(Numeric knot_value) const;
+
+        [[nodiscard]] Surface InsertKnotV(Numeric knot_value) const;
+
     private:
         [[nodiscard]] Grid<Vec4> HomogeneousDerivative(Numeric u, Numeric v, int order_u, int order_v) const;
     };

@@ -162,6 +162,68 @@ namespace libnurbs
         return {u_last, v_last};
     }
 
+    Surface Surface::InsertKnotU(Numeric knot_value) const
+    {
+        Surface result{*this};
+        int k = result.KnotsU.InsertKnot(knot_value);
+        result.ControlPoints.InsertU(k, Vec4::Zero());
+        const auto& knots = this->KnotsU.Values();
+        vector<Numeric> alpha_list(result.DegreeU);
+        for (int i = k - DegreeU + 1; i <= k; i++)
+        {
+            int idx = i - k + DegreeU - 1;
+            alpha_list[idx] = (knot_value - knots[i]) / (knots[i + DegreeU] - knots[i]);
+        }
+        for (int i = k - DegreeU + 1; i <= k; i++)
+        {
+            int idx = i - k + DegreeU - 1;
+            for (int j = 0; j < result.ControlPoints.VCount; j++)
+            {
+                Vec4 point_i = this->ControlPoints.Get(i, j);
+                point_i.head<3>() *= point_i(3);
+                Vec4 point_im1 = this->ControlPoints.Get(i - 1, j);
+                point_im1.head<3>() *= point_im1.w();
+
+                Numeric alpha = alpha_list[idx];
+                Vec4& point_new = result.ControlPoints.Get(i, j);
+                point_new = alpha * point_i + (1 - alpha) * point_im1;
+                point_new.head<3>() /= point_new.w();
+            }
+        }
+        return result;
+    }
+
+    Surface Surface::InsertKnotV(Numeric knot_value) const
+    {
+        Surface result{*this};
+        int k = result.KnotsV.InsertKnot(knot_value);
+        result.ControlPoints.InsertV(k, Vec4::Zero());
+        const auto& knots = this->KnotsV.Values();
+        vector<Numeric> alpha_list(result.DegreeV);
+        for (int i = k - DegreeV + 1; i <= k; i++)
+        {
+            int idx = i - k + DegreeV - 1;
+            alpha_list[idx] = (knot_value - knots[i]) / (knots[i + DegreeV] - knots[i]);
+        }
+        for (int i = k - DegreeV + 1; i <= k; i++)
+        {
+            int idx = i - k + DegreeV - 1;
+            for (int j = 0; j < result.ControlPoints.UCount; j++)
+            {
+                Vec4 point_i = this->ControlPoints.Get(j, i);
+                point_i.head<3>() *= point_i(3);
+                Vec4 point_im1 = this->ControlPoints.Get(j, i - 1);
+                point_im1.head<3>() *= point_im1.w();
+
+                Numeric alpha = alpha_list[idx];
+                Vec4& point_new = result.ControlPoints.Get(j, i);
+                point_new = alpha * point_i + (1 - alpha) * point_im1;
+                point_new.head<3>() /= point_new.w();
+            }
+        }
+        return result;
+    }
+
     Grid<Vec4> Surface::HomogeneousDerivative(Numeric u, Numeric v, int order_u, int order_v) const
     {
         assert(u >= 0 && u <= 1);
