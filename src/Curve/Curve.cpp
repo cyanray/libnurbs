@@ -15,11 +15,10 @@ namespace libnurbs
         Vec4 result = Vec4::Zero();
         for (int i = 0; i <= Degree; i++)
         {
-            auto point = ControlPoints[index_span - Degree + i];
-            point.head<3>() *= point(3);
+            auto point = ToHomo(ControlPoints[index_span - Degree + i]);
             result += basis(i) * point;
         }
-        return result.head<3>() / result(3);
+        return result.head<3>() / result.w();
     }
 
 
@@ -36,8 +35,7 @@ namespace libnurbs
             Vec4 tmp = Vec4::Zero();
             for (int i = 0; i <= Degree; i++)
             {
-                auto point = ControlPoints[index_span - Degree + i];
-                point.head<3>() *= point.w();
+                auto point = ToHomo(ControlPoints[index_span - Degree + i]);
                 tmp.noalias() += point * basis(k, i);
             }
             result[k] = tmp;
@@ -96,7 +94,7 @@ namespace libnurbs
         {
             auto f = fi(u_last);
             auto j = Ji(u_last);
-            Numeric u_new = u_last -f / j * s;
+            Numeric u_new = u_last - f / j * s;
 
             res = std::abs(u_new - u_last);
             u_last = u_new;
@@ -115,17 +113,14 @@ namespace libnurbs
     {
         Curve result{*this};
         int k = result.Knots.InsertKnot(knot_value);
-        result.ControlPoints.insert(result.ControlPoints.begin() + k - 1 ,Vec4::Zero());
+        result.ControlPoints.insert(result.ControlPoints.begin() + k, Vec4::Zero());
         const auto& knots = this->Knots.Values();
-        for(int i = k - Degree + 1; i <= k; i++)
+        for (int i = k - Degree + 1; i <= k; i++)
         {
             Numeric alpha = (knot_value - knots[i]) / (knots[i + Degree] - knots[i]);
-            auto point_i = this->ControlPoints[i];
-            point_i.head<3>() *= point_i.w();
-            auto point_im1 = this->ControlPoints[i - 1];
-            point_im1.head<3>() *= point_im1.w();
-            result.ControlPoints[i] = alpha * point_i + (1 - alpha) * point_im1;
-            result.ControlPoints[i].head<3>() /= result.ControlPoints[i].w();
+            auto point_i = ToHomo(this->ControlPoints[i]);
+            auto point_im1 = ToHomo(this->ControlPoints[i - 1]);
+            result.ControlPoints[i] = FromHomo(alpha * point_i + (1 - alpha) * point_im1);
         }
         return result;
     }

@@ -24,4 +24,18 @@ namespace libnurbs
     class Grid;
 
     using ControlPointGrid = Grid<Vec4>;
+
+    inline Vec4 ToHomo(const Vec4& vec)
+    {
+        Vec4 result(vec);
+        result.head<3>() *= result.w();
+        return result;
+    }
+
+    inline Vec4 FromHomo(const Vec4& vec)
+    {
+        Vec4 result(vec);
+        result.head<3>() /= result.w();
+        return result;
+    }
 }
