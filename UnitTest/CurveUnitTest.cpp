@@ -489,3 +489,120 @@ TEST_CASE("Curve/InsertKnot 2", "[curve][rational]")
         }
     }
 }
+
+
+TEST_CASE("Curve/InsertKnot 3", "[curve][rational]")
+{
+    const Numeric k = std::sqrt(2.0) / 2.0;
+    Curve curve;
+    curve.Degree = 2;
+    curve.Knots = KnotVector{{0, 0, 0, 0.25, 0.25, 0.5, 0.5, 0.75, 0.75, 1, 1, 1}};
+    curve.ControlPoints = vector<Vec4>
+    {
+            {1, 0, 0, 1},
+            {1, 1, 0, k},
+            {0, 1, 0, 1},
+            {-1, 1, 0, k},
+            {-1, 0, 0, 1},
+            {-1, -1, 0, k},
+            {0, -1, 0, 1},
+            {1, -1, 0, k},
+            {1, 0, 0, 1},
+        };
+
+    SECTION("1")
+    {
+        for (Numeric knot2: vector{0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+        {
+            for (Numeric knot1: vector{0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+            {
+                Curve new_curve = curve.InsertKnot(knot1).InsertKnot(knot2);
+                for (Numeric x: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+                {
+                    Vec3 value = curve.Evaluate(x);
+                    Vec3 new_value = new_curve.Evaluate(x);
+                    INFO("knot 1: "<< knot1);
+                    INFO("knot 2: "<< knot2);
+                    INFO("x: " << x);
+                    INFO("value: " << value.transpose());
+                    INFO("new_value: " << new_value.transpose());
+                    REQUIRE(value.x() == Approx(new_value.x()));
+                    REQUIRE(value.y() == Approx(new_value.y()));
+                    REQUIRE(value.z() == Approx(new_value.z()));
+                }
+            }
+        }
+    }
+}
+
+
+TEST_CASE("Curve/InsertKnot(list)", "[curve][rational]")
+{
+    const Numeric k = std::sqrt(2.0) / 2.0;
+    Curve curve;
+    curve.Degree = 2;
+    curve.Knots = KnotVector{{0, 0, 0, 0.25, 0.25, 0.5, 0.5, 0.75, 0.75, 1, 1, 1}};
+    curve.ControlPoints = vector<Vec4>
+    {
+                {1, 0, 0, 1},
+                {1, 1, 0, k},
+                {0, 1, 0, 1},
+                {-1, 1, 0, k},
+                {-1, 0, 0, 1},
+                {-1, -1, 0, k},
+                {0, -1, 0, 1},
+                {1, -1, 0, k},
+                {1, 0, 0, 1},
+            };
+
+    SECTION("[0.2, 0.8]")
+    {
+        vector knots{0.2 , 0.8};
+        auto new_curve = curve.InsertKnot(knots);
+        for (Numeric x: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+        {
+            Vec3 value = curve.Evaluate(x);
+            Vec3 new_value = new_curve.Evaluate(x);
+            INFO("x: " << x);
+            INFO("value: " << value.transpose());
+            INFO("new_value: " << new_value.transpose());
+            REQUIRE(value.x() == Approx(new_value.x()));
+            REQUIRE(value.y() == Approx(new_value.y()));
+            REQUIRE(value.z() == Approx(new_value.z()));
+        }
+    }
+
+    SECTION("[0.2, 0.2]")
+    {
+        vector knots{0.2 , 0.2};
+        auto new_curve = curve.InsertKnot(knots);
+        for (Numeric x: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+        {
+            Vec3 value = curve.Evaluate(x);
+            Vec3 new_value = new_curve.Evaluate(x);
+            INFO("x: " << x);
+            INFO("value: " << value.transpose());
+            INFO("new_value: " << new_value.transpose());
+            REQUIRE(value.x() == Approx(new_value.x()));
+            REQUIRE(value.y() == Approx(new_value.y()));
+            REQUIRE(value.z() == Approx(new_value.z()));
+        }
+    }
+
+    SECTION("[0.2, 0.2, 0.2]")
+    {
+        vector knots{0.2 , 0.2, 0.2};
+        auto new_curve = curve.InsertKnot(knots);
+        for (Numeric x: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+        {
+            Vec3 value = curve.Evaluate(x);
+            Vec3 new_value = new_curve.Evaluate(x);
+            INFO("x: " << x);
+            INFO("value: " << value.transpose());
+            INFO("new_value: " << new_value.transpose());
+            REQUIRE(value.x() == Approx(new_value.x()));
+            REQUIRE(value.y() == Approx(new_value.y()));
+            REQUIRE(value.z() == Approx(new_value.z()));
+        }
+    }
+}

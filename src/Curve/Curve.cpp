@@ -124,4 +124,29 @@ namespace libnurbs
         }
         return result;
     }
+
+    Curve Curve::InsertKnot(std::span<Numeric> knots_to_insert) const
+    {
+        Curve result = *this;
+        auto& knots = result.Knots.Values();
+        knots.reserve(knots.size() + knots_to_insert.size());
+        auto& points = result.ControlPoints;
+        points.reserve(points.size() + knots_to_insert.size());
+        for (auto knot_value: knots_to_insert)
+        {
+            int k = result.Knots.FindSpanIndex(Degree, knot_value);
+            points.insert(points.begin() + k, points[k]);
+            Vec4 point_last = ToHomo(points[k - Degree]);
+            for (int i = k - Degree + 1; i <= k; i++)
+            {
+                Numeric alpha = (knot_value - knots[i]) / (knots[i + Degree] - knots[i]);
+                auto point_i = ToHomo(points[i]);
+                Vec4 point_new = FromHomo(alpha * point_i + (1 - alpha) * point_last);
+                point_last = point_i;
+                points[i] = point_new;
+            }
+            knots.insert(knots.begin() + k + 1, knot_value);
+        }
+        return result;
+    }
 }

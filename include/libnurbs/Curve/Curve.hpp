@@ -1,8 +1,9 @@
 #pragma once
 
-#include <libnurbs/Core/Typedefs.hpp>
-#include <libnurbs/Core/KnotVector.hpp>
+#include <span>
 #include <vector>
+#include <libnurbs/Core/KnotVector.hpp>
+#include <libnurbs/Core/Typedefs.hpp>
 
 using std::vector;
 
@@ -32,6 +33,9 @@ namespace libnurbs
                                               Numeric max_iteration_count = 512) const;
 
         [[nodiscard]] Curve InsertKnot(Numeric knot_value) const;
+
+        [[nodiscard]] Curve InsertKnot(std::span<Numeric> knots_to_insert) const;
+
     private:
         [[nodiscard]] vector<Vec4> HomogeneousDerivative(Numeric x, int order) const;
     };
