@@ -23,12 +23,13 @@ namespace libnurbs
         {
             for (int j = 0; j <= DegreeV; j++)
             {
-                auto point = ControlPoints.Get(index_span_u - DegreeU + i, index_span_v - DegreeV + j);
-                point.head<3>() *= point(3);
+                int index_u = index_span_u - DegreeU + i;
+                int index_v = index_span_v - DegreeV + j;
+                auto point = ToHomo(ControlPoints.Get(index_u, index_v));
                 result.noalias() += basis_u(i) * basis_v(j) * point;
             }
         }
-        return result.head<3>() / result(3);
+        return result.head<3>() / result.w();
     }
 
     Vec3 Surface::EvaluateDerivative(Numeric u, Numeric v, int order_u, int order_v) const
@@ -46,7 +47,9 @@ namespace libnurbs
         {
             for (int j = 0; j <= DegreeV; j++)
             {
-                auto point = ControlPoints.Get(index_span_u - DegreeU + i, index_span_v - DegreeV + j);
+                int index_u = index_span_u - DegreeU + i;
+                int index_v = index_span_v - DegreeV + j;
+                auto point = ControlPoints.Get(index_u, index_v);
                 point.head<3>() *= basis_u(i) * basis_v(j);
                 result += point;
             }
@@ -179,15 +182,12 @@ namespace libnurbs
             int idx = i - k + DegreeU - 1;
             for (int j = 0; j < result.ControlPoints.VCount; j++)
             {
-                Vec4 point_i = this->ControlPoints.Get(i, j);
-                point_i.head<3>() *= point_i(3);
-                Vec4 point_im1 = this->ControlPoints.Get(i - 1, j);
-                point_im1.head<3>() *= point_im1.w();
+                Vec4 point_i = ToHomo(this->ControlPoints.Get(i, j));
+                Vec4 point_im1 = ToHomo(this->ControlPoints.Get(i - 1, j));
 
                 Numeric alpha = alpha_list[idx];
                 Vec4& point_new = result.ControlPoints.Get(i, j);
-                point_new = alpha * point_i + (1 - alpha) * point_im1;
-                point_new.head<3>() /= point_new.w();
+                point_new = FromHomo(alpha * point_i + (1 - alpha) * point_im1);
             }
         }
         return result;
@@ -210,15 +210,12 @@ namespace libnurbs
             int idx = i - k + DegreeV - 1;
             for (int j = 0; j < result.ControlPoints.UCount; j++)
             {
-                Vec4 point_i = this->ControlPoints.Get(j, i);
-                point_i.head<3>() *= point_i(3);
-                Vec4 point_im1 = this->ControlPoints.Get(j, i - 1);
-                point_im1.head<3>() *= point_im1.w();
+                Vec4 point_i = ToHomo(this->ControlPoints.Get(j, i));
+                Vec4 point_im1 = ToHomo(this->ControlPoints.Get(j, i - 1));
 
                 Numeric alpha = alpha_list[idx];
                 Vec4& point_new = result.ControlPoints.Get(j, i);
-                point_new = alpha * point_i + (1 - alpha) * point_im1;
-                point_new.head<3>() /= point_new.w();
+                point_new = FromHomo(alpha * point_i + (1 - alpha) * point_im1);
             }
         }
         return result;
@@ -247,8 +244,7 @@ namespace libnurbs
                     {
                         int index_u = index_span_u - DegreeU + i;
                         int index_v = index_span_v - DegreeV + j;
-                        auto point = ControlPoints.Get(index_u, index_v);
-                        point.head<3>() *= point(3);
+                        auto point = ToHomo(ControlPoints.Get(index_u, index_v));
                         result.Get(k, l).noalias() += point * basis_u(k, i) * basis_v(l, j);
                     }
                 }
