@@ -218,21 +218,26 @@ namespace libnurbs
         assert(basis_u.cols() == DegreeU + 1);
         assert(basis_v.cols() == DegreeV + 1);
 
+        int index_pre_u = index_span_u - DegreeU;
+        int index_pre_v = index_span_v - DegreeV;
+
         Grid<Vec4> result(order_u + 1, order_v + 1, Vec4::Zero());
 
-        for (int k = 0; k <= order_u; ++k)
+        for (int l = 0; l <= order_v; ++l)
         {
-            for (int l = 0; l <= order_v; ++l)
+            for (int k = 0; k <= order_u; ++k)
             {
-                for (int i = 0; i <= DegreeU; i++)
+                for (int j = 0; j <= DegreeV; j++)
                 {
-                    for (int j = 0; j <= DegreeV; j++)
+                    int index_v = index_pre_v + j;
+                    Vec4 tmp = Vec4::Zero();
+                    for (int i = 0; i <= DegreeU; i++)
                     {
-                        int index_u = index_span_u - DegreeU + i;
-                        int index_v = index_span_v - DegreeV + j;
+                        int index_u = index_pre_u + i;
                         auto point = ToHomo(ControlPoints.Get(index_u, index_v));
-                        result.Get(k, l).noalias() += point * basis_u(k, i) * basis_v(l, j);
+                        tmp.noalias() += basis_u(k, i) * point;
                     }
+                    result.Get(k,l).noalias() += basis_v(l, j) * tmp;
                 }
             }
         }
