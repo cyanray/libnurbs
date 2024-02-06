@@ -88,8 +88,7 @@ namespace libnurbs
             last = last + 1;
         }
 
-        // no move operation success, return the original curve
-        // TODO: return operation status
+        // no remove operation succeeded
         if (t == 0) return t;
 
         int j = (2 * r - s - degree) / 2, i = j;
