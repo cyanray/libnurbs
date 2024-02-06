@@ -157,7 +157,7 @@ namespace libnurbs
         return result;
     }
 
-    Curve Curve::RemoveKnot(Numeric knot_remove, int times, Numeric tolerance) const
+    std::tuple<Curve, int> Curve::RemoveKnot(Numeric knot_remove, int times, Numeric tolerance) const
     {
         constexpr static auto CalcTOL = [](const vector<Vec4>& points, Numeric epsilon)-> Numeric
         {
@@ -247,7 +247,7 @@ namespace libnurbs
 
         // no move operation success, return the original curve
         // TODO: return operation status
-        if (t == 0) return result;
+        if (t == 0) return {result, t};
 
         int j = (2 * r - s - degree) / 2, i = j;
         for (int k = 1; k < t; k++)
@@ -270,6 +270,6 @@ namespace libnurbs
         }
         knots.resize(knots.size() - times);
 
-        return result;
+        return {result, t};
     }
 }
