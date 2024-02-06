@@ -1,6 +1,5 @@
 #include <libnurbs/Basis/BSplineBasis.hpp>
 #include <libnurbs/Core/KnotVector.hpp>
-#include <libnurbs/Algorithm/MathUtils.hpp>
 
 namespace libnurbs
 {
@@ -88,7 +87,6 @@ namespace libnurbs
                 Numeric d = 0.0;
                 int rk = r - k;
                 int pk = degree - k;
-                int j1, j2;
 
                 if (r >= k)
                 {
@@ -96,8 +94,8 @@ namespace libnurbs
                     d = a(s2, 0) * ndu(rk, pk);
                 }
 
-                j1 = (rk >= -1) ? 1 : -rk;
-                j2 = (r - 1 <= pk) ? k - 1 : degree - r;
+                int j1 = (rk >= -1) ? 1 : -rk;
+                int j2 = (r - 1 <= pk) ? k - 1 : degree - r;
 
                 for (int j = j1; j <= j2; j++)
                 {
