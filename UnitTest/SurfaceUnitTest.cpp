@@ -92,8 +92,8 @@ TEST_CASE("Surface/EvaluateDerivative", "[surface][evaluate_derivative]")
     {
         auto value = surface.EvaluateDerivative(0.5, 0.5, 1, 0);
         INFO("value:" << value.transpose());
-        REQUIRE(value.x() == Approx(-1.0));
-        REQUIRE(value.y() == Approx(1.0));
+        REQUIRE(value.x() == Approx(-1.28));
+        REQUIRE(value.y() == Approx(0.96));
         REQUIRE(value.z() == Approx(0.0));
     }
 
@@ -110,7 +110,7 @@ TEST_CASE("Surface/EvaluateDerivative", "[surface][evaluate_derivative]")
     {
         auto value = surface.EvaluateDerivative(1.0, 1.0, 1, 0);
         INFO("value:" << value.transpose());
-        REQUIRE(value.x() == Approx(-2.0));
+        REQUIRE(value.x() == Approx(-1.0));
         REQUIRE(value.y() == Approx(0.0));
         REQUIRE(value.z() == Approx(0.0));
     }

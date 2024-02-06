@@ -20,13 +20,11 @@ namespace libnurbs
         assert(basis_v.size() == DegreeV + 1);
 
         Vec4 result = Vec4::Zero();
-        for (int i = 0; i <= DegreeU; i++)
         int index_pre_u = index_span_u - DegreeU;
         int index_pre_v = index_span_v - DegreeV;
 
         for (int j = 0; j <= DegreeV; j++)
         {
-            for (int j = 0; j <= DegreeV; j++)
             int index_v = index_pre_v + j;
             Vec4 tmp = Vec4::Zero();
             for (int i = 0; i <= DegreeU; i++)
@@ -42,27 +40,7 @@ namespace libnurbs
 
     Vec3 Surface::EvaluateDerivative(Numeric u, Numeric v, int order_u, int order_v) const
     {
-        assert(u >= 0 && u <= 1);
-        assert(v >= 0 && v <= 1);
-        int index_span_u = KnotsU.FindSpanIndex(DegreeU, u);
-        int index_span_v = KnotsV.FindSpanIndex(DegreeV, v);
-        VecX basis_u = BSplineBasis::EvaluateDerivative(DegreeU, KnotsU.Values(), index_span_u, u, order_u);
-        VecX basis_v = BSplineBasis::EvaluateDerivative(DegreeV, KnotsV.Values(), index_span_v, v, order_v);
-        assert(basis_u.size() == DegreeU + 1);
-        assert(basis_v.size() == DegreeV + 1);
-        Vec4 result = Vec4::Zero();
-        for (int i = 0; i <= DegreeU; i++)
-        {
-            for (int j = 0; j <= DegreeV; j++)
-            {
-                int index_u = index_span_u - DegreeU + i;
-                int index_v = index_span_v - DegreeV + j;
-                auto point = ControlPoints.Get(index_u, index_v);
-                point.head<3>() *= basis_u(i) * basis_v(j);
-                result += point;
-            }
-        }
-        return result.head<3>();
+        return EvaluateAll(u, v, order_u, order_v).Get(order_u, order_v);
     }
 
     Grid<Vec3> Surface::EvaluateAll(Numeric u, Numeric v, int order_u, int order_v) const
@@ -89,10 +67,10 @@ namespace libnurbs
                     Aders.noalias() -= Binomial(ov, j) * Wders * result.Get(ou, ov - j);
                 }
 
-                for (int i = 1; i <= ou; ++ou)
+                for (int i = 1; i <= ou; ++i)
                 {
                     const int bi = Binomial(ou, i);
-                    for (int j = 1; j <= ov; ++ov)
+                    for (int j = 1; j <= ov; ++j)
                     {
                         Numeric Wders = homo_ders.Get(i, j).w();
                         Aders.noalias() -= bi * Binomial(ov, j) * Wders * result.Get(ou - i, ov - j);
@@ -237,8 +215,8 @@ namespace libnurbs
         int index_span_v = KnotsV.FindSpanIndex(DegreeV, v);
         MatX basis_u = BSplineBasis::EvaluateAll(DegreeU, KnotsU.Values(), index_span_u, u, order_u);
         MatX basis_v = BSplineBasis::EvaluateAll(DegreeV, KnotsV.Values(), index_span_v, v, order_v);
-        assert(basis_u.size() == DegreeU + 1);
-        assert(basis_v.size() == DegreeV + 1);
+        assert(basis_u.cols() == DegreeU + 1);
+        assert(basis_v.cols() == DegreeV + 1);
 
         Grid<Vec4> result(order_u + 1, order_v + 1, Vec4::Zero());
 
