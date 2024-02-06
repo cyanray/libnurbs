@@ -18,16 +18,24 @@ namespace libnurbs
         VecX basis_v = BSplineBasis::Evaluate(DegreeV, KnotsV.Values(), index_span_v, v);
         assert(basis_u.size() == DegreeU + 1);
         assert(basis_v.size() == DegreeV + 1);
+
         Vec4 result = Vec4::Zero();
         for (int i = 0; i <= DegreeU; i++)
+        int index_pre_u = index_span_u - DegreeU;
+        int index_pre_v = index_span_v - DegreeV;
+
+        for (int j = 0; j <= DegreeV; j++)
         {
             for (int j = 0; j <= DegreeV; j++)
+            int index_v = index_pre_v + j;
+            Vec4 tmp = Vec4::Zero();
+            for (int i = 0; i <= DegreeU; i++)
             {
-                int index_u = index_span_u - DegreeU + i;
-                int index_v = index_span_v - DegreeV + j;
+                int index_u = index_pre_u + i;
                 auto point = ToHomo(ControlPoints.Get(index_u, index_v));
-                result.noalias() += basis_u(i) * basis_v(j) * point;
+                tmp.noalias() += basis_u(i) * point;
             }
+            result.noalias() += basis_v(j) * tmp;
         }
         return result.head<3>() / result.w();
     }
