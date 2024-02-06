@@ -115,7 +115,14 @@ namespace libnurbs
 
     bool KnotVector::IsUniform() const
     {
-        // TODO: implement
+        Numeric interval = 0;
+        for(int i = 1; i < m_Values.size(); ++i)
+        {
+            Numeric val = m_Values[i];
+            Numeric curr = val - m_Values[i - 1];
+            if(interval == 0) interval = curr;
+            else if(!Approx(curr, interval) && curr != 0) return false;
+        }
         return true;
     }
 

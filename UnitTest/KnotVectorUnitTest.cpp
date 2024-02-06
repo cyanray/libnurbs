@@ -43,6 +43,31 @@ TEST_CASE("KnotVector/Constructor", "[knot_vector]")
         REQUIRE(result[3].Multiplicity == 4);
     }
 
+    SECTION("static KnotVector::IsUniform() 1")
+    {
+        KnotVector knots = KnotVector::Uniform(3, 10);
+        REQUIRE(knots.Count() == 10);
+        REQUIRE(knots.IsUniform() == true);
+    }
+
+    SECTION("static KnotVector::IsUniform() 2")
+    {
+        KnotVector knots{{0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0}};
+        REQUIRE(knots.IsUniform() == true);
+    }
+
+    SECTION("static KnotVector::IsUniform() 3")
+    {
+        KnotVector knots{{0.0, 0.0, 0.0, 1.0, 1.0, 1.0}};
+        REQUIRE(knots.IsUniform() == true);
+    }
+
+    SECTION("static KnotVector::IsUniform() 5")
+    {
+        KnotVector knots{{0.0, 0.0, 0.0, 0.1, 0.3, 1.0, 1.0, 1.0}};
+        REQUIRE(knots.IsUniform() == false);
+    }
+
 }
 
 
