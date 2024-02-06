@@ -62,9 +62,10 @@ namespace libnurbs
         /**
          * \brief Insert a knot value into the knot vector.
          * \param value
+         * \param times
          * \return Span index in original KnotVector that contains the new knot value.
          */
-        int InsertKnot(Numeric value);
+        int InsertKnot(Numeric value, int times = 1);
     };
 
     struct KnotVector::KnotPair

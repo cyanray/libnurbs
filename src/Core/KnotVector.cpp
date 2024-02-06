@@ -159,12 +159,12 @@ namespace libnurbs
         throw std::out_of_range("The knot vector is invalid.");
     }
 
-    int KnotVector::InsertKnot(Numeric value)
+    int KnotVector::InsertKnot(Numeric value, int times)
     {
         assert(value > 0 && value < 1);
         auto it = std::upper_bound(m_Values.begin(), m_Values.end(), value);
         int i = (int)std::distance(m_Values.begin(), it);
-        m_Values.insert(it, value);
+        m_Values.insert(it, times, value);
         return i - 1;
     }
 }
