@@ -104,11 +104,11 @@ namespace libnurbs
         int count0, count1;
         for (count0 = 0; count0 < (int)m_Values.size(); ++count0)
         {
-            if(m_Values[count0] != 0.0) break;
+            if (m_Values[count0] != 0.0) break;
         }
-        for(count1 = (int)m_Values.size() - 1; count1 >= 0; --count1)
+        for (count1 = (int)m_Values.size() - 1; count1 >= 0; --count1)
         {
-            if(m_Values[count1] != 1.0) break;
+            if (m_Values[count1] != 1.0) break;
         }
         return count0 == count1;
     }
@@ -116,12 +116,12 @@ namespace libnurbs
     bool KnotVector::IsUniform() const
     {
         Numeric interval = 0;
-        for(int i = 1; i < m_Values.size(); ++i)
+        for (int i = 1; i < m_Values.size(); ++i)
         {
             Numeric val = m_Values[i];
             Numeric curr = val - m_Values[i - 1];
-            if(interval == 0) interval = curr;
-            else if(!Approx(curr, interval) && curr != 0) return false;
+            if (interval == 0) interval = curr;
+            else if (!Approx(curr, interval) && curr != 0) return false;
         }
         return true;
     }
@@ -164,6 +164,16 @@ namespace libnurbs
             if (m_Values[i] != 0.0) return i - 1;
         }
         throw std::out_of_range("The knot vector is invalid.");
+    }
+
+    int KnotVector::GetMultiplicity(Numeric u) const
+    {
+        int result = 0;
+        for (Numeric val: m_Values)
+        {
+            if (Approx(val, u)) ++result;
+        }
+        return result;
     }
 
     int KnotVector::InsertKnot(Numeric value, int times)

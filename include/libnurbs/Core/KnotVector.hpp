@@ -59,6 +59,8 @@ namespace libnurbs
 
         [[nodiscard]] int DetectDegree() const;
 
+        [[nodiscard]] int GetMultiplicity(Numeric u) const;
+
         /**
          * \brief Insert a knot value into the knot vector.
          * \param value
