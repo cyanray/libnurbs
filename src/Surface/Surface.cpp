@@ -179,6 +179,22 @@ namespace libnurbs
         return result;
     }
 
+    Surface Surface::InsertKnotU(Numeric knot_value, int times) const
+    {
+        std::vector list(times, knot_value);
+        return InsertKnotU(list);
+    }
+
+    Surface Surface::InsertKnotU(std::span<Numeric> knots_to_insert) const
+    {
+        Surface result{*this};
+        for(auto knot : knots_to_insert)
+        {
+            result = result.InsertKnotU(knot);
+        }
+        return result;
+    }
+
     Surface Surface::InsertKnotV(Numeric knot_value) const
     {
         Surface result{*this};
@@ -204,6 +220,22 @@ namespace libnurbs
                 Vec4& point_new = result.ControlPoints.Get(j, i);
                 point_new = FromHomo(alpha * point_i + (1 - alpha) * point_im1);
             }
+        }
+        return result;
+    }
+
+    Surface Surface::InsertKnotV(Numeric knot_value, int times) const
+    {
+        std::vector list(times, knot_value);
+        return InsertKnotV(list);
+    }
+
+    Surface Surface::InsertKnotV(std::span<Numeric> knots_to_insert) const
+    {
+        Surface result{*this};
+        for(auto knot : knots_to_insert)
+        {
+            result = result.InsertKnotV(knot);
         }
         return result;
     }

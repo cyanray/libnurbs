@@ -1,5 +1,6 @@
 #pragma once
 
+#include <span>
 #include <libnurbs/Core/Typedefs.hpp>
 #include <libnurbs/Core/KnotVector.hpp>
 #include <libnurbs/Core/Grid.hpp>
@@ -32,7 +33,15 @@ namespace libnurbs
 
         [[nodiscard]] Surface InsertKnotU(Numeric knot_value) const;
 
+        [[nodiscard]] Surface InsertKnotU(Numeric knot_value, int times) const;
+
+        [[nodiscard]] Surface InsertKnotU(std::span<Numeric> knots_to_insert) const;
+
         [[nodiscard]] Surface InsertKnotV(Numeric knot_value) const;
+
+        [[nodiscard]] Surface InsertKnotV(Numeric knot_value, int times) const;
+
+        [[nodiscard]] Surface InsertKnotV(std::span<Numeric> knots_to_insert) const;
 
     private:
         [[nodiscard]] Grid<Vec4> HomogeneousDerivative(Numeric u, Numeric v, int order_u, int order_v) const;
