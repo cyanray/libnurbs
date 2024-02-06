@@ -163,14 +163,14 @@ namespace libnurbs
             int idx = i - k + DegreeU - 1;
             alpha_list[idx] = (knot_value - knots[i]) / (knots[i + DegreeU] - knots[i]);
         }
-        for (int i = k - DegreeU + 1; i <= k; i++)
+
+        for (int j = 0; j < result.ControlPoints.VCount; j++)
         {
-            int idx = i - k + DegreeU - 1;
-            for (int j = 0; j < result.ControlPoints.VCount; j++)
+            for (int i = k - DegreeU + 1; i <= k; i++)
             {
                 Vec4 point_i = ToHomo(this->ControlPoints.Get(i, j));
                 Vec4 point_im1 = ToHomo(this->ControlPoints.Get(i - 1, j));
-
+                int idx = i - k + DegreeU - 1;
                 Numeric alpha = alpha_list[idx];
                 Vec4& point_new = result.ControlPoints.Get(i, j);
                 point_new = FromHomo(alpha * point_i + (1 - alpha) * point_im1);
@@ -191,14 +191,15 @@ namespace libnurbs
             int idx = i - k + DegreeV - 1;
             alpha_list[idx] = (knot_value - knots[i]) / (knots[i + DegreeV] - knots[i]);
         }
-        for (int i = k - DegreeV + 1; i <= k; i++)
+
+        for (int j = 0; j < result.ControlPoints.UCount; j++)
         {
-            int idx = i - k + DegreeV - 1;
-            for (int j = 0; j < result.ControlPoints.UCount; j++)
+            for (int i = k - DegreeV + 1; i <= k; i++)
             {
                 Vec4 point_i = ToHomo(this->ControlPoints.Get(j, i));
                 Vec4 point_im1 = ToHomo(this->ControlPoints.Get(j, i - 1));
 
+                int idx = i - k + DegreeV - 1;
                 Numeric alpha = alpha_list[idx];
                 Vec4& point_new = result.ControlPoints.Get(j, i);
                 point_new = FromHomo(alpha * point_i + (1 - alpha) * point_im1);
