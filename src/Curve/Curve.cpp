@@ -125,6 +125,13 @@ namespace libnurbs
         return result;
     }
 
+    Curve Curve::InsertKnot(Numeric knot_value, int times) const
+    {
+        // TODO: better implementation
+        std::vector list(times, knot_value);
+        return InsertKnot(list);
+    }
+
     Curve Curve::InsertKnot(std::span<Numeric> knots_to_insert) const
     {
         Curve result = *this;

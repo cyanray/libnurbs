@@ -34,6 +34,8 @@ namespace libnurbs
 
         [[nodiscard]] Curve InsertKnot(Numeric knot_value) const;
 
+        [[nodiscard]] Curve InsertKnot(Numeric knot_value, int times) const;
+
         [[nodiscard]] Curve InsertKnot(std::span<Numeric> knots_to_insert) const;
 
     private:
