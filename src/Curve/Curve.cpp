@@ -2,6 +2,7 @@
 #include <libnurbs/Basis/BSplineBasis.hpp>
 #include <cassert>
 
+#include "libnurbs/Algorithm/KnotRemoval.hpp"
 #include "libnurbs/Algorithm/MathUtils.hpp"
 
 namespace libnurbs
@@ -159,117 +160,13 @@ namespace libnurbs
 
     std::tuple<Curve, int> Curve::RemoveKnot(Numeric knot_remove, int times, Numeric tolerance) const
     {
-        constexpr static auto CalcTOL = [](const vector<Vec4>& points, Numeric epsilon)-> Numeric
-        {
-            Numeric w_min = 1e12;
-            Numeric dist_max = 0.0;
-            for (const auto& point: points)
-            {
-                w_min = std::min(w_min, point.w());
-                dist_max = std::max(dist_max, point.head<3>().norm());
-            }
-            return (epsilon * w_min) / (1 + dist_max);
-        };
-
         assert(knot_remove > 0 && knot_remove < 1);
         assert(times > 0);
 
         Curve result{*this};
         int degree = result.Degree;
         auto& points = result.ControlPoints;
-        const auto& points_original = this->ControlPoints;
-        auto& knots = result.Knots.Values();
-        const auto& knots_original = this->Knots.Values();
-
-        int s = result.Knots.GetMultiplicity(knot_remove);
-        int r = result.Knots.FindSpanIndex(degree, knot_remove);
-
-        double tol = CalcTOL(result.ControlPoints, tolerance);
-
-        int n = (int)result.ControlPoints.size() - 1;
-        int m = n + degree + 1;
-        int order = degree + 1;
-        int last = r - s;
-        int first = r - degree;
-
-        std::vector<Vec4> temp(2 * degree + 1);
-        int t;
-        for (t = 0; t < times; t++)
-        {
-            int off = first - 1;
-            temp[0] = points[off];
-            temp[last + 1 - off] = points[last + 1];
-            int i = first;
-            int j = last;
-            int ii = 1;
-            int jj = last - off;
-
-            while (j - i >= t)
-            {
-                double alphai = (knot_remove - knots[i]) / (knots[i + order + t] - knots[i]);
-                double alphaj = (knot_remove - knots[j - t]) / (knots[j + order] - knots[j - t]);
-
-                temp[ii] = (points[i] - (1.0 - alphai) * temp[ii - 1]) / alphai;
-                temp[jj] = (points[j] - alphaj * temp[jj + 1]) / (1.0 - alphaj);
-
-                i = i + 1;
-                ii = ii + 1;
-
-                j = j - 1;
-                jj = jj - 1;
-            }
-
-            Numeric dist;
-            if (j - i < t)
-            {
-                dist = (ToHomo(temp[ii - 1]) - ToHomo(temp[jj + 1])).norm();
-            }
-            else
-            {
-                double alphai = (knot_remove - knots[i]) / (knots[i + order + t] - knots[i]);
-                dist = (alphai * ToHomo(temp[ii + t + 1]) + (1.0 - alphai) * ToHomo(temp[ii - 1])).norm();
-            }
-            if (dist > tol) break;
-
-            i = first;
-            j = last;
-            while (j - i > t)
-            {
-                points[i] = temp[i - off];
-                points[j] = temp[j - off];
-                i = i + 1;
-                j = j - 1;
-            }
-
-            first = first - 1;
-            last = last + 1;
-        }
-
-        // no move operation success, return the original curve
-        // TODO: return operation status
-        if (t == 0) return {result, t};
-
-        int j = (2 * r - s - degree) / 2, i = j;
-        for (int k = 1; k < t; k++)
-        {
-            i += (k % 2 == 1) ? 1 : 0;
-            j -= (k % 2 == 1) ? 0 : 1;
-        }
-
-        /* Update control points */
-        for (int k = i + 1; k <= n; k++, j++)
-        {
-            points[j] = points_original[k];
-        }
-        points.resize(points.size() - times);
-
-        /* Update knot vector */
-        for (int k = r + 1; k <= m; k++)
-        {
-            knots[k - times] = knots_original[k];
-        }
-        knots.resize(knots.size() - times);
-
+        int t = KnotRemoval(result.Knots, points, degree, knot_remove, times, tolerance);
         return {result, t};
     }
 }

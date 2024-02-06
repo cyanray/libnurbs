@@ -18,6 +18,7 @@ set(LIBNURBS_INCLUDES
         include/libnurbs/Surface/Surface.hpp
         include/libnurbs/Geometry/GeomSegment.hpp
         include/libnurbs/Geometry/GeomRect.hpp
+        include/libnurbs/Algorithm/KnotRemoval.hpp
 
 )
 
@@ -28,6 +29,7 @@ set(LIBNURBS_SOURCES
         src/Surface/Surface.cpp
         src/Geometry/GeomSegment.cpp
         src/Geometry/GeomRect.cpp
+        src/Algotithm/KnotRemoval.cpp
 
 )
 

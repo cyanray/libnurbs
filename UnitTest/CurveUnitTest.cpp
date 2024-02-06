@@ -680,10 +680,11 @@ TEST_CASE("Curve/RemoveKnot", "[curve][rational]")
             REQUIRE(value.z() == Approx(new_value.z()));
         }
 
-        auto removed_curve = new_curve.RemoveKnot(0.2);
+        auto [removed_curve, t] = new_curve.RemoveKnot(0.2);
+        REQUIRE(t == 1);
         for (Numeric x: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
         {
-            Vec3 value = curve.Evaluate(x);
+            Vec3 value = removed_curve.Evaluate(x);
             Vec3 new_value = new_curve.Evaluate(x);
             INFO("x: " << x);
             INFO("value: " << value.transpose());
