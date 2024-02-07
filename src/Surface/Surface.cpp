@@ -1,6 +1,7 @@
 #include <libnurbs/Surface/Surface.hpp>
 #include <libnurbs/Basis/BSplineBasis.hpp>
 
+#include "libnurbs/Algorithm/KnotRemoval.hpp"
 #include "libnurbs/Algorithm/MathUtils.hpp"
 
 using namespace std;
@@ -188,7 +189,7 @@ namespace libnurbs
     Surface Surface::InsertKnotU(std::span<Numeric> knots_to_insert) const
     {
         Surface result{*this};
-        for(auto knot : knots_to_insert)
+        for (auto knot: knots_to_insert)
         {
             result = result.InsertKnotU(knot);
         }
@@ -233,11 +234,49 @@ namespace libnurbs
     Surface Surface::InsertKnotV(std::span<Numeric> knots_to_insert) const
     {
         Surface result{*this};
-        for(auto knot : knots_to_insert)
+        for (auto knot: knots_to_insert)
         {
             result = result.InsertKnotV(knot);
         }
         return result;
+    }
+
+    std::tuple<Surface, int> Surface::RemoveKnotU(Numeric knot_remove, int times, Numeric tolerance) const
+    {
+        Surface result{*this};
+        auto& points_ref = result.ControlPoints;
+        points_ref = {points_ref.UCount - times, points_ref.VCount};
+        int t = 0;
+        for (int it_v = 0; it_v < ControlPoints.VCount; ++it_v)
+        {
+            auto knots = result.KnotsU;
+            auto points = this->ControlPoints.GetV(it_v);
+            int t_tmp = KnotRemoval(knots, points, result.DegreeU, knot_remove, times, tolerance);
+            if (t_tmp == 0 || it_v != 0 && t != t_tmp) return {*this, 0};
+            if (it_v == ControlPoints.VCount - 1) result.KnotsU = knots;
+            points_ref.SetV(it_v, points);
+            t = t_tmp;
+        }
+        return {result, t};
+    }
+
+    std::tuple<Surface, int> Surface::RemoveKnotV(Numeric knot_remove, int times, Numeric tolerance) const
+    {
+        Surface result{*this};
+        auto& points_ref = result.ControlPoints;
+        points_ref = {points_ref.UCount, points_ref.VCount - times};
+        int t = 0;
+        for (int it_u = 0; it_u < ControlPoints.UCount; ++it_u)
+        {
+            auto knots = result.KnotsV;
+            auto points = this->ControlPoints.GetU(it_u);
+            int t_tmp = KnotRemoval(knots, points, result.DegreeV, knot_remove, times, tolerance);
+            if (t_tmp == 0 || it_u != 0 && t != t_tmp) return {*this, 0};
+            if (it_u == ControlPoints.UCount - 1) result.KnotsV = knots;
+            points_ref.SetU(it_u, points);
+            t = t_tmp;
+        }
+        return {result, t};
     }
 
     Grid<Vec4> Surface::HomogeneousDerivative(Numeric u, Numeric v, int order_u, int order_v) const
@@ -270,7 +309,7 @@ namespace libnurbs
                         auto point = ToHomo(ControlPoints.Get(index_u, index_v));
                         tmp.noalias() += basis_u(k, i) * point;
                     }
-                    result.Get(k,l).noalias() += basis_v(l, j) * tmp;
+                    result.Get(k, l).noalias() += basis_v(l, j) * tmp;
                 }
             }
         }

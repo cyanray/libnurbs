@@ -43,6 +43,14 @@ namespace libnurbs
 
         [[nodiscard]] Surface InsertKnotV(std::span<Numeric> knots_to_insert) const;
 
+        [[nodiscard]] std::tuple<Surface, int> RemoveKnotU(Numeric knot_remove,
+                                                           int times = 1,
+                                                           Numeric tolerance = 1e-12) const;
+
+        [[nodiscard]] std::tuple<Surface, int> RemoveKnotV(Numeric knot_remove,
+                                                   int times = 1,
+                                                   Numeric tolerance = 1e-12) const;
+
     private:
         [[nodiscard]] Grid<Vec4> HomogeneousDerivative(Numeric u, Numeric v, int order_u, int order_v) const;
     };

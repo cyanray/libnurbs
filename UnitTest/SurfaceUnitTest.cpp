@@ -612,3 +612,94 @@ TEST_CASE("Surface/InsertKnotUV", "[surface][insert_knot]")
         }
     }
 }
+
+
+TEST_CASE("Surface/RemoveKnot", "[surface][remove_knot]")
+{
+    ControlPointGrid grid;
+    grid.UCount = 3;
+    grid.VCount = 2;
+    grid.Values.emplace_back(1, 0, 0, 1);
+    grid.Values.emplace_back(1, 1, 0, 1);
+    grid.Values.emplace_back(0, 1, 0, 2);
+    grid.Values.emplace_back(1, 0, 1, 1);
+    grid.Values.emplace_back(1, 1, 1, 1);
+    grid.Values.emplace_back(0, 1, 1, 2);
+
+    Surface surface;
+    surface.DegreeU = 2;
+    surface.DegreeV = 1;
+    surface.KnotsU = KnotVector{{0.0, 0.0, 0.0, 1.0, 1.0, 1.0}};
+    surface.KnotsV = KnotVector{{0.0, 0.0, 1.0, 1.0}};
+    surface.ControlPoints = grid;
+
+    SECTION("times=1,1")
+    {
+        for (Numeric knot: vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+        {
+            auto [new_surface, t] = surface.InsertKnotU(knot, 1).RemoveKnotU(knot, 1);
+            REQUIRE(t == 1);
+            for (Numeric u: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+            {
+                for (Numeric v: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+                {
+                    Vec3 value = surface.Evaluate(u, v);
+                    Vec3 new_value = new_surface.Evaluate(u, v);
+                    INFO("u: " << u << ", v: " << v);
+                    INFO("value: " << value.transpose());
+                    INFO("new_value: " << new_value.transpose());
+                    REQUIRE(value.x() == Approx(new_value.x()));
+                    REQUIRE(value.y() == Approx(new_value.y()));
+                    REQUIRE(value.z() == Approx(new_value.z()));
+                }
+            }
+        }
+    }
+
+    SECTION("times=2,1")
+    {
+        for (Numeric knot: vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+        {
+            auto [new_surface, t] = surface.InsertKnotU(knot, 2).RemoveKnotU(knot, 1);
+            REQUIRE(t == 1);
+            for (Numeric u: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+            {
+                for (Numeric v: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+                {
+                    Vec3 value = surface.Evaluate(u, v);
+                    Vec3 new_value = new_surface.Evaluate(u, v);
+                    INFO("u: " << u << ", v: " << v);
+                    INFO("value: " << value.transpose());
+                    INFO("new_value: " << new_value.transpose());
+                    REQUIRE(value.x() == Approx(new_value.x()));
+                    REQUIRE(value.y() == Approx(new_value.y()));
+                    REQUIRE(value.z() == Approx(new_value.z()));
+                }
+            }
+        }
+    }
+
+    SECTION("times=2,2")
+    {
+        for (Numeric knot: vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+        {
+            auto [new_surface, t] = surface.InsertKnotU(knot, 2).RemoveKnotU(knot, 2);
+            REQUIRE(t == 2);
+            for (Numeric u: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+            {
+                for (Numeric v: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+                {
+                    Vec3 value = surface.Evaluate(u, v);
+                    Vec3 new_value = new_surface.Evaluate(u, v);
+                    INFO("u: " << u << ", v: " << v);
+                    INFO("value: " << value.transpose());
+                    INFO("new_value: " << new_value.transpose());
+                    REQUIRE(value.x() == Approx(new_value.x()));
+                    REQUIRE(value.y() == Approx(new_value.y()));
+                    REQUIRE(value.z() == Approx(new_value.z()));
+                }
+            }
+        }
+    }
+
+}
