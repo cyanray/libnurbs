@@ -5,7 +5,7 @@
 
 namespace libnurbs
 {
-    void DegreeElevate(KnotVector& knot_vector, std::vector<Vec4>& points, int degree, int times, Numeric tolerance)
+    void DegreeElevate(KnotVector& knot_vector, std::vector<Vec4>& points, int degree, int times)
     {
         assert(times > 1);
 
@@ -16,7 +16,7 @@ namespace libnurbs
         int ph = degree + times;
         int ph2 = ph / 2;
 
-        std::vector bezalfs(degree + times + 1, std::vector<double>(degree + 1));
+        std::vector bezalfs(degree + times + 1, std::vector<Numeric>(degree + 1));
         bezalfs[0][0] = bezalfs[ph][degree] = 1.0;
 
         for (int i = 1; i <= ph2; i++)

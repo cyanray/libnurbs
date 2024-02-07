@@ -10,7 +10,6 @@ namespace libnurbs
     void DegreeElevate(KnotVector& knot_vector,
                       std::vector<Vec4>& points,
                       int degree,
-                      int times,
-                      Numeric tolerance);
+                      int times);
 
 }
