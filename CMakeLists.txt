@@ -19,6 +19,7 @@ set(LIBNURBS_INCLUDES
         include/libnurbs/Geometry/GeomSegment.hpp
         include/libnurbs/Geometry/GeomRect.hpp
         include/libnurbs/Algorithm/KnotRemoval.hpp
+        include/libnurbs/Algorithm/DegreeElevate.hpp
 
 )
 
@@ -30,6 +31,7 @@ set(LIBNURBS_SOURCES
         src/Geometry/GeomSegment.cpp
         src/Geometry/GeomRect.cpp
         src/Algotithm/KnotRemoval.cpp
+        src/Algotithm/DegreeElevate.cpp
 
 )
 
