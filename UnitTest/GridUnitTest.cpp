@@ -63,4 +63,38 @@ TEST_CASE("Core/Grid", "[grid]")
         REQUIRE(grid.Get(0, 0) == Approx(0.0));
         REQUIRE(grid.Get(1, 1) == Approx(4.0));
     }
+
+    SECTION("GetU")
+    {
+        auto u = grid.GetU(1);
+        REQUIRE(u[0] == Approx(3.0));
+        REQUIRE(u[1] == Approx(4.0));
+        REQUIRE(u[2] == Approx(5.0));
+    }
+
+    SECTION("GetV")
+    {
+        auto v = grid.GetV(1);
+        REQUIRE(v[0] == Approx(1.0));
+        REQUIRE(v[1] == Approx(4.0));
+        REQUIRE(v[2] == Approx(7.0));
+    }
+
+    SECTION("SetU")
+    {
+        grid.SetU(1, {-1, -2, -3});
+        auto u = grid.GetU(1);
+        REQUIRE(u[0] == Approx(-1));
+        REQUIRE(u[1] == Approx(-2));
+        REQUIRE(u[2] == Approx(-3));
+    }
+
+    SECTION("SetV")
+    {
+        grid.SetV(1, {-1, -2, -3});
+        auto v = grid.GetV(1);
+        REQUIRE(v[0] == Approx(-1));
+        REQUIRE(v[1] == Approx(-2));
+        REQUIRE(v[2] == Approx(-3));
+    }
 }

@@ -51,6 +51,48 @@ namespace libnurbs
             return Values[index_v * UCount + index_u];
         }
 
+        [[nodiscard]] std::vector<T> GetU(int index_u) const
+        {
+            assert(index_u < UCount);
+            std::vector<T> result(VCount);
+            for (int i = 0; i < VCount; ++i)
+            {
+                result[i] = Values[i * UCount + index_u];
+            }
+            return result;
+        }
+
+        [[nodiscard]] std::vector<T> GetV(int index_v) const
+        {
+            assert(index_v < VCount);
+            std::vector<T> result(UCount);
+            for (int i = 0; i < UCount; ++i)
+            {
+                result[i] = Values[index_v * UCount + i];
+            }
+            return result;
+        }
+
+        void SetU(int index_u, const std::vector<T>& values)
+        {
+            assert(index_u < UCount);
+            assert(values.size() == VCount);
+            for (int i = 0; i < VCount; ++i)
+            {
+                Values[i * UCount + index_u] = values[i];
+            }
+        }
+
+        void SetV(int index_v, const std::vector<T>& values)
+        {
+            assert(index_v < VCount);
+            assert(values.size() == UCount);
+            for (int i = 0; i < UCount; ++i)
+            {
+                Values[index_v * UCount + i] = values[i];
+            }
+        }
+
         [[nodiscard]] int Count() const noexcept
         {
             return UCount * VCount;
