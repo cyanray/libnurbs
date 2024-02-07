@@ -37,7 +37,9 @@ namespace libnurbs
 
         [[nodiscard]] Curve InsertKnot(std::span<Numeric> knots_to_insert) const;
 
-        [[nodiscard]] std::tuple<Curve, int> RemoveKnot(Numeric knot_remove, int times = 1, Numeric tolerance = 1e-12) const;
+        [[nodiscard]] std::tuple<Curve, int> RemoveKnot(Numeric knot_remove,
+                                                        int times = 1,
+                                                        Numeric tolerance = 1e-12) const;
 
     private:
         [[nodiscard]] vector<Vec4> HomogeneousDerivative(Numeric x, int order) const;
