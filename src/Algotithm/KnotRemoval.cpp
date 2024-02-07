@@ -4,6 +4,7 @@
 namespace
 {
     using namespace libnurbs;
+
     constexpr Numeric CalcTOL(const vector<Vec4>& points, Numeric epsilon)
     {
         Numeric w_min = 1e12;
@@ -23,6 +24,12 @@ namespace libnurbs
                     std::vector<Vec4>& points,
                     int degree, Numeric knot_remove, int times, Numeric tolerance)
     {
+        // Convert to Homogeneous Coordinate
+        for (auto& point: points)
+        {
+            point.head<3>() *= point.w();
+        }
+
         auto& knots = knot_vector.Values();
         int s = knot_vector.GetMultiplicity(knot_remove);
         int r = knot_vector.FindSpanIndex(degree, knot_remove);
@@ -47,7 +54,7 @@ namespace libnurbs
             int ii = 1;
             int jj = last - off;
 
-            while (j - i >= t)
+            while (j - i > t)
             {
                 double alphai = (knot_remove - knots[i]) / (knots[i + order + t] - knots[i]);
                 double alphaj = (knot_remove - knots[j - t]) / (knots[j + order] - knots[j - t]);
@@ -65,12 +72,12 @@ namespace libnurbs
             Numeric dist;
             if (j - i < t)
             {
-                dist = (ToHomo(temp[ii - 1]) - ToHomo(temp[jj + 1])).norm();
+                dist = (temp[ii - 1] - temp[jj + 1]).norm();
             }
             else
             {
                 double alphai = (knot_remove - knots[i]) / (knots[i + order + t] - knots[i]);
-                dist = (alphai * ToHomo(temp[ii + t + 1]) + (1.0 - alphai) * ToHomo(temp[ii - 1])).norm();
+                dist = ((alphai * temp[ii + t + 1] + (1.0 - alphai) * temp[ii - 1]) - points[i]).norm();
             }
             if (dist > tol) break;
 
@@ -111,6 +118,12 @@ namespace libnurbs
             knots[k - times] = knots[k];
         }
         knots.resize(knots.size() - times);
+
+        // Convert to Cartesian Coordinate
+        for (auto& point: points)
+        {
+            point.head<3>() /= point.w();
+        }
 
         return t;
     }
