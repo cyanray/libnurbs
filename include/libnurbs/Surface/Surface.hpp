@@ -51,6 +51,10 @@ namespace libnurbs
                                                    int times = 1,
                                                    Numeric tolerance = 1e-12) const;
 
+        [[nodiscard]] Surface ElevateDegreeU(int times = 1) const;
+
+        [[nodiscard]] Surface ElevateDegreeV(int times = 1) const;
+
     private:
         [[nodiscard]] Grid<Vec4> HomogeneousDerivative(Numeric u, Numeric v, int order_u, int order_v) const;
     };

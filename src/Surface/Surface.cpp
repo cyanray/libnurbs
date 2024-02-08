@@ -1,6 +1,7 @@
 #include <libnurbs/Surface/Surface.hpp>
 #include <libnurbs/Basis/BSplineBasis.hpp>
 
+#include "libnurbs/Algorithm/DegreeElevate.hpp"
 #include "libnurbs/Algorithm/KnotRemoval.hpp"
 #include "libnurbs/Algorithm/MathUtils.hpp"
 
@@ -277,6 +278,48 @@ namespace libnurbs
             t = t_tmp;
         }
         return {result, t};
+    }
+
+    Surface Surface::ElevateDegreeU(int times) const
+    {
+        Surface result{*this};
+        auto& points_ref = result.ControlPoints;
+        points_ref = {points_ref.UCount + times, points_ref.VCount};
+        for (int it_v = 0; it_v < ControlPoints.VCount; ++it_v)
+        {
+            auto degree = result.DegreeU;
+            auto knots = result.KnotsU;
+            auto points = this->ControlPoints.GetV(it_v);
+            DegreeElevate(knots, points, degree, times);
+            if (it_v == ControlPoints.VCount - 1)
+            {
+                result.KnotsU = knots;
+                result.DegreeU = degree;
+            }
+            points_ref.SetV(it_v, points);
+        }
+        return result;
+    }
+
+    Surface Surface::ElevateDegreeV(int times) const
+    {
+        Surface result{*this};
+        auto& points_ref = result.ControlPoints;
+        points_ref = {points_ref.UCount, points_ref.VCount + times};
+        for (int it_u = 0; it_u < ControlPoints.UCount; ++it_u)
+        {
+            auto degree = result.DegreeV;
+            auto knots = result.KnotsV;
+            auto points = this->ControlPoints.GetU(it_u);
+            DegreeElevate(knots, points, degree, times);
+            if (it_u == ControlPoints.UCount - 1)
+            {
+                result.KnotsV = knots;
+                result.DegreeV = degree;
+            }
+            points_ref.SetU(it_u, points);
+        }
+        return result;
     }
 
     Grid<Vec4> Surface::HomogeneousDerivative(Numeric u, Numeric v, int order_u, int order_v) const

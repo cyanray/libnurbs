@@ -701,5 +701,63 @@ TEST_CASE("Surface/RemoveKnot", "[surface][remove_knot]")
             }
         }
     }
+}
 
+
+TEST_CASE("Surface/ElevateDegree", "[surface][elevate_degree]")
+{
+    ControlPointGrid grid;
+    grid.UCount = 3;
+    grid.VCount = 2;
+    grid.Values.emplace_back(1, 0, 0, 1);
+    grid.Values.emplace_back(1, 1, 0, 1);
+    grid.Values.emplace_back(0, 1, 0, 2);
+    grid.Values.emplace_back(1, 0, 1, 1);
+    grid.Values.emplace_back(1, 1, 1, 1);
+    grid.Values.emplace_back(0, 1, 1, 2);
+
+    Surface surface;
+    surface.DegreeU = 2;
+    surface.DegreeV = 1;
+    surface.KnotsU = KnotVector{{0.0, 0.0, 0.0, 1.0, 1.0, 1.0}};
+    surface.KnotsV = KnotVector{{0.0, 0.0, 1.0, 1.0}};
+    surface.ControlPoints = grid;
+
+    SECTION("U")
+    {
+        auto new_surface = surface.ElevateDegreeU();
+        for (Numeric u: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+        {
+            for (Numeric v: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+            {
+                Vec3 value = surface.Evaluate(u, v);
+                Vec3 new_value = new_surface.Evaluate(u, v);
+                INFO("u: " << u << ", v: " << v);
+                INFO("value: " << value.transpose());
+                INFO("new_value: " << new_value.transpose());
+                REQUIRE(value.x() == Approx(new_value.x()));
+                REQUIRE(value.y() == Approx(new_value.y()));
+                REQUIRE(value.z() == Approx(new_value.z()));
+            }
+        }
+    }
+
+    SECTION("V")
+    {
+        auto new_surface = surface.ElevateDegreeV();
+        for (Numeric u: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+        {
+            for (Numeric v: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+            {
+                Vec3 value = surface.Evaluate(u, v);
+                Vec3 new_value = new_surface.Evaluate(u, v);
+                INFO("u: " << u << ", v: " << v);
+                INFO("value: " << value.transpose());
+                INFO("new_value: " << new_value.transpose());
+                REQUIRE(value.x() == Approx(new_value.x()));
+                REQUIRE(value.y() == Approx(new_value.y()));
+                REQUIRE(value.z() == Approx(new_value.z()));
+            }
+        }
+    }
 }
