@@ -290,7 +290,7 @@ namespace libnurbs
             auto degree = result.DegreeU;
             auto knots = result.KnotsU;
             auto points = this->ControlPoints.GetV(it_v);
-            DegreeElevate(knots, points, degree, times);
+            DegreeElevation(knots, points, degree, times);
             if (it_v == ControlPoints.VCount - 1)
             {
                 result.KnotsU = knots;
@@ -311,7 +311,7 @@ namespace libnurbs
             auto degree = result.DegreeV;
             auto knots = result.KnotsV;
             auto points = this->ControlPoints.GetU(it_u);
-            DegreeElevate(knots, points, degree, times);
+            DegreeElevation(knots, points, degree, times);
             if (it_u == ControlPoints.UCount - 1)
             {
                 result.KnotsV = knots;

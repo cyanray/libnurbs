@@ -7,7 +7,7 @@ namespace libnurbs
 {
     class KnotVector;
 
-    void DegreeElevate(KnotVector& knot_vector,
+    void DegreeElevation(KnotVector& knot_vector,
                       std::vector<Vec4>& points,
                       int& degree,
                       int times);
