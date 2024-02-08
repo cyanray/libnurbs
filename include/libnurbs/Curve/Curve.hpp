@@ -41,6 +41,8 @@ namespace libnurbs
                                                         int times = 1,
                                                         Numeric tolerance = 1e-12) const;
 
+        [[nodiscard]] Curve ElevateDegree(int times = 1) const;
+
     private:
         [[nodiscard]] vector<Vec4> HomogeneousDerivative(Numeric x, int order) const;
     };

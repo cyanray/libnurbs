@@ -2,6 +2,7 @@
 #include <libnurbs/Basis/BSplineBasis.hpp>
 #include <cassert>
 
+#include "libnurbs/Algorithm/DegreeElevate.hpp"
 #include "libnurbs/Algorithm/KnotRemoval.hpp"
 #include "libnurbs/Algorithm/MathUtils.hpp"
 
@@ -168,5 +169,14 @@ namespace libnurbs
         auto& points = result.ControlPoints;
         int t = KnotRemoval(result.Knots, points, degree, knot_remove, times, tolerance);
         return {result, t};
+    }
+
+    Curve Curve::ElevateDegree(int times) const
+    {
+        assert(times >= 1);
+
+        Curve result{*this};
+        DegreeElevate(result.Knots, result.ControlPoints, result.Degree, times);
+        return result;
     }
 }
