@@ -5,9 +5,15 @@
 
 namespace libnurbs
 {
-    void DegreeElevate(KnotVector& knot_vector, std::vector<Vec4>& points, int degree, int times)
+    void DegreeElevate(KnotVector& knot_vector, std::vector<Vec4>& points, int& degree, int times)
     {
-        assert(times > 1);
+        assert(times >= 1);
+
+        // Convert to Homogeneous Coordinate
+        for (auto& point: points)
+        {
+            point.head<3>() *= point.w();
+        }
 
         auto& knots = knot_vector.Values();
 
@@ -191,9 +197,16 @@ namespace libnurbs
         } // end of: while (b < m)
 
         int nh = mh - ph - 1;
-        Qw.resize(nh);
-        Uh.resize(mh);
+        Qw.resize(nh + 1);
+        Uh.resize(mh + 1);
 
+        // Convert to Cartesian Coordinate
+        for (auto& point: Qw)
+        {
+            point.head<3>() /= point.w();
+        }
+
+        degree = ph;
         knot_vector = KnotVector(Uh);
         points = Qw;
     }
