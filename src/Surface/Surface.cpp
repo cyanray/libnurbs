@@ -1,7 +1,7 @@
 #include <libnurbs/Surface/Surface.hpp>
 #include <libnurbs/Basis/BSplineBasis.hpp>
 
-#include "libnurbs/Algorithm/DegreeElevate.hpp"
+#include "libnurbs/Algorithm/DegreeAlgo.hpp"
 #include "libnurbs/Algorithm/KnotRemoval.hpp"
 #include "libnurbs/Algorithm/MathUtils.hpp"
 

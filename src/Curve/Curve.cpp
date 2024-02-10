@@ -2,7 +2,7 @@
 #include <libnurbs/Basis/BSplineBasis.hpp>
 #include <cassert>
 
-#include "libnurbs/Algorithm/DegreeElevate.hpp"
+#include "libnurbs/Algorithm/DegreeAlgo.hpp"
 #include "libnurbs/Algorithm/KnotRemoval.hpp"
 #include "libnurbs/Algorithm/MathUtils.hpp"
 

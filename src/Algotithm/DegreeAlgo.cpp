@@ -1,4 +1,4 @@
-#include "libnurbs/Algorithm/DegreeElevate.hpp"
+#include "libnurbs/Algorithm/DegreeAlgo.hpp"
 
 #include "libnurbs/Algorithm/MathUtils.hpp"
 #include "libnurbs/Core/KnotVector.hpp"

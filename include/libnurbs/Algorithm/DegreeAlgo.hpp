@@ -12,4 +12,10 @@ namespace libnurbs
                       int& degree,
                       int times);
 
+    int KnotRemoval(KnotVector& knot_vector,
+                std::vector<Vec4>& points,
+                int degree,
+                Numeric knot_remove,
+                int times,
+                Numeric tolerance);
 }
