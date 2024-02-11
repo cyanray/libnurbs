@@ -5,7 +5,7 @@
 
 namespace libnurbs
 {
-    void DegreeElevation(KnotVector& knot_vector, std::vector<Vec4>& points, int& degree, int times)
+    void NurbsDegreeElevation(KnotVector& knot_vector, std::vector<Vec4>& points, int& degree, int times)
     {
         assert(times >= 1);
 

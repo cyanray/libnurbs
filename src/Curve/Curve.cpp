@@ -176,7 +176,7 @@ namespace libnurbs
         assert(times >= 1);
 
         Curve result{*this};
-        DegreeElevation(result.Knots, result.ControlPoints, result.Degree, times);
+        NurbsDegreeElevation(result.Knots, result.ControlPoints, result.Degree, times);
         return result;
     }
 }

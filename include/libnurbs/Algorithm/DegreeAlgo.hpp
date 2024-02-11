@@ -7,15 +7,14 @@ namespace libnurbs
 {
     class KnotVector;
 
-    void DegreeElevation(KnotVector& knot_vector,
+    void NurbsDegreeElevation(KnotVector& knot_vector,
                       std::vector<Vec4>& points,
                       int& degree,
                       int times);
 
-    int KnotRemoval(KnotVector& knot_vector,
+    bool BezierDegreeReduction(std::vector<Vec4>& bpts, int degree);
+
+    bool NurbsDegreeReduction(KnotVector& knot_vector,
                 std::vector<Vec4>& points,
-                int degree,
-                Numeric knot_remove,
-                int times,
                 Numeric tolerance);
 }
