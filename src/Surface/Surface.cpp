@@ -85,6 +85,18 @@ namespace libnurbs
         return result;
     }
 
+    bool Surface::IsRational() const
+    {
+        const auto& cps = ControlPoints.Values;
+        if (cps.empty()) return false;
+        Numeric w = cps.front().w();
+        for (size_t i = 1; i < cps.size(); ++i)
+        {
+            if (cps[i].w() != w) return true;
+        }
+        return false;
+    }
+
     std::pair<Numeric, Numeric> Surface::SearchParameter(const Vec3& point, Numeric init_u, Numeric init_v,
                                                          Numeric epsion, Numeric max_iteration_count) const
     {
@@ -190,7 +202,7 @@ namespace libnurbs
     Surface Surface::InsertKnotU(std::span<Numeric> knots_to_insert) const
     {
         Surface result{*this};
-        for (auto knot: knots_to_insert)
+        for (auto knot : knots_to_insert)
         {
             result = result.InsertKnotU(knot);
         }
@@ -235,7 +247,7 @@ namespace libnurbs
     Surface Surface::InsertKnotV(std::span<Numeric> knots_to_insert) const
     {
         Surface result{*this};
-        for (auto knot: knots_to_insert)
+        for (auto knot : knots_to_insert)
         {
             result = result.InsertKnotV(knot);
         }

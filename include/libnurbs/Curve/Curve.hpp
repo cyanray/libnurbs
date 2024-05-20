@@ -26,6 +26,8 @@ namespace libnurbs
 
         [[nodiscard]] vector<Vec3> EvaluateAll(Numeric x, int order) const;
 
+        [[nodiscard]] bool IsRational() const;
+
         [[nodiscard]] Numeric SearchParameter(const Vec3& point,
                                               Numeric init = 0.5,
                                               Numeric epsion = 1e-8,

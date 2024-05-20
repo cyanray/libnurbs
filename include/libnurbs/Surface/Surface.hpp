@@ -25,6 +25,8 @@ namespace libnurbs
 
         [[nodiscard]] Grid<Vec3> EvaluateAll(Numeric u, Numeric v, int order_u, int order_v) const;
 
+        [[nodiscard]] bool IsRational() const;
+
         [[nodiscard]] std::pair<Numeric, Numeric> SearchParameter(const Vec3& point,
                                                                   Numeric init_u = 0.5,
                                                                   Numeric init_v = 0.5,

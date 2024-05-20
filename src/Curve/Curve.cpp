@@ -70,6 +70,18 @@ namespace libnurbs
         return result;
     }
 
+    bool Curve::IsRational() const
+    {
+        const auto& cps = ControlPoints;
+        if (cps.empty()) return false;
+        Numeric w = cps.front().w();
+        for (size_t i = 1; i < cps.size(); ++i)
+        {
+            if (cps[i].w() != w) return true;
+        }
+        return false;
+    }
+
     Numeric Curve::SearchParameter(const Vec3& point, Numeric init, Numeric epsion, Numeric max_iteration_count) const
     {
         auto Ri = [&point, this](Numeric u) -> Vec3 { return Evaluate(u) - point; };
