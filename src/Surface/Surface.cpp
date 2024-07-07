@@ -334,6 +334,16 @@ namespace libnurbs
         return result;
     }
 
+    Surface Surface::Transform(const Mat3x3& R) const
+    {
+        Surface transformed_surface = *this;
+        for (auto& point : transformed_surface.ControlPoints.Values)
+        {
+            point.head<3>() = R * point.head<3>();
+        }
+        return transformed_surface;
+    }
+
     Grid<Vec4> Surface::HomogeneousDerivative(Numeric u, Numeric v, int order_u, int order_v) const
     {
         assert(u >= 0 && u <= 1);

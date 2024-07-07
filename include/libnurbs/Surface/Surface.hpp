@@ -57,6 +57,8 @@ namespace libnurbs
 
         [[nodiscard]] Surface ElevateDegreeV(int times = 1) const;
 
+        [[nodiscard]] Surface Transform(const Mat3x3& R) const;
+
     private:
         [[nodiscard]] Grid<Vec4> HomogeneousDerivative(Numeric u, Numeric v, int order_u, int order_v) const;
     };
