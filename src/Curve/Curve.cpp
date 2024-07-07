@@ -153,7 +153,7 @@ namespace libnurbs
         knots.reserve(knots.size() + knots_to_insert.size());
         auto& points = result.ControlPoints;
         points.reserve(points.size() + knots_to_insert.size());
-        for (auto knot_value: knots_to_insert)
+        for (auto knot_value : knots_to_insert)
         {
             int k = result.Knots.FindSpanIndex(Degree, knot_value);
             points.insert(points.begin() + k, points[k]);
@@ -190,5 +190,15 @@ namespace libnurbs
         Curve result{*this};
         NurbsDegreeElevation(result.Knots, result.ControlPoints, result.Degree, times);
         return result;
+    }
+
+    Curve Curve::Transform(const Mat3x3& R) const
+    {
+        Curve transformed_curve = *this;
+        for (auto& point : transformed_curve.ControlPoints)
+        {
+            point.head<3>() = R * point.head<3>();
+        }
+        return transformed_curve;
     }
 }

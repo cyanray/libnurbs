@@ -45,6 +45,8 @@ namespace libnurbs
 
         [[nodiscard]] Curve ElevateDegree(int times = 1) const;
 
+        [[nodiscard]] Curve Transform(const Mat3x3& R) const;
+
     private:
         [[nodiscard]] vector<Vec4> HomogeneousDerivative(Numeric x, int order) const;
     };
