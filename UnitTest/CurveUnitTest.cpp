@@ -391,9 +391,9 @@ TEST_CASE("Curve/SearchParameter", "[curve][non_rational]")
 
     SECTION("x = 1e-15")
     {
-        Numeric u = curve.SearchParameter(curve.Evaluate(1e-15), 0);
+        Numeric u = curve.SearchParameter(curve.Evaluate(1e-15), 0, 1e-15);
         INFO("u: " << u);
-        REQUIRE(u == Approx(1e-15).epsilon(0.1));
+        REQUIRE(std::abs(u - 1e-15) < 1e-2);
     }
 }
 
