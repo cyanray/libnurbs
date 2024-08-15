@@ -6,7 +6,7 @@ NURBS algorithm library for modern C++. Slowly under development.
 
 - [x] BSpline basis evaluation.
 - [x] NURBS curve & surface interpolation and derivative evaluation.
-- [x] Search for parameter of point on a curve or surface by Newton's method.
+- [x] Search for parameter of point on a curve or surface using the BFGS method.
 - [x] Knot insertion(refinement) and removal.
 - [x] Degree elevation and reduction.
 - [ ] NURBS curve & surface fitting.
