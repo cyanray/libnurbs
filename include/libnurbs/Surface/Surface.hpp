@@ -27,11 +27,21 @@ namespace libnurbs
 
         [[nodiscard]] bool IsRational() const;
 
-        [[nodiscard]] std::pair<Numeric, Numeric> SearchParameter(const Vec3& point,
-                                                                  Numeric init_u = 0.5,
-                                                                  Numeric init_v = 0.5,
-                                                                  Numeric epsion = 1e-8,
-                                                                  Numeric max_iteration_count = 512) const;
+        /**
+         * @brief Searches for the parameter value
+         *        corresponding to a point on the surface using the BFGS method.
+         * @param point Point on surface
+         * @param init_u Initial value for parameter u, default is 0.5
+         * @param init_v Initial value for parameter v, default is 0.5
+         * @param epsilon Precision, default is 1e-8
+         * @param max_iteration_count Maximum number of iterations allowed, default is 512
+         * @return pair(u, v)
+         */
+        [[nodiscard]] auto SearchParameter(const Vec3& point,
+                                           Numeric init_u = 0.5,
+                                           Numeric init_v = 0.5,
+                                           Numeric epsilon = 1e-8,
+                                           Numeric max_iteration_count = 512) const -> std::pair<Numeric, Numeric>;
 
         [[nodiscard]] Surface InsertKnotU(Numeric knot_value) const;
 

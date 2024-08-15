@@ -97,9 +97,12 @@ namespace libnurbs
         return false;
     }
 
-    std::pair<Numeric, Numeric> Surface::SearchParameter(const Vec3& point, Numeric init_u, Numeric init_v,
-                                                         Numeric epsion, Numeric max_iteration_count) const
+    auto Surface::SearchParameter(const Vec3& point, Numeric init_u, Numeric init_v,
+                                  Numeric epsilon, Numeric max_iteration_count) const
+        -> std::pair<Numeric, Numeric>
     {
+        assert(init_u >= 0 && init_u <= 1);
+        assert(init_v >= 0 && init_v <= 1);
         using Vec2 = Eigen::Vector2<Numeric>;
         using Mat2x2 = Eigen::Matrix<Numeric, 2, 2>;
 
@@ -116,51 +119,60 @@ namespace libnurbs
             return Vec2{ri.dot(Su), ri.dot(Sv)};
         };
 
-        auto Ji = [this, &Ri](Numeric u, Numeric v) -> Mat2x2
+        Numeric u_last = init_u, v_last = init_v;
+        Numeric current_residual = std::numeric_limits<Numeric>::max();
+        Mat2x2 Hk = Mat2x2::Identity();
+
+        auto line_search = [&](const Vec2& gk) -> Vec2
         {
-            auto Su = EvaluateDerivative(u, v, 1, 0);
-            auto Sv = EvaluateDerivative(u, v, 0, 1);
-            auto Suu = EvaluateDerivative(u, v, 2, 0);
-            auto Svv = EvaluateDerivative(u, v, 0, 2);
-            auto Suv = EvaluateDerivative(u, v, 1, 1);
-            auto ri = Ri(u, v);
-            auto a = Su.dot(Su) + ri.dot(Suu);
-            auto c = Su.dot(Sv) + ri.dot(Suv);
-            auto d = Sv.dot(Sv) + ri.dot(Svv);
-            Mat2x2 result;
-            result << a, c, c, d;
-            return result;
+            Numeric alpha = 1.0;
+            Numeric c1 = 1e-4;
+            Numeric beta = 0.9;
+            int max_line_search_iterations = 20;
+            int ls_count = 0;
+
+            while (ls_count++ < max_line_search_iterations)
+            {
+                Vec2 uv_trial = Vec2{u_last, v_last} - alpha * Hk * gk;
+                uv_trial.x() = std::clamp(uv_trial.x(), Numeric(0), Numeric(1));
+                uv_trial.y() = std::clamp(uv_trial.y(), Numeric(0), Numeric(1));
+
+                if (Ri(uv_trial.x(), uv_trial.y()).norm() <= current_residual - c1 * alpha * gk.dot(Hk * gk))
+                {
+                    return uv_trial;
+                }
+                alpha *= beta;
+            }
+            Vec2 uv_last = Vec2{u_last, v_last} - alpha * Hk * gk;
+            uv_last.x() = std::clamp(uv_last.x(), Numeric(0), Numeric(1));
+            uv_last.y() = std::clamp(uv_last.y(), Numeric(0), Numeric(1));
+            return uv_last;
         };
 
-        Numeric u_last = init_u, v_last = init_v;
-        Numeric u_res = 1, v_res = 1;
-
-        // coefficient *s* is used to prevent uv_last from going out of range
-        Numeric s = 1.0;
-
         int count = 0;
-        while ((u_res >= epsion || v_res >= epsion) && (count++ < max_iteration_count))
+        while (!((current_residual < epsilon) || (count++ >= max_iteration_count)))
         {
-            auto k = Ki(u_last, v_last);
-            auto j = Ji(u_last, v_last);
+            auto gk = Ki(u_last, v_last);
+            Vec2 uv_last = line_search(gk);
 
-            Vec2 uv_last{u_last, v_last};
-            uv_last.noalias() += -j.inverse() * k * s;
+            Vec2 sk = uv_last - Vec2{u_last, v_last};
+            Vec2 gk_new = Ki(uv_last.x(), uv_last.y());
+            Vec2 yk = gk_new - gk;
 
-            u_res = abs(uv_last.x() - u_last);
-            v_res = abs(uv_last.y() - v_last);
+            Numeric yk_dot_sk = yk.dot(sk);
+            if (std::abs(yk_dot_sk) < 1e-16)
+            {
+                Hk = Mat2x2::Identity();
+                yk_dot_sk = 1e-10;
+            }
+
+            Numeric rho = 1.0 / yk_dot_sk;
+            Mat2x2 I = Mat2x2::Identity();
+            Hk = (I - rho * sk * yk.transpose()) * Hk * (I - rho * yk * sk.transpose()) + rho * sk * sk.transpose();
 
             u_last = uv_last.x();
             v_last = uv_last.y();
-
-            if (u_last < 0 || u_last > 1 || v_last < 0 || v_last > 1)
-            {
-                s /= 2;
-                u_last = u_last > 1.0 ? 1.0 : u_last;
-                u_last = u_last < 0.0 ? 0.0 : u_last;
-                v_last = v_last > 1.0 ? 1.0 : v_last;
-                v_last = v_last < 0.0 ? 0.0 : v_last;
-            }
+            current_residual = Ri(u_last, v_last).norm();
         }
         return {u_last, v_last};
     }
