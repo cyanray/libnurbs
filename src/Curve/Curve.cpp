@@ -82,43 +82,66 @@ namespace libnurbs
         return false;
     }
 
-    Numeric Curve::SearchParameter(const Vec3& point, Numeric init, Numeric epsion, Numeric max_iteration_count) const
+    Numeric Curve::SearchParameter(const Vec3& point, Numeric init, Numeric epsilon, Numeric max_iteration_count) const
     {
         auto Ri = [&point, this](Numeric u) -> Vec3 { return Evaluate(u) - point; };
+
         auto fi = [this, &Ri](Numeric u) -> Numeric
         {
             auto ri = Ri(u);
             auto Cu = EvaluateDerivative(u, 1);
             return ri.dot(Cu);
         };
-        auto Ji = [this, &Ri](Numeric u) -> Numeric
-        {
-            auto Cu = EvaluateDerivative(u, 1);
-            auto Cuu = EvaluateDerivative(u, 2);
-            auto ri = Ri(u);
-            return Cu.dot(Cu) + ri.dot(Cuu);
-        };
 
         Numeric u_last = init;
-        Numeric res = 1;
-        int count = 0;
-        // coefficient *s* is used to prevent uv_last from going out of range
-        Numeric s = 1.0;
-        while (res >= epsion && (count++ < max_iteration_count))
+        Numeric current_residual = std::numeric_limits<Numeric>::max();
+        Numeric Hk = 1.0;
+
+        auto line_search = [&](Numeric gk) -> Numeric
         {
-            auto f = fi(u_last);
-            auto j = Ji(u_last);
-            Numeric u_new = u_last - f / j * s;
+            Numeric alpha = 1.0;
+            Numeric c1 = 1e-4;
+            Numeric beta = 0.9;
+            int max_line_search_iterations = 20;
+            int ls_count = 0;
 
-            res = std::abs(u_new - u_last);
-            u_last = u_new;
-
-            if (u_last < 0 || u_last > 1)
+            while (ls_count++ < max_line_search_iterations)
             {
-                s /= 2;
-                u_last = u_last > 1.0 ? 1.0 : u_last;
-                u_last = u_last < 0.0 ? 0.0 : u_last;
+                Numeric u_trial = u_last - alpha * Hk * gk;
+                u_trial = std::clamp(u_trial, Numeric(0), Numeric(1));
+
+                if (Ri(u_trial).norm() <= current_residual - c1 * alpha * gk * Hk * gk)
+                {
+                    return u_trial;
+                }
+                alpha *= beta;
             }
+            Numeric u_final = u_last - alpha * Hk * gk;
+            return std::clamp(u_final, Numeric(0), Numeric(1));
+        };
+
+        int count = 0;
+        while (!((current_residual < epsilon) || (count++ >= max_iteration_count)))
+        {
+            Numeric gk = fi(u_last);
+            Numeric u_new = line_search(gk);
+
+            Numeric sk = u_new - u_last;
+            Numeric gk_new = fi(u_new);
+            Numeric yk = gk_new - gk;
+
+            Numeric yk_dot_sk = yk * sk;
+            if (std::abs(yk_dot_sk) < 1e-16)
+            {
+                Hk = 1.0;
+                yk_dot_sk = 1e-10;
+            }
+
+            Numeric rho = 1.0 / yk_dot_sk;
+            Hk = (1.0 - rho * yk * sk) * Hk * (1.0 - rho * sk * yk) + rho * sk * sk;
+
+            u_last = u_new;
+            current_residual = Ri(u_last).norm();
         }
         return u_last;
     }

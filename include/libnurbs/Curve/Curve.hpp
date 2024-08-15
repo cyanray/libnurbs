@@ -30,7 +30,7 @@ namespace libnurbs
 
         [[nodiscard]] Numeric SearchParameter(const Vec3& point,
                                               Numeric init = 0.5,
-                                              Numeric epsion = 1e-8,
+                                              Numeric epsilon = 1e-8,
                                               Numeric max_iteration_count = 512) const;
 
         [[nodiscard]] Curve InsertKnot(Numeric knot_value) const;
