@@ -146,6 +146,52 @@ namespace libnurbs
         return u_last;
     }
 
+    Numeric Curve::BinarySearchParameter(const Vec3& point, Numeric epsilon, int max_iteration_count) const
+
+    {
+        Numeric low = 0.0;
+        Numeric high = 1.0;
+
+        auto Ri = [&point, this](Numeric u) -> Numeric
+        {
+            return (Evaluate(u) - point).norm();
+        };
+
+        int count = 0;
+        while (count++ < max_iteration_count)
+        {
+            Numeric mid = (low + high) / 2.0;
+
+            Numeric mid_residual = Ri(mid);
+
+            Numeric left_mid = mid - epsilon;
+            Numeric right_mid = mid + epsilon;
+
+            if (left_mid < low) left_mid = low;
+            if (right_mid > high) right_mid = high;
+
+            Numeric left_residual = Ri(left_mid);
+            Numeric right_residual = Ri(right_mid);
+
+            if (left_residual < mid_residual)
+            {
+                high = mid;
+            }
+            else if (right_residual < mid_residual)
+            {
+                low = mid;
+            }
+            else
+            {
+                if (std::abs(high - low) < epsilon || mid_residual < epsilon) return mid;
+                low = left_mid;
+                high = right_mid;
+            }
+        }
+
+        return (low + high) / 2.0;
+    }
+
     Curve Curve::InsertKnot(Numeric knot_value) const
     {
         Curve result{*this};

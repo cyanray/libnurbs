@@ -33,6 +33,11 @@ namespace libnurbs
                                               Numeric epsilon = 1e-8,
                                               Numeric max_iteration_count = 512) const;
 
+        [[nodiscard]] Numeric BinarySearchParameter(const Vec3& point,
+                                                    Numeric epsilon = 1e-8,
+                                                    int max_iteration_count = 512) const;
+
+
         [[nodiscard]] Curve InsertKnot(Numeric knot_value) const;
 
         [[nodiscard]] Curve InsertKnot(Numeric knot_value, int times) const;

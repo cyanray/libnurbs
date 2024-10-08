@@ -397,6 +397,136 @@ TEST_CASE("Curve/SearchParameter", "[curve][non_rational]")
     }
 }
 
+TEST_CASE("Curve/BinarySearchParameter", "[curve][non_rational]")
+{
+    int degree = 2;
+    KnotVector U{{0.0, 0.0, 0.0, 1.0, 1.0, 1.0}};
+    vector<Vec4> controlPoints
+    {
+        {0.0, 0.0, 0.0, 1.0},
+        {1.0, 0.0, 0.0, 1.0},
+        {1.0, 1.0, 0.0, 1.0}
+    };
+    Curve curve;
+    curve.Degree = degree;
+    curve.Knots = U;
+    curve.ControlPoints = controlPoints;
+
+    SECTION("x = 0.0")
+    {
+        Numeric u = curve.BinarySearchParameter({0, 0, 0});;
+        INFO("u: " << u);
+        REQUIRE(std::abs(u) < 1e-20);
+    }
+
+    SECTION("x = 1.0")
+    {
+        Numeric u = curve.BinarySearchParameter({1, 1, 0});;
+        INFO("u: " << u);
+        REQUIRE(u == Approx(1.0));
+    }
+
+    SECTION("x = 0.5")
+    {
+        Numeric u = curve.BinarySearchParameter({0.75, 0.25, 0});;
+        INFO("u: " << u);
+        REQUIRE(u == Approx(0.5));
+    }
+
+    SECTION("x = 0.3")
+    {
+        Numeric u = curve.BinarySearchParameter({0.51, 0.09, 0});;
+        INFO("u: " << u);
+        REQUIRE(u == Approx(0.3));
+    }
+
+    SECTION("x = 0.678")
+    {
+        Numeric u = curve.BinarySearchParameter({0.896316, 0.459684, 0});;
+        INFO("u: " << u);
+        REQUIRE(u == Approx(0.678));
+    }
+
+    SECTION("x = 0.00123")
+    {
+        Numeric u = curve.BinarySearchParameter(curve.Evaluate(0.00123));;
+        INFO("u: " << u);
+        REQUIRE(u == Approx(0.00123));
+    }
+
+    SECTION("x = 1e-15")
+    {
+        Numeric u = curve.BinarySearchParameter(curve.Evaluate(1e-15));
+        INFO("u: " << u);
+        REQUIRE(std::abs(u - 1e-15) < 1e-2);
+    }
+}
+
+TEST_CASE("Curve/BinarySearchParameter Arc", "[curve][non_rational]")
+{
+    int degree = 2;
+    KnotVector U{{0, 0, 0, 1, 1, 1}};
+    vector<Vec4> controlPoints
+    {
+            {0.0, 1.0, 0.0, 2.0},
+            {1.0, 1.0, 0.0, 1.0},
+            {1.0, 0.0, 0.0, 1.0}
+    };
+    Curve curve;
+    curve.Degree = degree;
+    curve.Knots = U;
+    curve.ControlPoints = controlPoints;
+
+    SECTION("x = 0.0")
+    {
+        Numeric u = curve.BinarySearchParameter(curve.Evaluate(0.0));
+        INFO("u: " << u);
+        REQUIRE(std::abs(u) < 1e-20);
+    }
+
+    SECTION("x = 1.0")
+    {
+        Numeric u = curve.BinarySearchParameter(curve.Evaluate(1.0));;
+        INFO("u: " << u);
+        REQUIRE(u == Approx(1.0));
+    }
+
+    SECTION("x = 0.5")
+    {
+        Numeric u = curve.BinarySearchParameter(curve.Evaluate(0.5));;
+        INFO("u: " << u);
+        REQUIRE(u == Approx(0.5));
+    }
+
+    SECTION("x = 0.3")
+    {
+        Numeric u = curve.BinarySearchParameter(curve.Evaluate(0.3));;
+        INFO("u: " << u);
+        REQUIRE(u == Approx(0.3));
+    }
+
+    SECTION("x = 0.678")
+    {
+        Numeric u = curve.BinarySearchParameter(curve.Evaluate(0.678));;
+        INFO("u: " << u);
+        REQUIRE(u == Approx(0.678));
+    }
+
+    SECTION("x = 0.00123")
+    {
+        Numeric u = curve.BinarySearchParameter(curve.Evaluate(0.00123));;
+        INFO("u: " << u);
+        REQUIRE(u == Approx(0.00123));
+    }
+
+    SECTION("x = 1e-15")
+    {
+        Numeric u = curve.BinarySearchParameter(curve.Evaluate(1e-15));
+        INFO("u: " << u);
+        REQUIRE(std::abs(u - 1e-15) < 1e-2);
+    }
+}
+
 TEST_CASE("Curve/InsertKnot", "[curve][non_rational]")
 {
     int degree = 2;
