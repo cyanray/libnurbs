@@ -43,6 +43,19 @@ namespace libnurbs
                                            Numeric epsilon = 1e-8,
                                            Numeric max_iteration_count = 512) const -> std::pair<Numeric, Numeric>;
 
+        [[nodiscard]] auto SearchParameterOn(const Vec3& point, int direction, Numeric constant,
+                                             Numeric init_value = 0.5,
+                                             Numeric epsilon = 1e-8,
+                                             Numeric max_iteration_count = 512) const -> std::pair<Numeric, Numeric>;
+
+
+        [[nodiscard]] auto BinarySearchParameterOn(const Vec3& point,
+                                                   int direction,
+                                                   Numeric constant,
+                                                   Numeric epsilon = 1e-8,
+                                                   Numeric max_iteration_count = 512) const -> std::pair<Numeric, Numeric>;
+
+
         [[nodiscard]] Surface InsertKnotU(Numeric knot_value) const;
 
         [[nodiscard]] Surface InsertKnotU(Numeric knot_value, int times) const;
@@ -60,8 +73,8 @@ namespace libnurbs
                                                            Numeric tolerance = 1e-12) const;
 
         [[nodiscard]] std::tuple<Surface, int> RemoveKnotV(Numeric knot_remove,
-                                                   int times = 1,
-                                                   Numeric tolerance = 1e-12) const;
+                                                           int times = 1,
+                                                           Numeric tolerance = 1e-12) const;
 
         [[nodiscard]] Surface ElevateDegreeU(int times = 1) const;
 

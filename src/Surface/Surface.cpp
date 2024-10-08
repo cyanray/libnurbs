@@ -177,6 +177,143 @@ namespace libnurbs
         return {u_last, v_last};
     }
 
+    auto Surface::SearchParameterOn(const Vec3& point, int direction, Numeric constant,
+                                    Numeric init_value,
+                                    Numeric epsilon, Numeric max_iteration_count) const
+        -> std::pair<Numeric, Numeric>
+    {
+        auto Ri = [&point, this, direction, constant](Numeric val) -> Vec3
+        {
+            Numeric u = direction == 0 ? constant : val;
+            Numeric v = direction == 1 ? constant : val;
+            return Evaluate(u, v) - point;
+        };
+
+        auto fi = [this, &Ri, direction, constant](Numeric val) -> Numeric
+        {
+            Numeric u = direction == 0 ? constant : val;
+            Numeric v = direction == 1 ? constant : val;
+            auto ri = Ri(val);
+            auto Cu = direction == 1
+                          ? EvaluateDerivative(u, v, 1, 0)
+                          : EvaluateDerivative(u, v, 0, 1);
+            return ri.dot(Cu);
+        };
+
+        Numeric val_last = init_value;
+        Numeric current_residual = std::numeric_limits<Numeric>::max();
+        Numeric Hk = 1.0;
+
+        auto line_search = [&](Numeric gk) -> Numeric
+        {
+            Numeric alpha = 1.0;
+            Numeric c1 = 1e-4;
+            Numeric beta = 0.9;
+            int max_line_search_iterations = 0;
+            int ls_count = 0;
+
+            while (ls_count++ < max_line_search_iterations)
+            {
+                Numeric u_trial = val_last - alpha * Hk * gk;
+                u_trial = std::clamp(u_trial, Numeric(0), Numeric(1));
+
+                if (Ri(u_trial).norm() <= current_residual - c1 * alpha * gk * Hk * gk)
+                {
+                    return u_trial;
+                }
+                alpha *= beta;
+            }
+            Numeric u_final = val_last - alpha * Hk * gk;
+            return std::clamp(u_final, Numeric(0), Numeric(1));
+        };
+
+        int count = 0;
+        while (!((current_residual < epsilon) || (count++ >= max_iteration_count)))
+        {
+            Numeric gk = fi(val_last);
+            Numeric u_new = line_search(gk);
+
+            Numeric sk = u_new - val_last;
+            Numeric gk_new = fi(u_new);
+            Numeric yk = gk_new - gk;
+
+            Numeric yk_dot_sk = yk * sk;
+            if (std::abs(yk_dot_sk) < 1e-16)
+            {
+                Hk = 1.0;
+                yk_dot_sk = 1e-10;
+            }
+
+            Numeric rho = 1.0 / yk_dot_sk;
+            Hk = (1.0 - rho * yk * sk) * Hk * (1.0 - rho * sk * yk) + rho * sk * sk;
+
+            val_last = u_new;
+            current_residual = Ri(val_last).norm();
+        }
+        return direction == 0
+                   ? std::make_pair(constant, val_last)
+                   : std::make_pair(val_last, constant);
+    }
+
+    auto Surface::BinarySearchParameterOn(const Vec3& point, int direction, Numeric constant,
+                                          Numeric epsilon, Numeric max_iteration_count) const
+        -> std::pair<Numeric, Numeric>
+    {
+        Numeric low = 0.0;
+        Numeric high = 1.0;
+
+        auto Ri = [&point, this, direction, constant](Numeric val) -> Numeric
+        {
+            Numeric u = direction == 0 ? constant : val;
+            Numeric v = direction == 1 ? constant : val;
+            return (Evaluate(u, v) - point).norm();
+        };
+
+        int count = 0;
+        Numeric mid_residual;
+        while (count++ < max_iteration_count)
+        {
+            Numeric mid = (low + high) / 2.0;
+
+            mid_residual = Ri(mid);
+
+            Numeric left_mid = mid - epsilon;
+            Numeric right_mid = mid + epsilon;
+
+            if (left_mid < low) left_mid = low;
+            if (right_mid > high) right_mid = high;
+
+            Numeric left_residual = Ri(left_mid);
+            Numeric right_residual = Ri(right_mid);
+
+            if (left_residual < mid_residual)
+            {
+                high = mid;
+            }
+            else if (right_residual < mid_residual)
+            {
+                low = mid;
+            }
+            else
+            {
+                if (std::abs(high - low) < epsilon || mid_residual < epsilon)
+                {
+                    return direction == 0
+                               ? std::make_pair(constant, mid)
+                               : std::make_pair(mid, constant);
+                }
+                low = left_mid;
+                high = right_mid;
+            }
+        }
+
+        Numeric final_val = (low + high) / 2.0;
+        return direction == 0
+                   ? std::make_pair(constant, final_val)
+                   : std::make_pair(final_val, constant);
+    }
+
+
     Surface Surface::InsertKnotU(Numeric knot_value) const
     {
         Surface result{*this};

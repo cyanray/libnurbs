@@ -305,6 +305,254 @@ TEST_CASE("Surface/SearchParameter 4", "[surface][search_parameter]")
     }
 }
 
+TEST_CASE("Surface/SearchParameterOn", "[surface][search_parameter]")
+{
+    ControlPointGrid grid;
+    grid.UCount = 3;
+    grid.VCount = 2;
+    grid.Values.emplace_back(1, 0, 0, 1);
+    grid.Values.emplace_back(1, 1, 0, 1);
+    grid.Values.emplace_back(0, 1, 0, 2);
+    grid.Values.emplace_back(1, 0, 1, 1);
+    grid.Values.emplace_back(1, 1, 1, 1);
+    grid.Values.emplace_back(0, 1, 1, 2);
+
+    Surface surface;
+    surface.DegreeU = 2;
+    surface.DegreeV = 1;
+    surface.KnotsU = KnotVector{{0.0, 0.0, 0.0, 1.0, 1.0, 1.0}};
+    surface.KnotsV = KnotVector{{0.0, 0.0, 1.0, 1.0}};
+    surface.ControlPoints = grid;
+
+    SECTION("u = 0.0 & v = 0.0 (a)")
+    {
+        auto [u, v] = surface.SearchParameterOn({1.0, 0.0, 0.0}, 0, 0);
+        REQUIRE(std::abs(u) == Approx(0.0));
+        REQUIRE(std::abs(v) == Approx(0.0));
+    }
+
+    SECTION("u = 0.0 & v = 0.0 (b)")
+    {
+        auto [u, v] = surface.SearchParameterOn({1.0, 0.0, 0.0}, 1, 0);
+        REQUIRE(std::abs(u) == Approx(0.0));
+        REQUIRE(std::abs(v) == Approx(0.0));
+    }
+
+
+    SECTION("u = 0.5 & v = 0.5")
+    {
+        auto [u, v] = surface.SearchParameterOn({0.6, 0.8, 0.5}, 0, 0.5);
+        REQUIRE(u == Approx(0.5));
+        REQUIRE(v == Approx(0.5));
+    }
+
+    SECTION("u = 0 & v = 0.123")
+    {
+        auto [u, v] = surface.SearchParameterOn(surface.Evaluate(0, 0.123), 0, 0);
+        REQUIRE(u == Approx(0));
+        REQUIRE(v == Approx(0.123));
+    }
+
+    SECTION("u = 0.123 & v = 0")
+    {
+        auto [u, v] = surface.SearchParameterOn(surface.Evaluate(0.123, 0), 1, 0);
+        REQUIRE(u == Approx(0.123));
+        REQUIRE(v == Approx(0));
+    }
+}
+
+TEST_CASE("Surface/BinarySearchParameterOn", "[surface][search_parameter]")
+{
+    ControlPointGrid grid;
+    grid.UCount = 3;
+    grid.VCount = 2;
+    grid.Values.emplace_back(1, 0, 0, 1);
+    grid.Values.emplace_back(1, 1, 0, 1);
+    grid.Values.emplace_back(0, 1, 0, 2);
+    grid.Values.emplace_back(1, 0, 1, 1);
+    grid.Values.emplace_back(1, 1, 1, 1);
+    grid.Values.emplace_back(0, 1, 1, 2);
+
+    Surface surface;
+    surface.DegreeU = 2;
+    surface.DegreeV = 1;
+    surface.KnotsU = KnotVector{{0.0, 0.0, 0.0, 1.0, 1.0, 1.0}};
+    surface.KnotsV = KnotVector{{0.0, 0.0, 1.0, 1.0}};
+    surface.ControlPoints = grid;
+
+    SECTION("u = 0.0 & v = 0.0 (a)")
+    {
+        auto [u, v] = surface.BinarySearchParameterOn({1.0, 0.0, 0.0}, 0, 0);
+        REQUIRE(std::abs(u) < 1e-20);
+        REQUIRE(std::abs(v) < 1e-20);
+    }
+
+    SECTION("u = 0.0 & v = 0.0 (b)")
+    {
+        auto [u, v] = surface.BinarySearchParameterOn({1.0, 0.0, 0.0}, 1, 0);
+        REQUIRE(std::abs(u) < 1e-20);
+        REQUIRE(std::abs(v) < 1e-20);
+    }
+
+
+    SECTION("u = 0.5 & v = 0.5")
+    {
+        auto [u, v] = surface.BinarySearchParameterOn({0.6, 0.8, 0.5}, 0, 0.5);
+        REQUIRE(u == Approx(0.5));
+        REQUIRE(v == Approx(0.5));
+    }
+
+    SECTION("u = 0 & v = 0.123")
+    {
+        auto [u, v] = surface.BinarySearchParameterOn(surface.Evaluate(0, 0.123), 0, 0);
+        REQUIRE(u == Approx(0));
+        REQUIRE(v == Approx(0.123));
+    }
+
+    SECTION("u = 0.123 & v = 0")
+    {
+        auto [u, v] = surface.BinarySearchParameterOn(surface.Evaluate(0.123, 0), 1, 0);
+        REQUIRE(u == Approx(0.123));
+        REQUIRE(v == Approx(0));
+    }
+
+    SECTION("u = 0.123 & v = 1")
+    {
+        auto [u, v] = surface.BinarySearchParameterOn(surface.Evaluate(0.123, 1), 1, 1);
+        REQUIRE(u == Approx(0.123));
+        REQUIRE(v == Approx(1));
+    }
+}
+
+TEST_CASE("Surface/BinarySearchParameterOn 2", "[surface][search_parameter]")
+{
+    auto get_surf = []()
+    {
+        ControlPointGrid grid;
+        grid.UCount = 8;
+        grid.VCount = 8;
+        grid.Values.emplace_back(-0.0294261835515e-3, 0.1506999969482, 0.0941875, 1);
+        grid.Values.emplace_back(4.9402571349272e-6, 0.1521587224039, 0.0753500315527, 1);
+        grid.Values.emplace_back(0.0576485078669e-3, 0.1517236898364, 0.0376750417598, 1);
+        grid.Values.emplace_back(0.0481794104219e-3, 0.1514366598289, -0.0188374776592, 1);
+        grid.Values.emplace_back(0.0190505260041e-3, 0.1322965328062, -0.075349982688, 1);
+        grid.Values.emplace_back(0.2702707795319e-6, 0.0802878958362, -0.131862495488, 1);
+        grid.Values.emplace_back(-0.0189456996064e-3, 0.0311588038952, -0.1695374986589, 1);
+        grid.Values.emplace_back(-0.0292324908078e-3, 0, -0.188375, 1);
+        grid.Values.emplace_back(-0.0294261835515e-3, 0.1306066640218, 0.0941875, 1);
+        grid.Values.emplace_back(4.9402571349265e-6, 0.13187089275, 0.0753500315527, 1);
+        grid.Values.emplace_back(0.0576485078669e-3, 0.1314938645249, 0.0376750417598, 1);
+        grid.Values.emplace_back(0.0481794104219e-3, 0.1312451051851, -0.0188374776592, 1);
+        grid.Values.emplace_back(0.0190505260041e-3, 0.1146569950987, -0.075349982688, 1);
+        grid.Values.emplace_back(0.2702707795315e-6, 0.0695828430581, -0.131862495488, 1);
+        grid.Values.emplace_back(-0.0189456996064e-3, 0.0270042967092, -0.1695374986589, 1);
+        grid.Values.emplace_back(-0.0292324908078e-3, 0, -0.188375, 1);
+        grid.Values.emplace_back(-0.0294261835515e-3, 0.0904199981689, 0.0941875, 1);
+        grid.Values.emplace_back(4.9402571349249e-6, 0.0912952334423, 0.0753500315527, 1);
+        grid.Values.emplace_back(0.0576485078669e-3, 0.0910342139019, 0.0376750417598, 1);
+        grid.Values.emplace_back(0.0481794104219e-3, 0.0908619958974, -0.0188374776592, 1);
+        grid.Values.emplace_back(0.0190505260041e-3, 0.0793779196837, -0.075349982688, 1);
+        grid.Values.emplace_back(0.2702707795307e-6, 0.0481727375017, -0.131862495488, 1);
+        grid.Values.emplace_back(-0.0189456996064e-3, 0.0186952823371, -0.1695374986589, 1);
+        grid.Values.emplace_back(-0.0292324908078e-3, 0, -0.188375, 1);
+        grid.Values.emplace_back(-0.0294261835515e-3, 0.0301399993896, 0.0941875, 1);
+        grid.Values.emplace_back(4.9402571349226e-6, 0.0304317444808, 0.0753500315527, 1);
+        grid.Values.emplace_back(0.0576485078669e-3, 0.0303447379673, 0.0376750417598, 1);
+        grid.Values.emplace_back(0.0481794104219e-3, 0.0302873319658, -0.0188374776592, 1);
+        grid.Values.emplace_back(0.0190505260041e-3, 0.0264593065612, -0.075349982688, 1);
+        grid.Values.emplace_back(0.2702707795295e-6, 0.0160575791672, -0.131862495488, 1);
+        grid.Values.emplace_back(-0.0189456996064e-3, 6.2317607790403e-3, -0.1695374986589, 1);
+        grid.Values.emplace_back(-0.0292324908078e-3, 0, -0.188375, 1);
+        grid.Values.emplace_back(-0.0294261835515e-3, -0.0301399993896, 0.0941875, 1);
+        grid.Values.emplace_back(4.9402571349203e-6, -0.0304317444808, 0.0753500315527, 1);
+        grid.Values.emplace_back(0.0576485078669e-3, -0.0303447379673, 0.0376750417598, 1);
+        grid.Values.emplace_back(0.0481794104219e-3, -0.0302873319658, -0.0188374776592, 1);
+        grid.Values.emplace_back(0.0190505260041e-3, -0.0264593065612, -0.075349982688, 1);
+        grid.Values.emplace_back(0.2702707795283e-6, -0.0160575791672, -0.131862495488, 1);
+        grid.Values.emplace_back(-0.0189456996064e-3, -6.2317607790402e-3, -0.1695374986589, 1);
+        grid.Values.emplace_back(-0.0292324908078e-3, 0, -0.188375, 1);
+        grid.Values.emplace_back(-0.0294261835515e-3, -0.0904199981689, 0.0941875, 1);
+        grid.Values.emplace_back(4.9402571349179e-6, -0.0912952334423, 0.0753500315527, 1);
+        grid.Values.emplace_back(0.0576485078669e-3, -0.0910342139019, 0.0376750417598, 1);
+        grid.Values.emplace_back(0.0481794104219e-3, -0.0908619958974, -0.0188374776592, 1);
+        grid.Values.emplace_back(0.0190505260041e-3, -0.0793779196837, -0.075349982688, 1);
+        grid.Values.emplace_back(0.270270779527e-6, -0.0481727375017, -0.131862495488, 1);
+        grid.Values.emplace_back(-0.0189456996064e-3, -0.0186952823371, -0.1695374986589, 1);
+        grid.Values.emplace_back(-0.0292324908078e-3, 0, -0.188375, 1);
+        grid.Values.emplace_back(-0.0294261835515e-3, -0.1306066640218, 0.0941875, 1);
+        grid.Values.emplace_back(4.9402571349164e-6, -0.13187089275, 0.0753500315527, 1);
+        grid.Values.emplace_back(0.0576485078669e-3, -0.1314938645249, 0.0376750417598, 1);
+        grid.Values.emplace_back(0.0481794104219e-3, -0.1312451051851, -0.0188374776592, 1);
+        grid.Values.emplace_back(0.0190505260041e-3, -0.1146569950987, -0.075349982688, 1);
+        grid.Values.emplace_back(0.2702707795262e-6, -0.0695828430581, -0.131862495488, 1);
+        grid.Values.emplace_back(-0.0189456996064e-3, -0.0270042967092, -0.1695374986589, 1);
+        grid.Values.emplace_back(-0.0292324908078e-3, 0, -0.188375, 1);
+        grid.Values.emplace_back(-0.0294261835515e-3, -0.1506999969482, 0.0941875, 1);
+        grid.Values.emplace_back(4.9402571349156e-6, -0.1521587224039, 0.0753500315527, 1);
+        grid.Values.emplace_back(0.0576485078669e-3, -0.1517236898364, 0.0376750417598, 1);
+        grid.Values.emplace_back(0.0481794104219e-3, -0.1514366598289, -0.0188374776592, 1);
+        grid.Values.emplace_back(0.0190505260041e-3, -0.1322965328062, -0.075349982688, 1);
+        grid.Values.emplace_back(0.2702707795258e-6, -0.0802878958362, -0.131862495488, 1);
+        grid.Values.emplace_back(-0.0189456996064e-3, -0.0311588038952, -0.1695374986589, 1);
+        grid.Values.emplace_back(-0.0292324908078e-3, 0, -0.188375, 1);
+        Surface surface;
+        surface.DegreeU = 3;
+        surface.DegreeV = 3;
+        surface.KnotsU = KnotVector{{0, 0, 0, 0, 0.2, 0.4, 0.6, 0.8, 1, 1, 1, 1}};
+        surface.KnotsV = KnotVector{
+            {0, 0, 0, 0, 0.19999999999999998, 0.39999999999999997, 0.6, 0.7999999999999999, 1, 1, 1, 1}
+        };
+        surface.ControlPoints = grid;
+        return surface;
+    };
+
+    Surface surface = get_surf();
+
+    SECTION("u = 0.0 & v = 0.0 (a)")
+    {
+        auto point = surface.Evaluate(0, 0);
+        auto [u, v] = surface.BinarySearchParameterOn(point, 0, 0, 1e-10);
+        auto point_searched = surface.Evaluate(u, v);
+        INFO("point: " << point.transpose());
+        INFO("point_search: " << point_searched.transpose());
+        REQUIRE(std::abs((point - point_searched).norm()) < 1e-10);
+        REQUIRE(false);
+    }
+
+    SECTION("u = 0.0 & v = 0.0 (b)")
+    {
+        auto point = surface.Evaluate(0, 0);
+        auto [u, v] = surface.BinarySearchParameterOn(point, 1, 0, 1e-10);
+        auto point_searched = surface.Evaluate(u, v);
+        INFO("point: " << point.transpose());
+        INFO("point_search: " << point_searched.transpose());
+        REQUIRE(std::abs((point - point_searched).norm()) < 1e-10);
+        REQUIRE(false);
+    }
+
+    SECTION("u = 1.0 & v = 0.0 (a)")
+    {
+        auto point = surface.Evaluate(1, 0);
+        auto [u, v] = surface.BinarySearchParameterOn(point, 0, 1, 1e-10);
+        auto point_searched = surface.Evaluate(u, v);
+        INFO("point: " << point.transpose());
+        INFO("point_search: " << point_searched.transpose());
+        REQUIRE(std::abs((point - point_searched).norm()) < 1e-10);
+        REQUIRE(false);
+    }
+
+    SECTION("u = 1.0 & v = 0.1234567")
+    {
+        auto point = surface.Evaluate(1, 0.1234567);
+        auto [u, v] = surface.BinarySearchParameterOn(point, 0, 1, 1e-10);
+        auto point_searched = surface.Evaluate(u, v);
+        INFO("point: " << point.transpose());
+        INFO("point_search: " << point_searched.transpose());
+        REQUIRE(std::abs((point - point_searched).norm()) < 1e-10);
+        REQUIRE(false);
+    }
+}
+
 TEST_CASE("Surface/InsertKnotU 1", "[surface][insert_knot]")
 {
     auto geom_rect1 = GeomRect::Make({0, 0, 0}, {1, 0, 0},
@@ -316,12 +564,12 @@ TEST_CASE("Surface/InsertKnotU 1", "[surface][insert_knot]")
 
     auto surface = geom_rect1.GetSurface();
 
-    for (Numeric knot: vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+    for (Numeric knot : vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
     {
         auto new_surface = surface.InsertKnotU(knot);
-        for (Numeric u: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+        for (Numeric u : vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
         {
-            for (Numeric v: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+            for (Numeric v : vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
             {
                 Vec3 value = surface.Evaluate(u, v);
                 Vec3 new_value = new_surface.Evaluate(u, v);
@@ -356,12 +604,12 @@ TEST_CASE("Surface/InsertKnotU 2", "[surface][insert_knot]")
     surface.KnotsV = KnotVector{{0.0, 0.0, 1.0, 1.0}};
     surface.ControlPoints = grid;
 
-    for (Numeric knot: vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+    for (Numeric knot : vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
     {
         auto new_surface = surface.InsertKnotU(knot);
-        for (Numeric u: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+        for (Numeric u : vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
         {
-            for (Numeric v: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+            for (Numeric v : vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
             {
                 Vec3 value = surface.Evaluate(u, v);
                 Vec3 new_value = new_surface.Evaluate(u, v);
@@ -396,14 +644,14 @@ TEST_CASE("Surface/InsertKnotU 3", "[surface][insert_knot]")
     surface.KnotsV = KnotVector{{0.0, 0.0, 1.0, 1.0}};
     surface.ControlPoints = grid;
 
-    for (Numeric knot1: vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+    for (Numeric knot1 : vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
     {
-        for (Numeric knot2: vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+        for (Numeric knot2 : vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
         {
             auto new_surface = surface.InsertKnotU(knot1).InsertKnotU(knot2);
-            for (Numeric u: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+            for (Numeric u : vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
             {
-                for (Numeric v: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+                for (Numeric v : vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
                 {
                     Vec3 value = surface.Evaluate(u, v);
                     Vec3 new_value = new_surface.Evaluate(u, v);
@@ -433,12 +681,12 @@ TEST_CASE("Surface/InsertKnotV 1", "[surface][insert_knot]")
 
     auto surface = geom_rect1.GetSurface();
 
-    for (Numeric knot: vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+    for (Numeric knot : vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
     {
         auto new_surface = surface.InsertKnotV(knot);
-        for (Numeric u: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+        for (Numeric u : vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
         {
-            for (Numeric v: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+            for (Numeric v : vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
             {
                 Vec3 value = surface.Evaluate(u, v);
                 Vec3 new_value = new_surface.Evaluate(u, v);
@@ -473,12 +721,12 @@ TEST_CASE("Surface/InsertKnotV 2", "[surface][insert_knot]")
     surface.KnotsV = KnotVector{{0.0, 0.0, 1.0, 1.0}};
     surface.ControlPoints = grid;
 
-    for (Numeric knot: vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+    for (Numeric knot : vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
     {
         auto new_surface = surface.InsertKnotV(knot);
-        for (Numeric u: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+        for (Numeric u : vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
         {
-            for (Numeric v: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+            for (Numeric v : vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
             {
                 Vec3 value = surface.Evaluate(u, v);
                 Vec3 new_value = new_surface.Evaluate(u, v);
@@ -513,14 +761,14 @@ TEST_CASE("Surface/InsertKnotV 3", "[surface][insert_knot]")
     surface.KnotsV = KnotVector{{0.0, 0.0, 1.0, 1.0}};
     surface.ControlPoints = grid;
 
-    for (Numeric knot1: vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+    for (Numeric knot1 : vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
     {
-        for (Numeric knot2: vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+        for (Numeric knot2 : vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
         {
             auto new_surface = surface.InsertKnotV(knot1).InsertKnotV(knot2);
-            for (Numeric u: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+            for (Numeric u : vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
             {
-                for (Numeric v: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+                for (Numeric v : vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
                 {
                     Vec3 value = surface.Evaluate(u, v);
                     Vec3 new_value = new_surface.Evaluate(u, v);
@@ -560,14 +808,14 @@ TEST_CASE("Surface/InsertKnotUV", "[surface][insert_knot]")
 
     SECTION("UV")
     {
-        for (Numeric knot1: vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+        for (Numeric knot1 : vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
         {
-            for (Numeric knot2: vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+            for (Numeric knot2 : vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
             {
                 auto new_surface = surface.InsertKnotU(knot1).InsertKnotV(knot2);
-                for (Numeric u: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+                for (Numeric u : vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
                 {
-                    for (Numeric v: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+                    for (Numeric v : vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
                     {
                         Vec3 value = surface.Evaluate(u, v);
                         Vec3 new_value = new_surface.Evaluate(u, v);
@@ -587,14 +835,14 @@ TEST_CASE("Surface/InsertKnotUV", "[surface][insert_knot]")
 
     SECTION("VU")
     {
-        for (Numeric knot1: vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+        for (Numeric knot1 : vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
         {
-            for (Numeric knot2: vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+            for (Numeric knot2 : vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
             {
                 auto new_surface = surface.InsertKnotV(knot1).InsertKnotU(knot2);
-                for (Numeric u: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+                for (Numeric u : vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
                 {
-                    for (Numeric v: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+                    for (Numeric v : vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
                     {
                         Vec3 value = surface.Evaluate(u, v);
                         Vec3 new_value = new_surface.Evaluate(u, v);
@@ -635,13 +883,13 @@ TEST_CASE("Surface/RemoveKnot", "[surface][remove_knot]")
 
     SECTION("times=1,1")
     {
-        for (Numeric knot: vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+        for (Numeric knot : vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
         {
             auto [new_surface, t] = surface.InsertKnotU(knot, 1).RemoveKnotU(knot, 1);
             REQUIRE(t == 1);
-            for (Numeric u: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+            for (Numeric u : vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
             {
-                for (Numeric v: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+                for (Numeric v : vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
                 {
                     Vec3 value = surface.Evaluate(u, v);
                     Vec3 new_value = new_surface.Evaluate(u, v);
@@ -658,13 +906,13 @@ TEST_CASE("Surface/RemoveKnot", "[surface][remove_knot]")
 
     SECTION("times=2,1")
     {
-        for (Numeric knot: vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+        for (Numeric knot : vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
         {
             auto [new_surface, t] = surface.InsertKnotU(knot, 2).RemoveKnotU(knot, 1);
             REQUIRE(t == 1);
-            for (Numeric u: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+            for (Numeric u : vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
             {
-                for (Numeric v: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+                for (Numeric v : vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
                 {
                     Vec3 value = surface.Evaluate(u, v);
                     Vec3 new_value = new_surface.Evaluate(u, v);
@@ -681,13 +929,13 @@ TEST_CASE("Surface/RemoveKnot", "[surface][remove_knot]")
 
     SECTION("times=2,2")
     {
-        for (Numeric knot: vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
+        for (Numeric knot : vector{0.1, 0.2, 0.345, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9})
         {
             auto [new_surface, t] = surface.InsertKnotU(knot, 2).RemoveKnotU(knot, 2);
             REQUIRE(t == 2);
-            for (Numeric u: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+            for (Numeric u : vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
             {
-                for (Numeric v: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+                for (Numeric v : vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
                 {
                     Vec3 value = surface.Evaluate(u, v);
                     Vec3 new_value = new_surface.Evaluate(u, v);
@@ -726,9 +974,9 @@ TEST_CASE("Surface/ElevateDegree", "[surface][elevate_degree]")
     SECTION("U")
     {
         auto new_surface = surface.ElevateDegreeU();
-        for (Numeric u: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+        for (Numeric u : vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
         {
-            for (Numeric v: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+            for (Numeric v : vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
             {
                 Vec3 value = surface.Evaluate(u, v);
                 Vec3 new_value = new_surface.Evaluate(u, v);
@@ -745,9 +993,9 @@ TEST_CASE("Surface/ElevateDegree", "[surface][elevate_degree]")
     SECTION("V")
     {
         auto new_surface = surface.ElevateDegreeV();
-        for (Numeric u: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+        for (Numeric u : vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
         {
-            for (Numeric v: vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
+            for (Numeric v : vector{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0})
             {
                 Vec3 value = surface.Evaluate(u, v);
                 Vec3 new_value = new_surface.Evaluate(u, v);
