@@ -147,7 +147,6 @@ namespace libnurbs
     }
 
     Numeric Curve::BinarySearchParameter(const Vec3& point, Numeric epsilon, int max_iteration_count) const
-
     {
         Numeric low = 0.0;
         Numeric high = 1.0;
