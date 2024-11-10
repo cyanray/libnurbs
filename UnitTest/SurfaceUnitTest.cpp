@@ -516,7 +516,6 @@ TEST_CASE("Surface/BinarySearchParameterOn 2", "[surface][search_parameter]")
         INFO("point: " << point.transpose());
         INFO("point_search: " << point_searched.transpose());
         REQUIRE(std::abs((point - point_searched).norm()) < 1e-10);
-        REQUIRE(false);
     }
 
     SECTION("u = 0.0 & v = 0.0 (b)")
@@ -527,7 +526,6 @@ TEST_CASE("Surface/BinarySearchParameterOn 2", "[surface][search_parameter]")
         INFO("point: " << point.transpose());
         INFO("point_search: " << point_searched.transpose());
         REQUIRE(std::abs((point - point_searched).norm()) < 1e-10);
-        REQUIRE(false);
     }
 
     SECTION("u = 1.0 & v = 0.0 (a)")
@@ -538,7 +536,6 @@ TEST_CASE("Surface/BinarySearchParameterOn 2", "[surface][search_parameter]")
         INFO("point: " << point.transpose());
         INFO("point_search: " << point_searched.transpose());
         REQUIRE(std::abs((point - point_searched).norm()) < 1e-10);
-        REQUIRE(false);
     }
 
     SECTION("u = 1.0 & v = 0.1234567")
@@ -549,7 +546,6 @@ TEST_CASE("Surface/BinarySearchParameterOn 2", "[surface][search_parameter]")
         INFO("point: " << point.transpose());
         INFO("point_search: " << point_searched.transpose());
         REQUIRE(std::abs((point - point_searched).norm()) < 1e-10);
-        REQUIRE(false);
     }
 }
 
