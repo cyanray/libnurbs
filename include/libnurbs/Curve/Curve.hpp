@@ -3,10 +3,12 @@
 #include <span>
 #include <vector>
 #include <tuple>
+#include <string>
 #include <libnurbs/Core/KnotVector.hpp>
 #include <libnurbs/Core/Typedefs.hpp>
 
 using std::vector;
+using std::string;
 
 namespace libnurbs
 {
@@ -19,6 +21,15 @@ namespace libnurbs
 
     public:
         Curve() = default;
+
+        void LoadFromFile(const string& filename);
+
+        void LoadFromFile(std::istream& is);
+
+        void SaveToFile(const string& filename, bool binary_mode = false) const;
+
+        void SaveToFile(std::ostream& os, bool binary_mode = false) const;
+
 
         [[nodiscard]] Vec3 Evaluate(Numeric x) const;
 

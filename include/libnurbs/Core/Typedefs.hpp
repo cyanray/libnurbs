@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Eigen/Dense>
+#include <string>
+using std::string;
 
 namespace libnurbs
 {
@@ -9,6 +11,8 @@ namespace libnurbs
     constexpr int INVALID_VALUE{-1};
 
     constexpr int INVALID_INDEX{-1};
+
+    const inline string LIBNURBS_MAGIC{"LIBNURBS"};
 
     using Numeric = double;
 
@@ -22,7 +26,7 @@ namespace libnurbs
 
     using MatX = Eigen::Matrix<Numeric, Eigen::Dynamic, Eigen::Dynamic>;
 
-    template<typename T>
+    template <typename T>
     class Grid;
 
     using ControlPointGrid = Grid<Vec4>;

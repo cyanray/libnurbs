@@ -20,6 +20,7 @@ set(LIBNURBS_INCLUDES
         include/libnurbs/Geometry/GeomRect.hpp
         include/libnurbs/Algorithm/KnotRemoval.hpp
         include/libnurbs/Algorithm/DegreeAlgo.hpp
+        include/libnurbs/Utils/Serialization.hpp
 
 )
 
@@ -32,6 +33,7 @@ set(LIBNURBS_SOURCES
         src/Geometry/GeomRect.cpp
         src/Algotithm/KnotRemoval.cpp
         src/Algotithm/DegreeAlgo.cpp
+        src/Utils/Serialization.cpp
 
 )
 

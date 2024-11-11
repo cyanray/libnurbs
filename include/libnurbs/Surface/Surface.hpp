@@ -19,6 +19,14 @@ namespace libnurbs
     public:
         Surface() = default;
 
+        void LoadFromFile(const string& filename);
+
+        void LoadFromFile(std::istream& is);
+
+        void SaveToFile(const string& filename, bool binary_mode = false) const;
+
+        void SaveToFile(std::ostream& os, bool binary_mode = false) const;
+
         [[nodiscard]] Vec3 Evaluate(Numeric u, Numeric v) const;
 
         [[nodiscard]] Vec3 EvaluateDerivative(Numeric u, Numeric v, int order_u, int order_v) const;

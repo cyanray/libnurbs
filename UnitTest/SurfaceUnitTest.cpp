@@ -1,12 +1,10 @@
+#include <stdexcept>
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_all.hpp>
-
+#include <catch2/matchers/catch_matchers_string.hpp>
+#include <libnurbs/Geometry/GeomRect.hpp>
 #include <libnurbs/Surface/Surface.hpp>
-
-#include <stdexcept>
-
-#include "libnurbs/Geometry/GeomRect.hpp"
 
 using namespace Catch;
 using namespace libnurbs;
@@ -184,15 +182,19 @@ TEST_CASE("Surface/SearchParameter", "[surface][search_parameter]")
 
 TEST_CASE("Surface/SearchParameter 2", "[surface][search_parameter]")
 {
-    auto geom_rect1 = GeomRect::Make({0, 0, 0}, {1, 0, 0},
-                                     {0, 2, 0}, {1, 2, 0});
+    auto geom_rect1 = GeomRect::Make({0, 0, 0},
+                                     {1, 0, 0},
+                                     {0, 2, 0},
+                                     {1, 2, 0});
     geom_rect1.DegreeU = 3;
     geom_rect1.DegreeV = 3;
     geom_rect1.ControlPointCountU = 5;
     geom_rect1.ControlPointCountV = 5;
 
-    auto geom_rect2 = GeomRect::Make({1, 0, 0}, {2.0, 0, 0},
-                                     {1, 2, 0}, {2, 2, 0});
+    auto geom_rect2 = GeomRect::Make({1, 0, 0},
+                                     {2.0, 0, 0},
+                                     {1, 2, 0},
+                                     {2, 2, 0});
     geom_rect2.DegreeU = 3;
     geom_rect2.DegreeV = 3;
     geom_rect2.ControlPointCountU = 5;
@@ -227,15 +229,19 @@ TEST_CASE("Surface/SearchParameter 2", "[surface][search_parameter]")
 
 TEST_CASE("Surface/SearchParameter 3", "[surface][search_parameter]")
 {
-    auto geom_rect1 = GeomRect::Make({0, 0, 0}, {1, 0, 0},
-                                     {0, 2, 0}, {1, 2, 0});
+    auto geom_rect1 = GeomRect::Make({0, 0, 0},
+                                     {1, 0, 0},
+                                     {0, 2, 0},
+                                     {1, 2, 0});
     geom_rect1.DegreeU = 4;
     geom_rect1.DegreeV = 4;
     geom_rect1.ControlPointCountU = 10;
     geom_rect1.ControlPointCountV = 10;
 
-    auto geom_rect2 = GeomRect::Make({1, 0, 0}, {2.0, 0, 0},
-                                     {1, 2, 0}, {2, 2, 0});
+    auto geom_rect2 = GeomRect::Make({1, 0, 0},
+                                     {2.0, 0, 0},
+                                     {1, 2, 0},
+                                     {2, 2, 0});
     geom_rect2.DegreeU = 4;
     geom_rect2.DegreeV = 4;
     geom_rect2.ControlPointCountU = 10;
@@ -270,15 +276,19 @@ TEST_CASE("Surface/SearchParameter 3", "[surface][search_parameter]")
 
 TEST_CASE("Surface/SearchParameter 4", "[surface][search_parameter]")
 {
-    auto geom_rect1 = GeomRect::Make({0, 0, 0}, {1, 0, 0},
-                                     {0, 2, 0}, {1, 2, 0});
+    auto geom_rect1 = GeomRect::Make({0, 0, 0},
+                                     {1, 0, 0},
+                                     {0, 2, 0},
+                                     {1, 2, 0});
     geom_rect1.DegreeU = 4;
     geom_rect1.DegreeV = 4;
     geom_rect1.ControlPointCountU = 8;
     geom_rect1.ControlPointCountV = 9;
 
-    auto geom_rect2 = GeomRect::Make({1, 0, 0}, {2.0, 0, 0},
-                                     {1, 2, 0}, {2, 2, 0});
+    auto geom_rect2 = GeomRect::Make({1, 0, 0},
+                                     {2.0, 0, 0},
+                                     {1, 2, 0},
+                                     {2, 2, 0});
     geom_rect2.DegreeU = 4;
     geom_rect2.DegreeV = 4;
     geom_rect2.ControlPointCountU = 9;
@@ -551,8 +561,10 @@ TEST_CASE("Surface/BinarySearchParameterOn 2", "[surface][search_parameter]")
 
 TEST_CASE("Surface/InsertKnotU 1", "[surface][insert_knot]")
 {
-    auto geom_rect1 = GeomRect::Make({0, 0, 0}, {1, 0, 0},
-                                     {0, 2, 0}, {1, 2, 0});
+    auto geom_rect1 = GeomRect::Make({0, 0, 0},
+                                     {1, 0, 0},
+                                     {0, 2, 0},
+                                     {1, 2, 0});
     geom_rect1.DegreeU = 3;
     geom_rect1.DegreeV = 3;
     geom_rect1.ControlPointCountU = 5;
@@ -668,8 +680,10 @@ TEST_CASE("Surface/InsertKnotU 3", "[surface][insert_knot]")
 
 TEST_CASE("Surface/InsertKnotV 1", "[surface][insert_knot]")
 {
-    auto geom_rect1 = GeomRect::Make({0, 0, 0}, {1, 0, 0},
-                                     {0, 2, 0}, {1, 2, 0});
+    auto geom_rect1 = GeomRect::Make({0, 0, 0},
+                                     {1, 0, 0},
+                                     {0, 2, 0},
+                                     {1, 2, 0});
     geom_rect1.DegreeU = 3;
     geom_rect1.DegreeV = 3;
     geom_rect1.ControlPointCountU = 5;
@@ -1004,4 +1018,407 @@ TEST_CASE("Surface/ElevateDegree", "[surface][elevate_degree]")
             }
         }
     }
+}
+
+
+TEST_CASE("Surface::LoadFromFile - Valid TXT Input", "[LoadFromFile]")
+{
+    std::string valid_input = R"(LIBNURBS TXT SURFACE
+*DegreeU: 3
+*DegreeV: 2
+*KnotsU:
+0, 0, 0, 1, 2, 3, 3, 3
+*KnotsV:
+0, 0, 1, 1
+*ControlPoints:
+4 3
+1.0 2.0 3.0 1.0
+4.0 5.0 6.0 1.0
+7.0 8.0 9.0 1.0
+1.1 2.1 3.1 1.0
+4.1 5.1 6.1 1.0
+7.1 8.1 9.1 1.0
+1.2 2.2 3.2 1.0
+4.2 5.2 6.2 1.0
+7.2 8.2 9.2 1.0
+1.3 2.3 3.3 1.0
+4.3 5.3 6.3 1.0
+7.3 8.3 9.3 1.0
+)";
+    std::istringstream iss(valid_input);
+    Surface surface;
+    REQUIRE_NOTHROW(surface.LoadFromFile(iss));
+
+    // Check Degrees
+    REQUIRE(surface.DegreeU == 3);
+    REQUIRE(surface.DegreeV == 2);
+
+    // Check Knot Vectors
+    REQUIRE(surface.KnotsU.Values().size() == 8);
+    REQUIRE(surface.KnotsV.Values().size() == 4);
+
+    // Check Control Points Grid Dimensions
+    REQUIRE(surface.ControlPoints.UCount == 4);
+    REQUIRE(surface.ControlPoints.VCount == 3);
+
+    // Check Control Points Values
+    REQUIRE(surface.ControlPoints.Values.size() == 12);
+    REQUIRE(surface.ControlPoints.Get(0, 0).x() == Approx(1.0));
+    REQUIRE(surface.ControlPoints.Get(3, 2).z() == Approx(9.3));
+}
+
+TEST_CASE("Surface::LoadFromFile - Missing Header", "[LoadFromFile]")
+{
+    std::string missing_header = R"(*DegreeU: 3
+*DegreeV: 2
+)";
+    std::istringstream iss(missing_header);
+    Surface surface;
+    REQUIRE_THROWS_WITH(surface.LoadFromFile(iss), Catch::Matchers::ContainsSubstring("Invalid file magic"));
+}
+
+TEST_CASE("Surface::LoadFromFile - Invalid Magic Number", "[LoadFromFile]")
+{
+    std::string invalid_magic = R"(INVALIDMAGIC TXT SURFACE
+*DegreeU: 3
+*DegreeV: 2
+)";
+    std::istringstream iss(invalid_magic);
+    Surface surface;
+    REQUIRE_THROWS_WITH(surface.LoadFromFile(iss), Catch::Matchers::ContainsSubstring("Invalid file magic"));
+}
+
+TEST_CASE("Surface::LoadFromFile - Unknown Serialization Mode", "[LoadFromFile]")
+{
+    std::string unknown_mode = R"(LIBNURBS UNKNOWN SURFACE
+*DegreeU: 3
+*DegreeV: 2
+)";
+    std::istringstream iss(unknown_mode);
+    Surface surface;
+    REQUIRE_THROWS_WITH(surface.LoadFromFile(iss), Catch::Matchers::ContainsSubstring("Unknown serialization mode"));
+}
+
+TEST_CASE("Surface::LoadFromFile - Type Mismatch", "[LoadFromFile]")
+{
+    std::string type_mismatch = R"(LIBNURBS TXT CURVE
+*DegreeU: 3
+*DegreeV: 2
+)";
+    std::istringstream iss(type_mismatch);
+    Surface surface;
+    REQUIRE_THROWS_WITH(surface.LoadFromFile(iss), Catch::Matchers::ContainsSubstring("Object type mismatch"));
+}
+
+TEST_CASE("Surface::LoadFromFile - Invalid Degrees", "[LoadFromFile]")
+{
+    std::string invalid_degrees = R"(LIBNURBS TXT SURFACE
+*DegreeU: invalid
+*DegreeV: 2
+)";
+    std::istringstream iss(invalid_degrees);
+    Surface surface;
+    REQUIRE_THROWS_WITH(surface.LoadFromFile(iss), Catch::Matchers::ContainsSubstring("Failed to parse DegreeU value"));
+}
+
+TEST_CASE("Surface::LoadFromFile - Invalid Knot Values", "[LoadFromFile]")
+{
+    std::string invalid_knots = R"(LIBNURBS TXT SURFACE
+*DegreeU: 3
+*DegreeV: 2
+*KnotsU:
+0, 0, invalid, 1, 2, 3, 3, 3
+)";
+    std::istringstream iss(invalid_knots);
+    Surface surface;
+    REQUIRE_THROWS_WITH(surface.LoadFromFile(iss), Catch::Matchers::ContainsSubstring("Failed to parse KnotsU value"));
+}
+
+TEST_CASE("Surface::LoadFromFile - Invalid Control Point Data", "[LoadFromFile]")
+{
+    std::string invalid_cp = R"(LIBNURBS TXT SURFACE
+*DegreeU: 3
+*DegreeV: 2
+*ControlPoints:
+2 2
+1.0 2.0 invalid 1.0
+4.0 5.0 6.0 1.0
+)";
+    std::istringstream iss(invalid_cp);
+    Surface surface;
+    REQUIRE_THROWS_WITH(surface.LoadFromFile(iss), Catch::Matchers::ContainsSubstring("ControlPoints count does not match grid dimensions."));
+}
+
+TEST_CASE("Surface::LoadFromFile - Extra Spaces and Formatting", "[LoadFromFile]")
+{
+    std::string extra_spaces = R"(LIBNURBS     TXT    SURFACE
+
+    *DegreeU:   3
+
+    *DegreeV:   2
+
+    *KnotsU:
+    0,  0,0,   1,   2,3, 3,3
+
+    *KnotsV:
+    0, 0, 1, 1
+
+    *ControlPoints:
+    4    3
+    1.0 2.0 3.0 1.0
+    4.0    5.0 6.0 1.0
+    7.0 8.0 9.0 1.0
+    1.1 2.1 3.1 1.0
+    4.1 5.1 6.1 1.0
+    7.1 8.1 9.1 1.0
+    1.2 2.2 3.2 1.0
+    4.2 5.2 6.2 1.0
+    7.2 8.2 9.2 1.0
+    1.3 2.3 3.3 1.0
+    4.3 5.3 6.3 1.0
+    7.3 8.3 9.3 1.0
+)";
+    std::istringstream iss(extra_spaces);
+    Surface surface;
+    REQUIRE_NOTHROW(surface.LoadFromFile(iss));
+    REQUIRE(surface.DegreeU == 3);
+    REQUIRE(surface.DegreeV == 2);
+    REQUIRE(surface.KnotsU.Values().size() == 8);
+    REQUIRE(surface.KnotsV.Values().size() == 4);
+    REQUIRE(surface.ControlPoints.UCount == 4);
+    REQUIRE(surface.ControlPoints.VCount == 3);
+    REQUIRE(surface.ControlPoints.Values.size() == 12);
+}
+
+TEST_CASE("Surface::LoadFromFile - Missing Key", "[LoadFromFile]")
+{
+    std::string missing_key = R"(LIBNURBS TXT SURFACE
+3
+)";
+    std::istringstream iss(missing_key);
+    Surface surface;
+    REQUIRE_THROWS_WITH(surface.LoadFromFile(iss), Catch::Matchers::ContainsSubstring("Content found before any key"));
+}
+
+TEST_CASE("Surface::LoadFromFile - Empty File", "[LoadFromFile]")
+{
+    std::string empty_file = "";
+    std::istringstream iss(empty_file);
+    Surface surface;
+    REQUIRE_THROWS_WITH(surface.LoadFromFile(iss), Catch::Matchers::ContainsSubstring("Failed to read header line"));
+}
+
+TEST_CASE("Surface::LoadFromFile and SaveToFile - Round-trip Test", "[SaveLoad]")
+{
+    Surface original_surface;
+    // Initialize original_surface with test data
+    original_surface.DegreeU = 3;
+    original_surface.DegreeV = 2;
+    original_surface.KnotsU.Values() = {0, 0, 0, 1, 2, 3, 3, 3};
+    original_surface.KnotsV.Values() = {0, 0, 1, 1};
+    original_surface.ControlPoints.UCount = 4;
+    original_surface.ControlPoints.VCount = 3;
+    original_surface.ControlPoints.Values = {
+        Vec4{1.0, 2.0, 3.0, 1.0},
+        Vec4{4.0, 5.0, 6.0, 1.0},
+        Vec4{7.0, 8.0, 9.0, 1.0},
+        Vec4{1.1, 2.1, 3.1, 1.0},
+        Vec4{4.1, 5.1, 6.1, 1.0},
+        Vec4{7.1, 8.1, 9.1, 1.0},
+        Vec4{1.2, 2.2, 3.2, 1.0},
+        Vec4{4.2, 5.2, 6.2, 1.0},
+        Vec4{7.2, 8.2, 9.2, 1.0},
+        Vec4{1.3, 2.3, 3.3, 1.0},
+        Vec4{4.3, 5.3, 6.3, 1.0},
+        Vec4{7.3, 8.3, 9.3, 1.0}
+    };
+
+    // Save to string stream
+    std::ostringstream oss;
+    REQUIRE_NOTHROW(original_surface.SaveToFile(oss));
+
+    // Load from string stream
+    std::istringstream iss(oss.str());
+    Surface loaded_surface;
+    REQUIRE_NOTHROW(loaded_surface.LoadFromFile(iss));
+
+    // Compare original and loaded surfaces
+    REQUIRE(loaded_surface.DegreeU == original_surface.DegreeU);
+    REQUIRE(loaded_surface.DegreeV == original_surface.DegreeV);
+    REQUIRE(loaded_surface.KnotsU.Values() == original_surface.KnotsU.Values());
+    REQUIRE(loaded_surface.KnotsV.Values() == original_surface.KnotsV.Values());
+    REQUIRE(loaded_surface.ControlPoints.UCount == original_surface.ControlPoints.UCount);
+    REQUIRE(loaded_surface.ControlPoints.VCount == original_surface.ControlPoints.VCount);
+    REQUIRE(loaded_surface.ControlPoints.Values.size() == original_surface.ControlPoints.Values.size());
+
+    for (size_t i = 0; i < original_surface.ControlPoints.Values.size(); ++i)
+    {
+        const auto& original_cp = original_surface.ControlPoints.Values[i];
+        const auto& loaded_cp = loaded_surface.ControlPoints.Values[i];
+        REQUIRE(loaded_cp.x() == Approx(original_cp.x()));
+        REQUIRE(loaded_cp.y() == Approx(original_cp.y()));
+        REQUIRE(loaded_cp.z() == Approx(original_cp.z()));
+        REQUIRE(loaded_cp.w() == Approx(original_cp.w()));
+    }
+}
+
+TEST_CASE("Surface::SaveToFile and LoadFromFile - Binary Mode", "[SaveLoad]")
+{
+    Surface original_surface;
+    // Initialize original_surface with test data (same as previous test)
+
+    original_surface.DegreeU = 3;
+    original_surface.DegreeV = 2;
+    original_surface.KnotsU.Values() = {0, 0, 0, 1, 2, 3, 3, 3};
+    original_surface.KnotsV.Values() = {0, 0, 1, 1};
+    original_surface.ControlPoints.UCount = 4;
+    original_surface.ControlPoints.VCount = 3;
+    original_surface.ControlPoints.Values = {
+        Vec4{1.0, 2.0, 3.0, 1.0},
+        Vec4{4.0, 5.0, 6.0, 1.0},
+        Vec4{7.0, 8.0, 9.0, 1.0},
+        Vec4{1.1, 2.1, 3.1, 1.0},
+        Vec4{4.1, 5.1, 6.1, 1.0},
+        Vec4{7.1, 8.1, 9.1, 1.0},
+        Vec4{1.2, 2.2, 3.2, 1.0},
+        Vec4{4.2, 5.2, 6.2, 1.0},
+        Vec4{7.2, 8.2, 9.2, 1.0},
+        Vec4{1.3, 2.3, 3.3, 1.0},
+        Vec4{4.3, 5.3, 6.3, 1.0},
+        Vec4{7.3, 8.3, 9.3, 1.0}
+    };
+
+    // Save to binary string stream
+    std::ostringstream oss(std::ios::binary);
+    REQUIRE_NOTHROW(original_surface.SaveToFile(oss, true));
+
+    // Load from binary string stream
+    std::istringstream iss(oss.str(), std::ios::binary);
+    Surface loaded_surface;
+    REQUIRE_NOTHROW(loaded_surface.LoadFromFile(iss));
+
+    // Compare original and loaded surfaces (same as previous test)
+    REQUIRE(loaded_surface.DegreeU == original_surface.DegreeU);
+    REQUIRE(loaded_surface.DegreeV == original_surface.DegreeV);
+    REQUIRE(loaded_surface.KnotsU.Values() == original_surface.KnotsU.Values());
+    REQUIRE(loaded_surface.KnotsV.Values() == original_surface.KnotsV.Values());
+    REQUIRE(loaded_surface.ControlPoints.UCount == original_surface.ControlPoints.UCount);
+    REQUIRE(loaded_surface.ControlPoints.VCount == original_surface.ControlPoints.VCount);
+    REQUIRE(loaded_surface.ControlPoints.Values.size() == original_surface.ControlPoints.Values.size());
+
+    for (size_t i = 0; i < original_surface.ControlPoints.Values.size(); ++i)
+    {
+        const auto& original_cp = original_surface.ControlPoints.Values[i];
+        const auto& loaded_cp = loaded_surface.ControlPoints.Values[i];
+        REQUIRE(loaded_cp.x() == Approx(original_cp.x()));
+        REQUIRE(loaded_cp.y() == Approx(original_cp.y()));
+        REQUIRE(loaded_cp.z() == Approx(original_cp.z()));
+        REQUIRE(loaded_cp.w() == Approx(original_cp.w()));
+    }
+}
+
+TEST_CASE("Surface::LoadFromFile - Large Surface Data", "[LoadFromFile]")
+{
+    // Generate a large surface
+    Surface surface;
+    surface.DegreeU = 4;
+    surface.DegreeV = 4;
+    int u_count = 50;
+    int v_count = 50;
+    surface.KnotsU.Values().resize(u_count + surface.DegreeU + 1, 0.0);
+    surface.KnotsV.Values().resize(v_count + surface.DegreeV + 1, 0.0);
+
+    for (int i = 0; i < u_count + surface.DegreeU + 1; ++i)
+    {
+        surface.KnotsU.Values()[i] = static_cast<Numeric>(i);
+    }
+
+    for (int i = 0; i < v_count + surface.DegreeV + 1; ++i)
+    {
+        surface.KnotsV.Values()[i] = static_cast<Numeric>(i);
+    }
+
+    surface.ControlPoints.UCount = u_count;
+    surface.ControlPoints.VCount = v_count;
+    surface.ControlPoints.Values.resize(u_count * v_count);
+
+    for (int v = 0; v < v_count; ++v)
+    {
+        for (int u = 0; u < u_count; ++u)
+        {
+            surface.ControlPoints.Get(u, v) = Vec4{
+                static_cast<Numeric>(u),
+                static_cast<Numeric>(v),
+                static_cast<Numeric>(u + v),
+                1.0
+            };
+        }
+    }
+
+    // Save to string stream
+    std::ostringstream oss;
+    REQUIRE_NOTHROW(surface.SaveToFile(oss));
+
+    // Load from string stream
+    std::istringstream iss(oss.str());
+    Surface loaded_surface;
+    REQUIRE_NOTHROW(loaded_surface.LoadFromFile(iss));
+
+    // Check dimensions
+    REQUIRE(loaded_surface.ControlPoints.UCount == surface.ControlPoints.UCount);
+    REQUIRE(loaded_surface.ControlPoints.VCount == surface.ControlPoints.VCount);
+
+    // Spot-check some control points
+    REQUIRE(loaded_surface.ControlPoints.Get(0, 0).x() == Approx(0.0));
+    REQUIRE(loaded_surface.ControlPoints.Get(u_count - 1, v_count - 1).z() == Approx(2 * (u_count - 1)));
+}
+
+TEST_CASE("Surface::LoadFromFile - Unrecognized Key", "[LoadFromFile]")
+{
+    std::string unrecognized_key = R"(LIBNURBS TXT SURFACE
+*DegreeU: 3
+*DegreeV: 2
+*UnknownKey:
+SomeValue
+)";
+    std::istringstream iss(unrecognized_key);
+    Surface surface;
+    REQUIRE_THROWS_WITH(surface.LoadFromFile(iss), Catch::Matchers::ContainsSubstring("Unknown key encountered"));
+}
+
+TEST_CASE("Surface::LoadFromFile - Values Spanning Multiple Lines", "[LoadFromFile]")
+{
+    std::string multi_line_values = R"(LIBNURBS TXT SURFACE
+*DegreeU:
+3
+*DegreeV:
+2
+*KnotsU:
+0,0,0,
+1,2,3,
+3,3
+*KnotsV:
+0,0,
+1,1
+*ControlPoints:
+4 3
+1.0 2.0 3.0 1.0
+4.0 5.0 6.0 1.0
+7.0 8.0 9.0 1.0
+1.1 2.1 3.1 1.0
+4.1 5.1 6.1 1.0
+7.1 8.1 9.1 1.0
+1.2 2.2 3.2 1.0
+4.2 5.2 6.2 1.0
+7.2 8.2 9.2 1.0
+1.3 2.3 3.3 1.0
+4.3 5.3 6.3 1.0
+7.3 8.3 9.3 1.0
+)";
+    std::istringstream iss(multi_line_values);
+    Surface surface;
+    REQUIRE_NOTHROW(surface.LoadFromFile(iss));
+    REQUIRE(surface.KnotsU.Values().size() == 8);
+    REQUIRE(surface.KnotsV.Values().size() == 4);
+    REQUIRE(surface.ControlPoints.Values.size() == 12);
 }
