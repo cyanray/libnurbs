@@ -14,17 +14,17 @@
 using namespace std;
 using namespace libnurbs;
 
-void Curve::LoadFromFile(const string& filename)
+Curve& Curve::LoadFromFile(const string& filename)
 {
     ifstream file(filename);
     if (!file.is_open())
     {
         throw std::runtime_error("Failed to open file: " + filename);
     }
-    LoadFromFile(file);
+    return LoadFromFile(file);
 }
 
-void Curve::LoadFromFile(std::istream& is)
+Curve& Curve::LoadFromFile(std::istream& is)
 {
     // Read header line
     std::string header_line;
@@ -82,7 +82,7 @@ void Curve::LoadFromFile(std::istream& is)
         {
             Utils::ReadVec4FromStream(ControlPoints[i], is);
         }
-        return;
+        return *this;
     }
 
     // TXT mode
@@ -194,6 +194,7 @@ void Curve::LoadFromFile(std::istream& is)
     {
         process_key(current_key, content_lines);
     }
+    return *this;
 }
 
 void Curve::SaveToFile(const std::string& filename, bool binary_mode) const

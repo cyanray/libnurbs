@@ -11,17 +11,17 @@
 using namespace std;
 using namespace libnurbs;
 
-void Surface::LoadFromFile(const std::string& filename)
+Surface& Surface::LoadFromFile(const std::string& filename)
 {
     std::ifstream file(filename, std::ios::binary);
     if (!file.is_open())
     {
         throw std::runtime_error("Failed to open file: " + filename);
     }
-    LoadFromFile(file);
+    return LoadFromFile(file);
 }
 
-void Surface::LoadFromFile(std::istream& is)
+Surface& Surface::LoadFromFile(std::istream& is)
 {
     // Read header line
     std::string header_line;
@@ -253,6 +253,7 @@ void Surface::LoadFromFile(std::istream& is)
             process_key(current_key, content_lines);
         }
     }
+    return *this;
 }
 
 void Surface::SaveToFile(const std::string& filename, bool binary_mode) const

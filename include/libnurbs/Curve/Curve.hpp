@@ -22,9 +22,9 @@ namespace libnurbs
     public:
         Curve() = default;
 
-        void LoadFromFile(const string& filename);
+        Curve& LoadFromFile(const string& filename);
 
-        void LoadFromFile(std::istream& is);
+        Curve& LoadFromFile(std::istream& is);
 
         void SaveToFile(const string& filename, bool binary_mode = false) const;
 

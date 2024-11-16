@@ -19,9 +19,9 @@ namespace libnurbs
     public:
         Surface() = default;
 
-        void LoadFromFile(const string& filename);
+        Surface& LoadFromFile(const string& filename);
 
-        void LoadFromFile(std::istream& is);
+        Surface& LoadFromFile(std::istream& is);
 
         void SaveToFile(const string& filename, bool binary_mode = false) const;
 
