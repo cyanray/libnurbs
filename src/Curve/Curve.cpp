@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <fstream>
+#include <iomanip>
 
 #include "libnurbs/Algorithm/DegreeAlgo.hpp"
 #include "libnurbs/Algorithm/KnotRemoval.hpp"
@@ -247,6 +248,8 @@ void Curve::SaveToFile(std::ostream& os, bool binary_mode) const
     {
         // Write textual data
         os << "*Degree: " << Degree << "\n";
+
+        os << std::fixed << std::setprecision(std::numeric_limits<double>::digits10 + 2);
 
         os << "*Knots:\n";
         for (size_t i = 0; i < Knots.Values().size(); ++i)

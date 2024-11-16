@@ -1,5 +1,7 @@
 #include "libnurbs/Surface/Surface.hpp"
 #include <fstream>
+#include <iomanip>
+
 #include "libnurbs/Algorithm/DegreeAlgo.hpp"
 #include "libnurbs/Algorithm/KnotRemoval.hpp"
 #include "libnurbs/Algorithm/MathUtils.hpp"
@@ -318,6 +320,8 @@ void Surface::SaveToFile(std::ostream& os, bool binary_mode) const
         os << "*DegreeU: " << DegreeU << "\n";
         os << "*DegreeV: " << DegreeV << "\n";
 
+        os << std::fixed << std::setprecision(std::numeric_limits<double>::digits10 + 2);
+
         // Write knot vectors
         os << "*KnotsU:\n";
         for (size_t i = 0; i < KnotsU.Values().size(); ++i)
@@ -325,15 +329,7 @@ void Surface::SaveToFile(std::ostream& os, bool binary_mode) const
             os << KnotsU.Values()[i];
             if (i != KnotsU.Values().size() - 1)
             {
-                os << ",";
-            }
-            if ((i + 1) % 10 == 0)
-            {
-                os << "\n";
-            }
-            else
-            {
-                os << " ";
+                os << ", ";
             }
         }
         os << "\n";
@@ -344,15 +340,7 @@ void Surface::SaveToFile(std::ostream& os, bool binary_mode) const
             os << KnotsV.Values()[i];
             if (i != KnotsV.Values().size() - 1)
             {
-                os << ",";
-            }
-            if ((i + 1) % 10 == 0)
-            {
-                os << "\n";
-            }
-            else
-            {
-                os << " ";
+                os << ", ";
             }
         }
         os << "\n";
