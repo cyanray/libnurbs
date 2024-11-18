@@ -1,6 +1,7 @@
 #include "libnurbs/Surface/Surface.hpp"
 #include <fstream>
 #include <iomanip>
+#include <iostream>
 
 #include "libnurbs/Algorithm/DegreeAlgo.hpp"
 #include "libnurbs/Algorithm/KnotRemoval.hpp"
@@ -849,6 +850,302 @@ Surface Surface::Transform(const Mat3x3& R) const
     }
     return transformed_surface;
 }
+
+Surface Surface::AlignParameterDomain(AlignAxis u_axis, AlignAxis v_axis)
+{
+    // 创建当前 Surface 的副本，以便进行操作
+    Surface result = *this;
+
+    // 检查控制点网格是否至少有 2 个控制点，以计算参数方向
+    if (ControlPoints.UCount < 2 || ControlPoints.VCount < 2)
+    {
+        // 控制点太少，无法计算参数方向，直接返回原始 Surface
+        return result;
+    }
+
+    // 1. 获取四个角点的控制点
+    int u_max = ControlPoints.UCount - 1;
+    int v_max = ControlPoints.VCount - 1;
+
+    Vec3 S00 = ControlPoints.Get(0, 0).head<3>();
+    Vec3 S10 = ControlPoints.Get(u_max, 0).head<3>();
+    Vec3 S01 = ControlPoints.Get(0, v_max).head<3>();
+    Vec3 S11 = ControlPoints.Get(u_max, v_max).head<3>();
+
+    // 2. 计算包围盒
+    Numeric min_x = std::min({S00.x(), S10.x(), S01.x(), S11.x()});
+    Numeric max_x = std::max({S00.x(), S10.x(), S01.x(), S11.x()});
+    Numeric min_y = std::min({S00.y(), S10.y(), S01.y(), S11.y()});
+    Numeric max_y = std::max({S00.y(), S10.y(), S01.y(), S11.y()});
+    Numeric min_z = std::min({S00.z(), S10.z(), S01.z(), S11.z()});
+    Numeric max_z = std::max({S00.z(), S10.z(), S01.z(), S11.z()});
+
+    Numeric dx = max_x - min_x;
+    Numeric dy = max_y - min_y;
+    Numeric dz = max_z - min_z;
+
+    // 3. 确定主要的两个坐标轴和法向量
+    std::vector<std::pair<Numeric, AlignAxis>> extents = {
+        {dx, AlignAxis::XAxis},
+        {dy, AlignAxis::YAxis},
+        {dz, AlignAxis::ZAxis}
+    };
+
+    // 按照尺寸从大到小排序
+    std::sort(extents.begin(),
+              extents.end(),
+              [](const auto& a, const auto& b)
+              {
+                  return a.first > b.first;
+              });
+
+    // 主要的两个方向（参数方向）
+    AlignAxis major_axis1 = extents[0].second;
+    AlignAxis major_axis2 = extents[1].second;
+    // 法向量方向
+    AlignAxis normal_axis = extents[2].second;
+
+    // 4. 计算控制点之间的矢量
+    struct VectorInfo
+    {
+        Vec3 vector;
+        // 角度
+        Numeric angle1; // 与 major_axis1 的夹角
+        Numeric angle2; // 与 major_axis2 的夹角
+    };
+    std::vector<VectorInfo> vectors;
+
+    auto compute_angle = [](const Vec3& vec, AlignAxis axis) -> Numeric
+    {
+        Vec3 axis_vector;
+        switch (axis)
+        {
+        case AlignAxis::XAxis:
+            axis_vector = Vec3::UnitX();
+            break;
+        case AlignAxis::YAxis:
+            axis_vector = Vec3::UnitY();
+            break;
+        case AlignAxis::ZAxis:
+            axis_vector = Vec3::UnitZ();
+            break;
+        }
+        // 计算夹角的余弦值
+        Numeric cos_angle = vec.normalized().dot(axis_vector);
+        // 为了比较方便，使用夹角的绝对值
+        return std::acos(std::abs(cos_angle));
+    };
+
+    // 计算非零矢量并计算其与主要方向的夹角
+    auto add_vector_info = [&](const Vec3& vec)
+    {
+        if (vec.norm() > 1e-6)
+        {
+            VectorInfo info;
+            info.vector = vec;
+            info.angle1 = compute_angle(vec, major_axis1);
+            info.angle2 = compute_angle(vec, major_axis2);
+            vectors.push_back(info);
+        }
+    };
+
+    add_vector_info(S10 - S00);
+    add_vector_info(S01 - S00);
+    add_vector_info(S11 - S10);
+    add_vector_info(S11 - S01);
+
+    if (vectors.empty())
+    {
+        // 无法确定参数方向，返回原始 Surface
+        return result;
+    }
+
+    // 5. 为每个矢量分配最接近的主要方向
+    AlignAxis current_u_axis, current_v_axis;
+    int u_sign = 0, v_sign = 0;
+
+    if (vectors.size() < 4)
+    {
+        int count_axis1 = 0;
+        int count_axis2 = 0;
+        Numeric du = 0;
+        Numeric dv = 0;
+
+        auto GetAxisValue = [](const Vec3& point, AlignAxis axis) -> Numeric
+        {
+            switch (axis)
+            {
+            case AlignAxis::XAxis:
+                return point.x();
+            case AlignAxis::YAxis:
+                return point.y();
+            case AlignAxis::ZAxis:
+                return point.z();
+            }
+            return 0.0;
+        };
+
+        for (const auto& info : vectors)
+        {
+            if (info.angle1 < info.angle2)
+            {
+                // 分配给 major_axis1
+                ++count_axis1;
+                // 累加在该轴上的增量
+                du += GetAxisValue(info.vector, major_axis1);
+            }
+            else
+            {
+                // 分配给 major_axis2
+                ++count_axis2;
+                dv += GetAxisValue(info.vector, major_axis2);
+            }
+        }
+
+        if (count_axis1 >= count_axis2)
+        {
+            current_u_axis = major_axis1;
+            current_v_axis = major_axis2;
+            u_sign = (du >= 0) ? 1 : -1;
+            v_sign = (dv >= 0) ? 1 : -1;
+        }
+        else
+        {
+            current_u_axis = major_axis2;
+            current_v_axis = major_axis1;
+            u_sign = (dv >= 0) ? 1 : -1;
+            v_sign = (du >= 0) ? 1 : -1;
+        }
+    }
+    else
+    {
+        auto GetDominantAxis = [](const Vec3& vec) -> std::pair<AlignAxis, int>
+        {
+            Numeric abs_x = std::abs(vec.x());
+            Numeric abs_y = std::abs(vec.y());
+            Numeric abs_z = std::abs(vec.z());
+            Numeric max_abs = std::max({abs_x, abs_y, abs_z});
+
+            AlignAxis axis;
+            if (max_abs == abs_x)
+                axis = AlignAxis::XAxis;
+            else if (max_abs == abs_y)
+                axis = AlignAxis::YAxis;
+            else
+                axis = AlignAxis::ZAxis;
+
+            int sign = 0;
+            switch (axis)
+            {
+            case AlignAxis::XAxis:
+                sign = (vec.x() >= 0) ? 1 : -1;
+                break;
+            case AlignAxis::YAxis:
+                sign = (vec.y() >= 0) ? 1 : -1;
+                break;
+            case AlignAxis::ZAxis:
+                sign = (vec.z() >= 0) ? 1 : -1;
+                break;
+            }
+
+            return {axis, sign};
+        };
+
+        std::tie(current_u_axis, u_sign) = GetDominantAxis(vectors[0].vector);
+        std::tie(current_v_axis, v_sign) = GetDominantAxis(vectors[1].vector);
+    }
+
+
+    // 7. 判断是否需要交换 u 和 v
+    bool need_swap = false;
+    if (current_u_axis != u_axis)
+    {
+        if (current_v_axis == u_axis && current_u_axis == v_axis)
+        {
+            // 需要交换 u 和 v
+            need_swap = true;
+            std::swap(current_u_axis, current_v_axis);
+            std::swap(u_sign, v_sign);
+        }
+        else
+        {
+            // 无法通过交换实现对齐，返回原始 Surface
+            return result;
+        }
+    }
+
+    // 8. 判断是否需要反转 u 和 v 的方向
+    bool reverse_u = false;
+    if (current_u_axis == u_axis)
+    {
+        if (u_sign < 0)
+            reverse_u = true;
+    }
+
+    bool reverse_v = false;
+    if (current_v_axis == v_axis)
+    {
+        if (v_sign < 0)
+            reverse_v = true;
+    }
+
+    // 9. 执行必要的操作：交换和反转
+    if (need_swap)
+    {
+        // 交换次数
+        std::swap(result.DegreeU, result.DegreeV);
+        // 交换节点矢量
+        std::swap(result.KnotsU, result.KnotsV);
+
+        // 交换控制点网格
+        auto& grid = result.ControlPoints;
+        Grid<Vec4> transposed_grid(grid.VCount, grid.UCount);
+        for (int u = 0; u < grid.UCount; ++u)
+        {
+            for (int v = 0; v < grid.VCount; ++v)
+            {
+                transposed_grid.Get(v, u) = grid.Get(u, v);
+            }
+        }
+        result.ControlPoints = std::move(transposed_grid);
+    }
+
+    if (reverse_u)
+    {
+        // 反转 u 方向的节点矢量
+        result.KnotsU.Reverse();
+
+        // 反转 u 方向的控制点顺序
+        auto& grid = result.ControlPoints;
+        for (int v = 0; v < grid.VCount; ++v)
+        {
+            for (int u = 0; u < grid.UCount / 2; ++u)
+            {
+                std::swap(grid.Get(u, v), grid.Get(grid.UCount - 1 - u, v));
+            }
+        }
+    }
+
+    if (reverse_v)
+    {
+        // 反转 v 方向的节点矢量
+        result.KnotsV.Reverse();
+
+        // 反转 v 方向的控制点顺序
+        auto& grid = result.ControlPoints;
+        for (int u = 0; u < grid.UCount; ++u)
+        {
+            for (int v = 0; v < grid.VCount / 2; ++v)
+            {
+                std::swap(grid.Get(u, v), grid.Get(u, grid.VCount - 1 - v));
+            }
+        }
+    }
+
+    // 10. 返回调整后的 Surface
+    return result;
+}
+
 
 Grid<Vec4> Surface::HomogeneousDerivative(Numeric u, Numeric v, int order_u, int order_v) const
 {

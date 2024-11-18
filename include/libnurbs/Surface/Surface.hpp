@@ -90,6 +90,16 @@ namespace libnurbs
 
         [[nodiscard]] Surface Transform(const Mat3x3& R) const;
 
+
+        enum class AlignAxis
+        {
+            XAxis,
+            YAxis,
+            ZAxis
+        };
+
+        [[nodiscard]] Surface AlignParameterDomain(AlignAxis u_axis, AlignAxis v_axis);
+
     private:
         [[nodiscard]] Grid<Vec4> HomogeneousDerivative(Numeric u, Numeric v, int order_u, int order_v) const;
     };

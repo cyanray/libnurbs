@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <libnurbs/Core/Typedefs.hpp>
 #include <vector>
 
@@ -68,6 +69,8 @@ namespace libnurbs
          * \return Span index in original KnotVector that contains the new knot value.
          */
         int InsertKnot(Numeric value, int times = 1);
+
+        void Reverse();
     };
 
     struct KnotVector::KnotPair

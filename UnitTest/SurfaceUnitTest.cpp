@@ -1146,7 +1146,8 @@ TEST_CASE("Surface::LoadFromFile - Invalid Control Point Data", "[LoadFromFile]"
 )";
     std::istringstream iss(invalid_cp);
     Surface surface;
-    REQUIRE_THROWS_WITH(surface.LoadFromFile(iss), Catch::Matchers::ContainsSubstring("ControlPoints count does not match grid dimensions."));
+    REQUIRE_THROWS_WITH(surface.LoadFromFile(iss),
+                        Catch::Matchers::ContainsSubstring("ControlPoints count does not match grid dimensions."));
 }
 
 TEST_CASE("Surface::LoadFromFile - Extra Spaces and Formatting", "[LoadFromFile]")
@@ -1422,3 +1423,5 @@ TEST_CASE("Surface::LoadFromFile - Values Spanning Multiple Lines", "[LoadFromFi
     REQUIRE(surface.KnotsV.Values().size() == 4);
     REQUIRE(surface.ControlPoints.Values.size() == 12);
 }
+
+
