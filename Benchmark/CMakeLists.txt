@@ -9,3 +9,7 @@ set(libnurbs_Benchmark_SOURCES
 add_executable(${PROJECT_NAME} ${libnurbs_Benchmark_SOURCES})
 target_link_libraries(${PROJECT_NAME} PRIVATE benchmark::benchmark benchmark::benchmark_main)
 target_link_libraries(${PROJECT_NAME} PRIVATE libnurbs)
+
+install(TARGETS ${PROJECT_NAME}
+        RUNTIME DESTINATION bin
+)

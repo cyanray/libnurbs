@@ -17,6 +17,9 @@ add_executable(${PROJECT_NAME} ${libnurbs_UNITTEST_SOURCES})
 target_link_libraries(${PROJECT_NAME} PRIVATE Catch2::Catch2WithMain)
 target_link_libraries(${PROJECT_NAME} PRIVATE libnurbs)
 
-include(CTest)
 include(Catch)
 catch_discover_tests(${PROJECT_NAME})
+
+install(TARGETS ${PROJECT_NAME}
+        RUNTIME DESTINATION bin
+)
