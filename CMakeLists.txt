@@ -45,9 +45,6 @@ set(LIBNURBS_SOURCES
 )
 
 option(BUILD_SHARED_LIBS "Build libnurbs as a shared library" OFF)
-if (BUILD_SHARED_LIBS)
-    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-endif ()
 
 add_library(libnurbs ${LIBNURBS_SOURCES} ${LIBNURBS_INCLUDES})
 add_library(libnurbs::libnurbs ALIAS libnurbs)
@@ -64,6 +61,10 @@ set_target_properties(libnurbs PROPERTIES
         VERSION ${PROJECT_VERSION}
         SOVERSION ${LIBNURBS_SOVERSION}
 )
+
+if (BUILD_SHARED_LIBS)
+    set_target_properties(libnurbs PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
+endif ()
 
 
 install(TARGETS libnurbs
