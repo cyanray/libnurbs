@@ -1,9 +1,0 @@
-{
-  "name" : "libnurbs",
-  "version-string" : "1.0.0",
-  "builtin-baseline" : "f06267da58f3c06b3a1aff9cbf5c2906e595ebc9",
-  "dependencies" : [ {
-    "name" : "eigen3",
-    "version>=" : "3.4.0#4"
-  }]
-}
