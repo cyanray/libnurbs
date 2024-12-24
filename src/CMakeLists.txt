@@ -1,0 +1,7 @@
+add_subdirectory(Algorithm)
+add_subdirectory(Basis)
+add_subdirectory(Core)
+add_subdirectory(Curve)
+add_subdirectory(Geometry)
+add_subdirectory(Surface)
+add_subdirectory(Utils)
