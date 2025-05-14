@@ -6,6 +6,7 @@
 #include <string>
 #include <libnurbs/Core/KnotVector.hpp>
 #include <libnurbs/Core/Typedefs.hpp>
+#include <libnurbs/Core/BoundingBox.hpp>
 
 using std::vector;
 using std::string;
@@ -40,12 +41,12 @@ namespace libnurbs
         [[nodiscard]] bool IsRational() const;
 
         [[nodiscard]] Numeric SearchParameter(const Vec3& point,
-                                              Numeric init = 0.5,
-                                              Numeric epsilon = 1e-8,
+                                              Numeric init                = 0.5,
+                                              Numeric epsilon             = 1e-8,
                                               Numeric max_iteration_count = 512) const;
 
         [[nodiscard]] Numeric BinarySearchParameter(const Vec3& point,
-                                                    Numeric epsilon = 1e-8,
+                                                    Numeric epsilon         = 1e-8,
                                                     int max_iteration_count = 512) const;
 
 
@@ -56,12 +57,16 @@ namespace libnurbs
         [[nodiscard]] Curve InsertKnot(std::span<Numeric> knots_to_insert) const;
 
         [[nodiscard]] std::tuple<Curve, int> RemoveKnot(Numeric knot_remove,
-                                                        int times = 1,
+                                                        int times         = 1,
                                                         Numeric tolerance = 1e-12) const;
 
         [[nodiscard]] Curve ElevateDegree(int times = 1) const;
 
         [[nodiscard]] Curve Transform(const Mat3x3& R) const;
+
+        vector<Curve> ExtractBezier() const;
+
+        BoundingBox GetBoundingBox(Numeric epsilon = 1e-3) const;
 
     private:
         [[nodiscard]] vector<Vec4> HomogeneousDerivative(Numeric x, int order) const;

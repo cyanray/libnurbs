@@ -16,10 +16,19 @@ namespace libnurbs
         return std::abs(v1 - v2) < epsilon;
     }
 
+    template <typename Derived>
+    bool Approx(const Eigen::MatrixBase<Derived>& v1,
+                const Eigen::MatrixBase<Derived>& v2,
+                double epsilon = 1e-6)
+    {
+        return (v1 - v2).cwiseAbs().maxCoeff() < epsilon;
+    }
+
     inline int Binomial(int n, int k)
     {
         int result = 1;
-        if (k > n) return 0;
+        if (k > n)
+            return 0;
         for (int i = 1; i <= k; i++)
         {
             result *= (n - i + 1);

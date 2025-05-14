@@ -12,10 +12,11 @@ namespace libnurbs
     {
     private:
         vector <Numeric> m_Values{};
+
     public:
         struct KnotPair;
-
         struct KnotSpan;
+
     public:
         KnotVector() = default;
 
@@ -40,6 +41,16 @@ namespace libnurbs
         [[nodiscard]] int Count() const
         {
             return (int)m_Values.size();
+        }
+
+        Numeric& operator[](int index)
+        {
+            return m_Values[index];
+        }
+
+        const Numeric& operator()(int index) const
+        {
+            return m_Values[index];
         }
 
         [[nodiscard]] bool IsValid() const;

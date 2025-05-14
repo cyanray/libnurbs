@@ -3,6 +3,8 @@
 #include <cassert>
 #include <fstream>
 #include <iomanip>
+#include <stack>
+#include <mdspan>
 
 #include "libnurbs/Algorithm/DegreeAlgo.hpp"
 #include "libnurbs/Algorithm/KnotRemoval.hpp"
@@ -88,9 +90,9 @@ Curve& Curve::LoadFromFile(std::istream& is)
     // TXT mode
     std::string line;
     std::string current_key;
-    std::vector<std::string> content_lines;
+    vector<std::string> content_lines;
 
-    auto process_key = [&](const std::string& key, const std::vector<std::string>& lines)
+    auto process_key = [&](const std::string& key, const vector<std::string>& lines)
     {
         if (key == "Degree")
         {
@@ -155,7 +157,8 @@ Curve& Curve::LoadFromFile(std::istream& is)
     while (std::getline(is, line))
     {
         Utils::TrimString(line);
-        if (line.empty()) continue;
+        if (line.empty())
+            continue;
 
         if (line.front() == '*' && line.find(':') != std::string::npos)
         {
@@ -168,7 +171,7 @@ Curve& Curve::LoadFromFile(std::istream& is)
 
             // Extract key and possible inline value
             size_t colon_pos = line.find(':');
-            current_key = line.substr(1, colon_pos - 1);
+            current_key      = line.substr(1, colon_pos - 1);
             Utils::TrimString(current_key);
 
             std::string value_part = line.substr(colon_pos + 1);
@@ -281,7 +284,7 @@ Vec3 Curve::Evaluate(Numeric x) const
 {
     assert(x >= 0 && x <= 1);
     int index_span = Knots.FindSpanIndex(Degree, x);
-    VecX basis = BSplineBasis::Evaluate(Degree, Knots.Values(), index_span, x);
+    VecX basis     = BSplineBasis::Evaluate(Degree, Knots.Values(), index_span, x);
     assert(basis.size() == Degree + 1);
     Vec4 result = Vec4::Zero();
     for (int i = 0; i <= Degree; i++)
@@ -293,14 +296,14 @@ Vec3 Curve::Evaluate(Numeric x) const
 }
 
 
-std::vector<Vec4> Curve::HomogeneousDerivative(Numeric x, int order) const
+vector<Vec4> Curve::HomogeneousDerivative(Numeric x, int order) const
 {
     assert(x >= 0 && x <= 1);
     int index_span = Knots.FindSpanIndex(Degree, x);
-    MatX basis = BSplineBasis::EvaluateAll(Degree, Knots.Values(), index_span, x, order);
+    MatX basis     = BSplineBasis::EvaluateAll(Degree, Knots.Values(), index_span, x, order);
     assert(basis.rows() == order + 1);
     assert(basis.cols() == Degree + 1);
-    std::vector<Vec4> result(order + 1);
+    vector<Vec4> result(order + 1);
     for (int k = 0; k <= order; ++k)
     {
         Vec4 tmp = Vec4::Zero();
@@ -342,11 +345,13 @@ vector<Vec3> Curve::EvaluateAll(Numeric x, int order) const
 bool Curve::IsRational() const
 {
     const auto& cps = ControlPoints;
-    if (cps.empty()) return false;
+    if (cps.empty())
+        return false;
     Numeric w = cps.front().w();
     for (size_t i = 1; i < cps.size(); ++i)
     {
-        if (cps[i].w() != w) return true;
+        if (cps[i].w() != w)
+            return true;
     }
     return false;
 }
@@ -362,22 +367,22 @@ Numeric Curve::SearchParameter(const Vec3& point, Numeric init, Numeric epsilon,
         return ri.dot(Cu);
     };
 
-    Numeric u_last = init;
+    Numeric u_last           = init;
     Numeric current_residual = std::numeric_limits<Numeric>::max();
-    Numeric Hk = 1.0;
+    Numeric Hk               = 1.0;
 
     auto line_search = [&](Numeric gk) -> Numeric
     {
-        Numeric alpha = 1.0;
-        Numeric c1 = 1e-4;
-        Numeric beta = 0.9;
+        Numeric alpha                  = 1.0;
+        Numeric c1                     = 1e-4;
+        Numeric beta                   = 0.9;
         int max_line_search_iterations = 20;
-        int ls_count = 0;
+        int ls_count                   = 0;
 
         while (ls_count++ < max_line_search_iterations)
         {
             Numeric u_trial = u_last - alpha * Hk * gk;
-            u_trial = std::clamp(u_trial, Numeric(0), Numeric(1));
+            u_trial         = std::clamp(u_trial, Numeric(0), Numeric(1));
 
             if (Ri(u_trial).norm() <= current_residual - c1 * alpha * gk * Hk * gk)
             {
@@ -392,24 +397,24 @@ Numeric Curve::SearchParameter(const Vec3& point, Numeric init, Numeric epsilon,
     int count = 0;
     while (!((current_residual < epsilon) || (count++ >= max_iteration_count)))
     {
-        Numeric gk = fi(u_last);
+        Numeric gk    = fi(u_last);
         Numeric u_new = line_search(gk);
 
-        Numeric sk = u_new - u_last;
+        Numeric sk     = u_new - u_last;
         Numeric gk_new = fi(u_new);
-        Numeric yk = gk_new - gk;
+        Numeric yk     = gk_new - gk;
 
         Numeric yk_dot_sk = yk * sk;
         if (std::abs(yk_dot_sk) < 1e-16)
         {
-            Hk = 1.0;
+            Hk        = 1.0;
             yk_dot_sk = 1e-10;
         }
 
         Numeric rho = 1.0 / yk_dot_sk;
-        Hk = (1.0 - rho * yk * sk) * Hk * (1.0 - rho * sk * yk) + rho * sk * sk;
+        Hk          = (1.0 - rho * yk * sk) * Hk * (1.0 - rho * sk * yk) + rho * sk * sk;
 
-        u_last = u_new;
+        u_last           = u_new;
         current_residual = Ri(u_last).norm();
     }
     return u_last;
@@ -417,7 +422,7 @@ Numeric Curve::SearchParameter(const Vec3& point, Numeric init, Numeric epsilon,
 
 Numeric Curve::BinarySearchParameter(const Vec3& point, Numeric epsilon, int max_iteration_count) const
 {
-    Numeric low = 0.0;
+    Numeric low  = 0.0;
     Numeric high = 1.0;
 
     auto Ri = [&point, this](Numeric u) -> Numeric
@@ -432,13 +437,15 @@ Numeric Curve::BinarySearchParameter(const Vec3& point, Numeric epsilon, int max
 
         Numeric mid_residual = Ri(mid);
 
-        Numeric left_mid = mid - epsilon;
+        Numeric left_mid  = mid - epsilon;
         Numeric right_mid = mid + epsilon;
 
-        if (left_mid < low) left_mid = low;
-        if (right_mid > high) right_mid = high;
+        if (left_mid < low)
+            left_mid = low;
+        if (right_mid > high)
+            right_mid = high;
 
-        Numeric left_residual = Ri(left_mid);
+        Numeric left_residual  = Ri(left_mid);
         Numeric right_residual = Ri(right_mid);
 
         if (left_residual < mid_residual)
@@ -451,8 +458,9 @@ Numeric Curve::BinarySearchParameter(const Vec3& point, Numeric epsilon, int max
         }
         else
         {
-            if (std::abs(high - low) < epsilon || mid_residual < epsilon) return mid;
-            low = left_mid;
+            if (std::abs(high - low) < epsilon || mid_residual < epsilon)
+                return mid;
+            low  = left_mid;
             high = right_mid;
         }
     }
@@ -468,9 +476,9 @@ Curve Curve::InsertKnot(Numeric knot_value) const
     const auto& knots = this->Knots.Values();
     for (int i = k - Degree + 1; i <= k; i++)
     {
-        Numeric alpha = (knot_value - knots[i]) / (knots[i + Degree] - knots[i]);
-        auto point_i = ToHomo(this->ControlPoints[i]);
-        auto point_im1 = ToHomo(this->ControlPoints[i - 1]);
+        Numeric alpha           = (knot_value - knots[i]) / (knots[i + Degree] - knots[i]);
+        auto point_i            = ToHomo(this->ControlPoints[i]);
+        auto point_im1          = ToHomo(this->ControlPoints[i - 1]);
         result.ControlPoints[i] = FromHomo(alpha * point_i + (1 - alpha) * point_im1);
     }
     return result;
@@ -479,14 +487,14 @@ Curve Curve::InsertKnot(Numeric knot_value) const
 Curve Curve::InsertKnot(Numeric knot_value, int times) const
 {
     // TODO: better implementation
-    std::vector list(times, knot_value);
+    vector list(times, knot_value);
     return InsertKnot(list);
 }
 
 Curve Curve::InsertKnot(std::span<Numeric> knots_to_insert) const
 {
     Curve result = *this;
-    auto& knots = result.Knots.Values();
+    auto& knots  = result.Knots.Values();
     knots.reserve(knots.size() + knots_to_insert.size());
     auto& points = result.ControlPoints;
     points.reserve(points.size() + knots_to_insert.size());
@@ -497,11 +505,11 @@ Curve Curve::InsertKnot(std::span<Numeric> knots_to_insert) const
         Vec4 point_last = ToHomo(points[k - Degree]);
         for (int i = k - Degree + 1; i <= k; i++)
         {
-            Numeric alpha = (knot_value - knots[i]) / (knots[i + Degree] - knots[i]);
-            auto point_i = ToHomo(points[i]);
+            Numeric alpha  = (knot_value - knots[i]) / (knots[i + Degree] - knots[i]);
+            auto point_i   = ToHomo(points[i]);
             Vec4 point_new = FromHomo(alpha * point_i + (1 - alpha) * point_last);
-            point_last = point_i;
-            points[i] = point_new;
+            point_last     = point_i;
+            points[i]      = point_new;
         }
         knots.insert(knots.begin() + k + 1, knot_value);
     }
@@ -514,9 +522,9 @@ std::tuple<Curve, int> Curve::RemoveKnot(Numeric knot_remove, int times, Numeric
     assert(times > 0);
 
     Curve result{*this};
-    int degree = result.Degree;
+    int degree   = result.Degree;
     auto& points = result.ControlPoints;
-    int t = KnotRemoval(result.Knots, points, degree, knot_remove, times, tolerance);
+    int t        = KnotRemoval(result.Knots, points, degree, knot_remove, times, tolerance);
     return {result, t};
 }
 
@@ -537,4 +545,124 @@ Curve Curve::Transform(const Mat3x3& R) const
         point.head<3>() = R * point.head<3>();
     }
     return transformed_curve;
+}
+
+vector<Curve> Curve::ExtractBezier() const
+{
+    Curve bezier = *this;
+    auto pairs   = this->Knots.GetKnotPairs();
+    for (auto& item : pairs)
+    {
+        Numeric u = item.Value;
+        int mult  = item.Multiplicity;
+        if (u <= Numeric(0.0) || u >= Numeric(1.0))
+            continue;
+        if (mult >= Degree)
+            continue;
+        bezier = bezier.InsertKnot(u, Degree - mult);
+    }
+
+    vector<Curve> segments;
+    segments.reserve(pairs.size());
+    const auto& ctrl = bezier.ControlPoints;
+    int p            = bezier.Degree;
+
+    for (int i = 0; i + p < ctrl.size(); i += p)
+    {
+        Curve seg;
+        seg.Degree = p;
+        seg.Knots  = KnotVector::Uniform(p, 2 * p + 2);
+        seg.ControlPoints.resize(p + 1);
+        for (int k = 0; k <= p; ++k)
+        {
+            seg.ControlPoints[k] = ctrl[i + k];
+        }
+        segments.emplace_back(std::move(seg));
+    }
+    return segments;
+}
+
+BoundingBox Curve::GetBoundingBox(Numeric epsilon) const
+{
+    auto segments = this->ExtractBezier();
+    int p         = this->Degree;
+
+    auto to3 = [&](const Vec4& v) -> Vec3
+    {
+        return v.head<3>();
+    };
+
+    // if p <= 5, use static buffer
+    vector<Vec4> b((p + 1) * (p + 1));
+    using std_2dspan = mdspan<Vec4, extents<int, dynamic_extent, dynamic_extent>>;
+
+    bool initialized = false;
+    BoundingBox globalBox;
+    for (auto& seg : segments)
+    {
+        stack<vector<Vec4>> stack;
+        stack.push(std::move(seg.ControlPoints));
+        while (!stack.empty())
+        {
+            auto ctrlPts = std::move(stack.top());
+            stack.pop();
+
+            // Bounding-box of control points net
+            BoundingBox cpBox(to3(ctrlPts[0]), to3(ctrlPts[0]));
+            for (size_t m = 1; m < ctrlPts.size(); ++m)
+            {
+                Vec3 p3 = to3(ctrlPts[m]);
+                cpBox.ExpandToInclude(p3);
+            }
+
+            // Bounding-box of end points
+            Vec3 A = to3(ctrlPts.front());
+            Vec3 B = to3(ctrlPts.back());
+            BoundingBox epBox(A, B);
+
+            // is this condition working?
+            bool small_enough = cpBox.Length().norm() <= epsilon;
+
+            bool flat_enough = Approx(cpBox.Min, epBox.Min, 1e-6) &&
+                               Approx(cpBox.Max, epBox.Max, 1e-6);
+
+            if (small_enough || flat_enough)
+            {
+                if (!initialized)
+                {
+                    globalBox   = epBox;
+                    initialized = true;
+                }
+                else
+                {
+                    globalBox.ExpandToInclude(epBox);
+                }
+                continue;
+            }
+
+            std_2dspan b_view{b.data(), p + 1, p + 1};
+            // fill first row
+            for (int s = 0; s <= p; ++s)
+            {
+                b_view[0, s] = ctrlPts[s];
+            }
+
+            for (int r = 1; r <= p; ++r)
+            {
+                for (int s = 0; s <= p - r; ++s)
+                {
+                    b_view[r, s] = b_view[r - 1, s] * 0.5 + b_view[r - 1, s + 1] * 0.5;
+                }
+            }
+            vector<Vec4> L(p + 1), R(p + 1);
+            for (int r = 0; r <= p; ++r)
+            {
+                L[r] = b_view[r, 0];
+                R[r] = b_view[p - r, r];
+            }
+            stack.push(std::move(R));
+            stack.push(std::move(L));
+        }
+    }
+    return globalBox;
 }
