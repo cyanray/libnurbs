@@ -1,6 +1,6 @@
 #include "libnurbs/Geometry/GeomRect.hpp"
-
 #include "libnurbs/Surface/Surface.hpp"
+#include <cassert>
 
 namespace libnurbs
 {

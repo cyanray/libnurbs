@@ -2,6 +2,7 @@
 
 #include <libnurbs/Core/Typedefs.hpp>
 #include <vector>
+#include <cassert>
 
 namespace libnurbs
 {

@@ -352,3 +352,4 @@ FodyWeavers.xsd
 .idea
 /cmake-build-*
 /CMakeUserPresets.json
+.DS_Store

@@ -1,6 +1,6 @@
 #include "libnurbs/Geometry/GeomSegment.hpp"
-
 #include "libnurbs/Curve/Curve.hpp"
+#include <cassert>
 
 namespace libnurbs
 {
