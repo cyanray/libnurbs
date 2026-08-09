@@ -443,6 +443,46 @@ Grid<Vec3> Surface::EvaluateAll(Numeric u, Numeric v, int order_u, int order_v) 
     return result;
 }
 
+DerivativeJet2D<Vec3> Surface::EvaluateJet(const Numeric u, const Numeric v, const int max_order) const
+{
+    assert(max_order >= 0);
+    const auto homo_derivatives = HomogeneousJet(u, v, max_order);
+    DerivativeJet2D<Vec3> result(max_order);
+
+    const Numeric weight = homo_derivatives.Get(0, 0).w();
+    for (int total_order = 0; total_order <= max_order; ++total_order)
+    {
+        for (int order_u = total_order; order_u >= 0; --order_u)
+        {
+            const int order_v = total_order - order_u;
+            Vec3 derivative = homo_derivatives.Get(order_u, order_v).head<3>();
+
+            for (int i = 1; i <= order_u; ++i)
+            {
+                derivative.noalias() -= Binomial(order_u, i) * homo_derivatives.Get(i, 0).w()
+                                        * result.Get(order_u - i, order_v);
+            }
+            for (int j = 1; j <= order_v; ++j)
+            {
+                derivative.noalias() -= Binomial(order_v, j) * homo_derivatives.Get(0, j).w()
+                                        * result.Get(order_u, order_v - j);
+            }
+            for (int i = 1; i <= order_u; ++i)
+            {
+                const int binomial_u = Binomial(order_u, i);
+                for (int j = 1; j <= order_v; ++j)
+                {
+                    derivative.noalias() -= binomial_u * Binomial(order_v, j)
+                                            * homo_derivatives.Get(i, j).w()
+                                            * result.Get(order_u - i, order_v - j);
+                }
+            }
+            result.Get(order_u, order_v) = derivative / weight;
+        }
+    }
+    return result;
+}
+
 bool Surface::IsRational() const
 {
     const auto& cps = ControlPoints.Values;
@@ -1179,6 +1219,42 @@ Grid<Vec4> Surface::HomogeneousDerivative(Numeric u, Numeric v, int order_u, int
                 }
                 result.Get(k, l).noalias() += basis_v(l, j) * tmp;
             }
+        }
+    }
+    return result;
+}
+
+DerivativeJet2D<Vec4> Surface::HomogeneousJet(const Numeric u, const Numeric v, const int max_order) const
+{
+    assert(u >= 0 && u <= 1);
+    assert(v >= 0 && v <= 1);
+    assert(max_order >= 0);
+
+    const int index_span_u = KnotsU.FindSpanIndex(DegreeU, u);
+    const int index_span_v = KnotsV.FindSpanIndex(DegreeV, v);
+    const MatX basis_u = BSplineBasis::EvaluateAll(DegreeU, KnotsU.Values(), index_span_u, u, max_order);
+    const MatX basis_v = BSplineBasis::EvaluateAll(DegreeV, KnotsV.Values(), index_span_v, v, max_order);
+    const int index_pre_u = index_span_u - DegreeU;
+    const int index_pre_v = index_span_v - DegreeV;
+
+    DerivativeJet2D<Vec4> result(max_order);
+    for (int total_order = 0; total_order <= max_order; ++total_order)
+    {
+        for (int order_u = total_order; order_u >= 0; --order_u)
+        {
+            const int order_v = total_order - order_u;
+            Vec4 derivative = Vec4::Zero();
+            for (int j = 0; j <= DegreeV; ++j)
+            {
+                Vec4 temporary = Vec4::Zero();
+                for (int i = 0; i <= DegreeU; ++i)
+                {
+                    temporary.noalias() += basis_u(order_u, i)
+                                           * ToHomo(ControlPoints.Get(index_pre_u + i, index_pre_v + j));
+                }
+                derivative.noalias() += basis_v(order_v, j) * temporary;
+            }
+            result.Get(order_u, order_v) = derivative;
         }
     }
     return result;

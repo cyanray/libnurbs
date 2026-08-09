@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <libnurbs/Core/Typedefs.hpp>
 #include <vector>
 #include <cassert>

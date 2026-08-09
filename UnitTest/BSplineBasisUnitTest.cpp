@@ -82,3 +82,22 @@ TEST_CASE("BSplineBasis/Derivative (p=2)", "[basis, derivative]")
         REQUIRE(result(2, 2) == Approx(0.333333));
     }
 }
+
+TEST_CASE("BSplineBasis/EvaluateAll above degree", "[basis][jet]")
+{
+    KnotVector knots{{0, 0, 0, 0.5, 1, 1, 1}};
+    const Numeric x = 0.37;
+    const MatX derivatives = BSplineBasis::EvaluateAll(2, knots, x, 4);
+
+    REQUIRE(derivatives.rows() == 5);
+    REQUIRE(derivatives.cols() == 3);
+    for (int order = 0; order <= 2; ++order)
+    {
+        const VecX expected = order == 0
+            ? BSplineBasis::Evaluate(2, knots, x)
+            : BSplineBasis::EvaluateDerivative(2, knots, x, order);
+        REQUIRE((derivatives.row(order).transpose() - expected).norm() == Approx(0.0).margin(1e-12));
+    }
+    REQUIRE(derivatives.row(3).norm() == Approx(0.0).margin(1e-12));
+    REQUIRE(derivatives.row(4).norm() == Approx(0.0).margin(1e-12));
+}

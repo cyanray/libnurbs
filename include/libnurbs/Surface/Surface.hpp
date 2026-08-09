@@ -4,6 +4,7 @@
 #include <libnurbs/Core/Typedefs.hpp>
 #include <libnurbs/Core/KnotVector.hpp>
 #include <libnurbs/Core/Grid.hpp>
+#include <libnurbs/Core/DerivativeJet2D.hpp>
 
 namespace libnurbs
 {
@@ -32,6 +33,8 @@ namespace libnurbs
         [[nodiscard]] Vec3 EvaluateDerivative(Numeric u, Numeric v, int order_u, int order_v) const;
 
         [[nodiscard]] Grid<Vec3> EvaluateAll(Numeric u, Numeric v, int order_u, int order_v) const;
+
+        [[nodiscard]] DerivativeJet2D<Vec3> EvaluateJet(Numeric u, Numeric v, int max_order) const;
 
         [[nodiscard]] bool IsRational() const;
 
@@ -102,5 +105,7 @@ namespace libnurbs
 
     private:
         [[nodiscard]] Grid<Vec4> HomogeneousDerivative(Numeric u, Numeric v, int order_u, int order_v) const;
+
+        [[nodiscard]] DerivativeJet2D<Vec4> HomogeneousJet(Numeric u, Numeric v, int max_order) const;
     };
 }

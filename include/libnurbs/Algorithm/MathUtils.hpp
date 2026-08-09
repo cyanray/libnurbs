@@ -1,6 +1,9 @@
 #pragma once
 
 #include <cassert>
+#include <cmath>
+
+#include <Eigen/Core>
 
 namespace libnurbs
 {

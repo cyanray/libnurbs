@@ -40,6 +40,47 @@ TEST_CASE("Surface/Evaluate", "[surface][evaluate]")
     }
 }
 
+TEST_CASE("Surface/EvaluateJet", "[surface][jet]")
+{
+    Surface surface;
+    surface.DegreeU = 2;
+    surface.DegreeV = 1;
+    surface.KnotsU = KnotVector{{0, 0, 0, 1, 1, 1}};
+    surface.KnotsV = KnotVector{{0, 0, 1, 1}};
+    surface.ControlPoints = ControlPointGrid{3, 2};
+    surface.ControlPoints.Get(0, 0) = Vec4{0, 0, 0, 1};
+    surface.ControlPoints.Get(1, 0) = Vec4{1, 0, 0.2, 2};
+    surface.ControlPoints.Get(2, 0) = Vec4{2, 0, 0, 1};
+    surface.ControlPoints.Get(0, 1) = Vec4{0, 1, 0, 1};
+    surface.ControlPoints.Get(1, 1) = Vec4{1, 1, 0.2, 2};
+    surface.ControlPoints.Get(2, 1) = Vec4{2, 1, 0, 1};
+
+    Surface nonrational_surface = surface;
+    for (auto& point : nonrational_surface.ControlPoints.Values) point.w() = 1.0;
+
+    for (const Surface* target : {&surface, &nonrational_surface})
+    {
+        for (const auto [u, v] : {std::pair{0.0, 0.0}, std::pair{0.37, 0.61}, std::pair{1.0, 1.0}})
+        {
+            const auto jet = target->EvaluateJet(u, v, 3);
+            const auto larger_jet = target->EvaluateJet(u, v, 4);
+            REQUIRE(jet.MaxOrder() == 3);
+            REQUIRE(jet.Count() == 10);
+            for (int total_order = 0; total_order <= 3; ++total_order)
+            {
+                for (int order_u = total_order; order_u >= 0; --order_u)
+                {
+                    const int order_v = total_order - order_u;
+                    const Vec3 expected = target->EvaluateDerivative(u, v, order_u, order_v);
+                    REQUIRE((jet.Get(order_u, order_v) - expected).norm() == Approx(0.0).margin(1e-10));
+                    REQUIRE((jet.Get(order_u, order_v) - larger_jet.Get(order_u, order_v)).norm()
+                            == Approx(0.0).margin(1e-10));
+                }
+            }
+        }
+    }
+}
+
 TEST_CASE("Surface/EvaluateDerivative", "[surface][evaluate_derivative]")
 {
     ControlPointGrid grid;

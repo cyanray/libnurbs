@@ -1,6 +1,8 @@
 #include <libnurbs/Basis/BSplineBasis.hpp>
 #include <libnurbs/Core/KnotVector.hpp>
 
+#include <algorithm>
+
 namespace libnurbs
 {
     // modified from: https://github.com/pradeep-pyro/tinynurbs
@@ -78,11 +80,12 @@ namespace libnurbs
         result.row(0) = ndu.col(degree);
 
         MatX a = MatX::Zero(2, degree + 1);
+        const int derivative_order = std::min(order, degree);
         for (int r = 0; r <= degree; r++)
         {
             int s1 = 0, s2 = 1;
             a(0, 0) = 1.0;
-            for (int k = 1; k <= order; k++)
+            for (int k = 1; k <= derivative_order; k++)
             {
                 Numeric d = 0.0;
                 int rk = r - k;
@@ -115,7 +118,7 @@ namespace libnurbs
         }
 
         Numeric fac = degree;
-        for (int k = 1; k <= order; k++)
+        for (int k = 1; k <= derivative_order; k++)
         {
             result.row(k) *= fac;
             fac *= (degree - k);
